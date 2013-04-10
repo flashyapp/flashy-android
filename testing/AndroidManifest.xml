@@ -4,6 +4,12 @@
     android:versionCode="1"
     android:versionName="1.0" >
 
+    
+    <uses-feature android:name="android.hardware.camera" />
+    
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    
     <uses-sdk
         android:minSdkVersion="3"
         android:targetSdkVersion="3" />
@@ -20,6 +26,14 @@
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+        </activity>
+        <activity
+            android:name="com.example.test3.DisplayMessageActivity"
+            android:label="@string/title_activity_display_message"
+            android:parentActivityName="com.example.test3.MainActivity" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.example.test3.MainActivity" />
         </activity>
     </application>
 

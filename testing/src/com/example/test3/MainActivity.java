@@ -22,7 +22,7 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.media.MediaScannerConnection;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
@@ -37,6 +37,9 @@ import android.widget.LinearLayout;
 public class MainActivity extends Activity {
 
 	public final static String EXTRA_MESSAGE = "com.example.test3.MESSAGE";
+	Intent takePictureIntent;
+	String mCurrentPhotoPath;
+	
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -63,7 +66,7 @@ public class MainActivity extends Activity {
 
 	}
 	
-	
+	/*similar to sendMessage but for internal calling use*/
 	public void displayMessageFromHttp(String message)
 	{
 		
@@ -72,19 +75,16 @@ public class MainActivity extends Activity {
 		//String message = editText.getText().toString();
 		intent.putExtra(EXTRA_MESSAGE, message);
 		startActivity(intent);
-
-		
 	}
 	
+	/*send button calls this right now*/
 	public void pictureFunc(View view){
-		
 		dispatchTakePictureIntent(0);
-		
-	}
+	}	
 	
-	
+	/*internal call camera function*/
 	private void dispatchTakePictureIntent(int actionCode) {
-	    Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+	   takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
 	    /*File f=null;
 		try {
 			Log.d("DEBUG", "TESTTTTTTTTTTTTTTTTT1");
@@ -115,20 +115,85 @@ public class MainActivity extends Activity {
 	
 	
 	@Override
-	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-		super.onActivityResult(requestCode, resultCode, data);
+	protected void onActivityResult(int requestCode, int resultCode, Intent intent) {
+		super.onActivityResult(requestCode, resultCode, intent);
 		
 		if (requestCode == 0) // the pictureIntent returned it
 		{
-			Bundle extras = data.getExtras();
-		    Bitmap bm = (Bitmap) extras.get("data");
-		   // File fm=new File(extras.get("data"));
-		    String postUrl="http://www.flashyapp.com/api/add_image";
-			HttpPost(postUrl,bm);
-		    handleSmallCameraPhoto(bm);
+			cameraHelper(intent);
 			
 		}
 	}
+
+	private void cameraHelper(Intent intent)
+	{
+		Bundle extras = intent.getExtras();
+	    Bitmap bm = (Bitmap) extras.get("data");
+	   // File fm=new File(extras.get("data"));
+	    
+	    
+	    
+	    File path = Environment.getExternalStorageDirectory();
+	    //String StrPath=path.getPath();
+	    String fileName="cameraFile.jpg";
+	    File f = new File(path,fileName);
+	    //was takePictureIntent
+	    mCurrentPhotoPath = f.getAbsolutePath();
+	    takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(f));
+	    try {
+	    	Log.d("WRITING","GOT INTO THE TRY STATEMENT");
+	    	FileOutputStream out = new FileOutputStream(f);
+	         bm.compress(Bitmap.CompressFormat.JPEG, 90, out);
+        } catch (Exception e) {
+        	Log.d("WRITING","FAILED WRITING");
+            e.printStackTrace();
+        }
+	   
+	    
+        
+        
+        
+	    galleryAddPic();
+	    
+	    Log.d("BEFORE POST", "RIGHT BEFORE HTTPPOST");
+	    
+	    String postUrl="http://www.flashyapp.com/api/add_image";
+		HttpPost(postUrl,bm);
+		
+		//handleSmallCameraPhoto(bm);
+		handleSmallPhoto();
+		
+	    
+	    
+	    Log.d("AFTER GALLERY CALL", "FINISHED GALLERY CALL");
+	}
+	
+	void handleSmallPhoto(){
+		File imgFile = new  File(mCurrentPhotoPath);
+		if(imgFile.exists()){
+			LinearLayout Previews = (LinearLayout)findViewById(R.id.layoutID);
+		    Bitmap myBitmap = BitmapFactory.decodeFile(imgFile.getAbsolutePath());
+		    if (myBitmap == null)
+		    	Log.d("Debugggingggg", "Bitmap is null!");
+		    
+		    ImageView myImage = new ImageView(this);
+		    
+		    myImage.setImageBitmap(myBitmap);
+			
+			myImage.setId(101);
+			Previews.addView(myImage); 
+			myImage.invalidate(); 
+			Previews.invalidate();
+		    
+		    
+		}
+	    	
+
+	}
+	
+	
+	
+	
 	
 	private void handleSmallCameraPhoto(Bitmap bm) {
 	    
@@ -162,11 +227,24 @@ public class MainActivity extends Activity {
 	public void httpReq(View view)
 	{
 		String getUrl="http://www.flashyapp.com/api/get_images";
-		String postUrl="http://www.flashyapp.com/api/add_image";
+		//String postUrl="http://www.flashyapp.com/api/add_image";
 		//HttpPost(postUrl,bm);
 		HttpGet(getUrl);
 	}
 
+	
+	
+	
+	
+	private void galleryAddPic() {
+        Intent mediaScanIntent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
+        File f = new File(mCurrentPhotoPath);
+        Uri contentUri = Uri.fromFile(f);
+        mediaScanIntent.setData(contentUri);
+        this.sendBroadcast(mediaScanIntent);
+    }
+	
+	
 	
 	
 	
@@ -191,17 +269,17 @@ public class MainActivity extends Activity {
 		    
 		    //File path = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
 		    
-		    
-			 createExternalStoragePrivatePicture();
+		    String saveName="cameraFile.bmp";
+			// createExternalStoragePrivatePicture(saveName,bm);
 			    
 			   
 			   
-			 Log.w("BEFORE READING", "RIGHT BEFORE I READ");
+			 Log.d("BEFORE READING", "RIGHT BEFORE I READ");
 		    
 		    
-		    
+		   
 		    if (path != null) {
-		    	 File file = new File(path, "TestStoredNinja.jpg");
+		    	 File file = new File(mCurrentPhotoPath);
 		    
 		    entity.addPart("file", new FileBody(file));
 		// entity.addPart("file", bm);
@@ -397,7 +475,7 @@ public class MainActivity extends Activity {
 	
 	
 	
-	void createExternalStoragePrivatePicture() {
+	void createExternalStoragePrivatePicture(String saveName, Bitmap bm) {
 	    // Create a path where we will place our picture in our own private
 	    // pictures directory.  Note that we don't really need to place a
 	    // picture in DIRECTORY_PICTURES, since the media scanner will see
@@ -407,7 +485,7 @@ public class MainActivity extends Activity {
 	   // File path = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
 		
 		File path = Environment.getExternalStorageDirectory();
-	    File file = new File(path, "TestStoredNinja.jpg");
+	    File file = new File(path, saveName);
 
 	    try {
 	    	//make sure directory exists

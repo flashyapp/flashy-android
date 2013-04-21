@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/outer_register_layout"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:orientation="vertical" >
+
+    <TextView
+        android:id="@+id/register_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/registerpage" />
+
+    <EditText android:id="@+id/login_name_register"
+        android:singleLine="true"
+       android:layout_width="200dip"
+        android:layout_height="40dip"
+        android:hint="@string/login_hint" />
+    
+     <EditText android:id="@+id/password_register"
+        android:inputType="textPassword"
+        android:layout_height="40dip"
+        android:singleLine="true"
+       android:layout_width="200dip"
+        android:hint="@string/password_hint" />
+
+     <EditText android:id="@+id/email_register"
+         android:inputType="textEmailAddress"
+        android:singleLine="true"
+       android:layout_width="200dip"
+        android:layout_height="40dip"
+        android:hint="@string/email_hint" />
+     
+     
+     <LinearLayout 
+    	android:id="@+id/button_login_layout"
+   		
+    	android:layout_width="wrap_content"
+    	android:layout_height="wrap_content"
+    	android:orientation="horizontal" >
+     <Button
+         android:id="@+id/second_register_button"
+         android:layout_width="wrap_content"
+         android:layout_height="wrap_content"
+         android:text="@string/button_register" />
+     
+     </LinearLayout>
+
+     
+     <Button
+         android:id="@+id/draw_button"
+         android:layout_width="wrap_content"
+         android:layout_height="wrap_content"
+         android:text="@string/button_draw" />
+
+</LinearLayout>

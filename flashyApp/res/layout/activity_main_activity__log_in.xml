@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/outer_login_layout"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:orientation="vertical" >
+
+    <TextView
+        android:id="@+id/login_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/loginpage" />
+
+    <EditText android:id="@+id/login_name"
+        android:singleLine="true"
+       android:layout_width="200dip"
+        android:layout_height="40dip"
+        android:hint="@string/login_hint" />
+    
+     <EditText android:id="@+id/password"
+        android:inputType="textPassword"
+        android:layout_height="40dip"
+        android:singleLine="true"
+       android:layout_width="200dip"
+        android:hint="@string/password_hint" />
+
+     
+     
+     <LinearLayout 
+    	android:id="@+id/button_login_layout"
+   		
+    	android:layout_width="wrap_content"
+    	android:layout_height="wrap_content"
+    	android:orientation="horizontal" >
+     <Button
+         android:id="@+id/register_button"
+         android:layout_width="wrap_content"
+         android:layout_height="wrap_content"
+         android:text="@string/button_register" />
+     
+     <Button
+         android:id="@+id/login_button"
+         android:layout_width="wrap_content"
+         android:layout_height="wrap_content"
+         android:text="@string/button_login" />
+     </LinearLayout>
+
+     
+     <Button
+         android:id="@+id/draw_button"
+         android:layout_width="wrap_content"
+         android:layout_height="wrap_content"
+         android:text="@string/button_draw" />
+
+</LinearLayout>

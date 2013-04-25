@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/ViewDeck_layout"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:orientation="vertical" >
+
+    <TextView
+        android:id="@+id/deckView_textView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/deckView_text" />
+
+    
+     <Button
+         android:id="@+id/flip_over_button"
+         android:layout_width="wrap_content"
+         android:layout_height="wrap_content"
+         android:text="@string/flip_over_card"
+         android:onClick="flipOver" />
+      <Button
+         android:id="@+id/flip_next_button"
+         android:layout_width="wrap_content"
+         android:layout_height="wrap_content"
+         android:text="@string/flip_next_card"
+         android:onClick="nextCard" />
+      
+      
+      
+      
+      
+</LinearLayout>

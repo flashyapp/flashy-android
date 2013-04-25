@@ -16,5 +16,15 @@
     <string name="button_login">Login</string>
     <string name="button_draw">Draw</string>
     <string name="title_activity_view_html">ViewHTML</string>
-
+    <string name="button_new_deck">New Deck</string>
+    <string name="title_activity_new_deck">NewDeck</string>
+    <string name="new_deck_text">Fill in the Fields to Make a New Deck</string>
+    <string name="deck_name_hint">Name of the Deck</string>
+    <string name="deck_description_hint">Description of Deck</string>
+    <string name="fromList_button_text">Submit the List</string>
+    <string name="title_activity_view_deck">ViewDeck</string>
+    <string name="deckView_text">A single Deck:</string>
+ 	<string name="flip_over_card">Flip This Card Over</string>
+ 	<string name="flip_next_card">Next Card</string>
+ 	
 </resources>

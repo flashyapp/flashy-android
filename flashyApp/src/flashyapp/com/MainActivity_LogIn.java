@@ -62,13 +62,13 @@ public class MainActivity_LogIn extends Activity {
 			view.setText(message);
 		}
  
-		htmlWrite();
-		htmlRead();
+		//htmlWrite();
+		//htmlRead();
 	    
 	  
 	    
 		
-		//checkForSessionId();
+		checkForSessionId();
 		
 		
 		

@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/outer_register_layout"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:orientation="vertical" >
+
+    <TextView
+        android:id="@+id/new_deck_text_field"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/new_deck_text" />
+
+    <EditText android:id="@+id/new_deck_name"
+        android:singleLine="true"
+       android:layout_width="200dip"
+        android:layout_height="40dip"
+        android:hint="@string/deck_name_hint" />
+    
+     <EditText android:id="@+id/new_deck_description"
+        
+        android:layout_height="wrap_content"
+        android:singleLine="true"
+       android:layout_width="200dip"
+        android:hint="@string/deck_description_hint" />
+
+    
+     
+     
+    
+     <Button
+         android:id="@+id/new_deck_fromList_button"
+         android:layout_width="wrap_content"
+         android:layout_height="wrap_content"
+         android:onClick="fromListSubmit"
+         android:text="@string/fromList_button_text" />
+     
+    
+
+</LinearLayout>

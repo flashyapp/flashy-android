@@ -23,7 +23,7 @@ import android.util.Log;
 import android.view.MenuItem;
 
 public class DecksPage extends Activity {
-	
+ 
 	private String sessionId;
 	private String username;
 	
@@ -142,13 +142,13 @@ public class DecksPage extends Activity {
 		if (deckJSON==null){
 			//do what?
 		}
-		
+	
 		deckJSON=addString(deckJSON,"session_id",sessionId);
 		if (deckJSON==null){
 			//do what?
 		}
-		
-		
+	
+	 
 		String url="http://www.flashyapp.com/api/deck/get_decks";
 		HttpResponse httpResponse=sendJSONObject(deckJSON,url);
 		String response=responseChecker(httpResponse);
@@ -162,7 +162,7 @@ public class DecksPage extends Activity {
 			JSONArray deckArray=jresponse.getArray("titles"); ????
 			
 			sessionId=jresponse.getString("session_id");
-			
+		
 		}
 		catch(Exception e) {
 			 Log.d("Error", "Cannot turn response to JSON");

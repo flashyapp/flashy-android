@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.EOFException;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -25,6 +26,7 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.os.Bundle;
+import android.os.Environment;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MotionEvent;
@@ -36,7 +38,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 public class MainActivity_LogIn extends Activity {
-
+	
 	private EditText etName;
 	private EditText etPswd;
 	public final static String SESSION_FILE= "sessionId.txt";
@@ -50,6 +52,8 @@ public class MainActivity_LogIn extends Activity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main_activity__log_in);
 		
+		Log.d("DEGUG","Got into create method....");
+		
 		Intent intent=getIntent();
 		String message = intent.getStringExtra(MainActivity_LogIn.INTENT_EXTRA_DATA_REGISTER);
 		if (message != null)
@@ -57,13 +61,18 @@ public class MainActivity_LogIn extends Activity {
 			TextView view=(TextView) findViewById(R.id.login_text);
 			view.setText(message);
 		}
+ 
+		htmlWrite();
+		htmlRead();
+	    
+	  
+	    
+		
+		//checkForSessionId();
 		
 		
-		checkForSessionId();
 		
 		
-		
-		Log.d("DEGUG","Got into create method....");
 		 etName = (EditText) findViewById(R.id.login_name);
 		 etPswd = (EditText) findViewById(R.id.password);
 		 
@@ -343,6 +352,7 @@ public class MainActivity_LogIn extends Activity {
 	    return sb.toString();
 	}
 
+	//NOW INVALID!! NEW LINE CODE IN OTHER PROJECT!!!
 	private void drawingLines()
 	{
 		Log.d("Drawing", "Got into drawing method");
@@ -376,6 +386,75 @@ public class MainActivity_LogIn extends Activity {
 		
 	}
 
+	
+	private void htmlWrite(){
+		Log.d("WRITING HTML FILE","Before Writing html");
+		
+		File path = Environment.getExternalStorageDirectory();
+		    //String StrPath=path.getPath();
+		String photoName="cameraFile.jpg";
+		
+		File f = new File(path,photoName);
+	    //was takePictureIntent
+	    // String mCurrentPhotoPath = "\""+f.getAbsolutePath()+"\"";
+	     String photoPath="file:///android_asset/FlashCardsPhoto.jpg";
+	     
+	    String fileName="Test.html";
+	    String htmlString="<html><head><title>TITLeeeEE</title></head><body><i>Middle</i> of the<b> body!</b>" +
+	    		"<img src="+photoPath+" alt=\"Ninja Pic\" > </body></html>";
+	   //height="42" width="42"
+	   
+	    try {
+	        //writing SessionId
+	        DataOutputStream out = 
+	                new DataOutputStream(openFileOutput(fileName, Context.MODE_PRIVATE));
+	        out.writeUTF(htmlString);
+	        Log.d("WRITING HTML FILE","After Writing html"+htmlString);
+	       
+	   
+	    out.close();
+	    }catch (IOException e) {
+	        Log.i("Data Input Sample", "I/O Error");
+	    }
+	}
+	
+	private void htmlRead()
+	{
+		String htmlIn=null;
+		 try {
+		      DataInputStream in = new DataInputStream(openFileInput("Test.html"));
+		        
+		    	try {
+		   
+		    			htmlIn=in.readUTF();
+		    			
+		              	Log.i("HTML Input", htmlIn);
+		    			
+		    		
+		          
+		        } catch (EOFException e) {
+		            Log.i("HTML Input Sample from MAIN", "End of file reached");
+		        }
+		        in.close();
+		    } catch (IOException e) {
+		        Log.i("HTML Input Sample", "I/O Error--file isn't there!");
+		        return;
+		    }
+		
+		if(htmlIn != null){
+			
+			Log.d("HTML Input", htmlIn);
+			
+			
+			Intent intent = new Intent(this, ViewHTML.class);
+			//can pass in html string
+			intent.putExtra("html_extra", htmlIn);
+			startActivity(intent);
+			
+			
+		}
+	}
+	
 
 }
 

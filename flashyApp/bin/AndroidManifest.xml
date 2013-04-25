@@ -43,6 +43,14 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="flashapp.com.MainActivity_LogIn" />
         </activity>
+        <activity
+            android:name="flashyapp.com.ViewHTML"
+            android:label="@string/title_activity_view_html"
+            android:parentActivityName="flashyapp.com.MainActivity_LogIn" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="flashyapp.com.MainActivity_LogIn" />
+        </activity>
     </application>
 
 </manifest>

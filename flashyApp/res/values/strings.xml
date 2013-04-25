@@ -12,7 +12,9 @@
     <string name="deckpage">This is a list of decks</string>
     <string name="title_activity_registration">Registration</string>
     <string name="title_activity_decks_page">DecksPage</string>
-	<string name="button_register">Register Now!</string>
-	<string name="button_login">Login</string>
-	<string name="button_draw">Draw</string>
+    <string name="button_register">Register Now!</string>
+    <string name="button_login">Login</string>
+    <string name="button_draw">Draw</string>
+    <string name="title_activity_view_html">ViewHTML</string>
+
 </resources>

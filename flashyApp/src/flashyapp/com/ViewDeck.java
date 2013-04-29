@@ -66,12 +66,12 @@ public class ViewDeck extends Activity {
 	private void loadDeck(){
 		
 		JSONObject deckJSON=new JSONObject();
-		deckJSON=addString(deckJSON,"username",username);
+		deckJSON=MyJSON.addString(deckJSON,"username",username);
 		if (deckJSON==null){
 			//do what?
 		}
 	
-		deckJSON=addString(deckJSON,"session_id",sessionId);
+		deckJSON=MyJSON.addString(deckJSON,"session_id",sessionId);
 		if (deckJSON==null){
 			//do what?
 		}
@@ -81,8 +81,8 @@ public class ViewDeck extends Activity {
 		
 	 
 		String url="http://www.flashyapp.com/api/deck/"+deckId+"/get";
-		HttpResponse httpResponse=sendJSONObject(deckJSON,url);
-		String response=responseChecker(httpResponse);
+		HttpResponse httpResponse=MyJSON.sendJSONObject(deckJSON,url);
+		String response=MyJSON.responseChecker(httpResponse);
 		Log.d("GET_DECKHttpResponse",response); 
 		
 		
@@ -193,91 +193,6 @@ public class ViewDeck extends Activity {
 
 	
 	
-	private JSONObject addString(JSONObject json, String key, String value){
-		try{
-			json.put(key, value);
-			return json;
-		}
-		catch(Exception e)
-		{
-			Log.e("JSON FAILURE!","JSON couldn't add the data");
-			e.printStackTrace();
-			return null;
-			
-		}
-		
-	}
-	
-	
-	
-	
-	private String responseChecker(HttpResponse httpResponse){
-		try{
-			if(httpResponse!=null){
-				InputStream instream = httpResponse.getEntity().getContent(); //Get the data in the entity
-	            String result= convertStreamToString(instream);
-	            // now you have the string representation of the HTML request        
-	            instream.close();
-	            return result;
-			}
-			else{
-				Log.d("HttpResponse", "Response was NULL");
-			}
-		}
-		catch(Exception e) {
-	        e.printStackTrace();
-	        Log.e("Error", "Cannot get response information");
-	    }
-		return null;
-	}
-	private HttpResponse sendJSONObject(JSONObject json, String url){
-		Log.d("DEBUGGING JSON", json.toString());
-		
-		
-		
-		try{
-			HttpClient httpClient = new DefaultHttpClient();
-			HttpResponse httpResponse;
-			
-			HttpPost httpPost = new HttpPost(url); 
-			 StringEntity se = new StringEntity(json.toString());  
-	         se.setContentType(new BasicHeader(HTTP.CONTENT_TYPE, "application/json"));
-	         httpPost.setEntity(se);
-	         Log.d("Debug","Before executing post");
-	         httpResponse = httpClient.execute(httpPost);
-	         return httpResponse;
-	         
-		} catch(Exception e) {
-	        e.printStackTrace();
-	        Log.e("Error", "Cannot Estabilish Connection");
-	        return null;
-	    }
-		
-		
-		
-	}
-	private static String convertStreamToString(InputStream is) {
-
-	    BufferedReader reader = new BufferedReader(new InputStreamReader(is));
-	    StringBuilder sb = new StringBuilder();
-
-	    String line = null;
-	    try {
-	        while ((line = reader.readLine()) != null) {
-	            sb.append(line + "\n");
-	        }
-	    } catch (IOException e) {
-	        e.printStackTrace();
-	    } finally {
-	        try {
-	            is.close();
-	        } catch (IOException e) {
-	            e.printStackTrace();
-	        }
-	    }
-	    return sb.toString();
-	}
-
 	
 
 }

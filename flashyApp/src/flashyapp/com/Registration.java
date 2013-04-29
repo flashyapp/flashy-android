@@ -105,9 +105,7 @@ public class Registration extends Activity {
 		 
 		 
 		}
-	        
-			
-			
+	   
 	private boolean validateText(EditText et,String error){
 		String str=et.getText().toString();
 		if (str.equalsIgnoreCase("")){
@@ -117,11 +115,6 @@ public class Registration extends Activity {
 			return true;
 	}
 	
-
-	
-	
-	
-	
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		// Inflate the menu; this adds items to the action bar if it is present.
@@ -129,30 +122,27 @@ public class Registration extends Activity {
 		return true;
 	}
 	
-	
-
-
 	private void returnHomeIntent(){
 		
 		String name=etName.getText().toString();
 		String pswd=etPswd.getText().toString();
 		String email=etEmail.getText().toString();
 		JSONObject loginJSON=new JSONObject();
-		loginJSON=addString(loginJSON,"username",name);
+		loginJSON=MyJSON.addString(loginJSON,"username",name);
 		if (loginJSON==null){
 			//do what?
 		}
-		loginJSON=addString(loginJSON,"password",pswd);
+		loginJSON=MyJSON.addString(loginJSON,"password",pswd);
 		if (loginJSON==null){
 			//do what?
 		}
-		loginJSON=addString(loginJSON,"email",email);
+		loginJSON=MyJSON.addString(loginJSON,"email",email);
 		if (loginJSON==null){
 			//do what?
 		}
 		String url="http://www.flashyapp.com/api/user/create_user";
-		HttpResponse httpResponse=sendJSONObject(loginJSON,url);
-		String response=responseChecker(httpResponse);
+		HttpResponse httpResponse=MyJSON.sendJSONObject(loginJSON,url);
+		String response=MyJSON.responseChecker(httpResponse);
 		Log.d("LoginHttpResponse",response); 
 		int email_s=1;
 		int password_s=1;
@@ -191,93 +181,6 @@ public class Registration extends Activity {
 	}
 	
 	
-	private JSONObject addString(JSONObject json, String key, String value){
-		try{
-			json.put(key, value);
-			return json;
-		}
-		catch(Exception e)
-		{
-			Log.e("JSON FAILURE!","JSON couldn't add the data");
-			e.printStackTrace();
-			return null;
-			
-		}
-		
-	}
-	
-	private String responseChecker(HttpResponse httpResponse){
-		try{
-			if(httpResponse!=null){
-				InputStream instream = httpResponse.getEntity().getContent(); //Get the data in the entity
-	            String result= convertStreamToString(instream);
-	            // now you have the string representation of the HTML request        
-	            instream.close();
-	            return result;
-			}
-			else{
-				Log.d("HttpResponse", "Response was NULL");
-			}
-		}
-		catch(Exception e) {
-	        e.printStackTrace();
-	        Log.e("Error", "Cannot get response information");
-	    }
-		return null;
-	}
-	private HttpResponse sendJSONObject(JSONObject json, String url){
-		Log.d("DEBUGGING JSON", json.toString());
-		
-		
-		
-		try{
-			HttpClient httpClient = new DefaultHttpClient();
-			HttpResponse httpResponse;
-			
-			HttpPost httpPost = new HttpPost(url); 
-			 StringEntity se = new StringEntity(json.toString());  
-	         se.setContentType(new BasicHeader(HTTP.CONTENT_TYPE, "application/json"));
-	         httpPost.setEntity(se);
-	         Log.d("Debug","Before executing post");
-	         httpResponse = httpClient.execute(httpPost);
-	         return httpResponse;
-	         
-		} catch(Exception e) {
-	        e.printStackTrace();
-	        Log.e("Error", "Cannot Estabilish Connection");
-	        return null;
-	    }
-		
-		
-		
-	}
-	
-	
-	
-	private static String convertStreamToString(InputStream is) {
-
-	    BufferedReader reader = new BufferedReader(new InputStreamReader(is));
-	    StringBuilder sb = new StringBuilder();
-
-	    String line = null;
-	    try {
-	        while ((line = reader.readLine()) != null) {
-	            sb.append(line + "\n");
-	        }
-	    } catch (IOException e) {
-	        e.printStackTrace();
-	    } finally {
-	        try {
-	            is.close();
-	        } catch (IOException e) {
-	            e.printStackTrace();
-	        }
-	    }
-	    return sb.toString();
-	}
-
-	
-
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {

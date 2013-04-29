@@ -1,18 +1,6 @@
 package flashyapp.com;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-
 import org.apache.http.HttpResponse;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.entity.StringEntity;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.message.BasicHeader;
-import org.apache.http.protocol.HTTP;
-import org.json.JSONArray;
 import org.json.JSONObject;
 
 import android.app.Activity;
@@ -22,6 +10,8 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.PopupWindow;
+import android.widget.TextView;
 
 public class NewDeck extends Activity {
 
@@ -61,59 +51,54 @@ public class NewDeck extends Activity {
 		{
 			JSONObject card = new JSONObject();
 			
-			card=addString(card,"sideA","front"+index);
+			card=MyJSON.addString(card,"sideA","front"+index);
 			if (card==null){
 				//do what?
 			}
-		
-			card=addString(card,"sideB","back"+index);
+			card=MyJSON.addString(card,"sideB","back"+index);
 			if (card==null){
 				//do what?
 			}
-			
 			Log.d("DEBUG each card JSON #"+index,card.toString());
 			deck[index]=card;
-		
 		}
 		
 		JSONObject completeDeck=new JSONObject();
-		
-		
-		completeDeck=addString(completeDeck,"username",username);
+				
+		completeDeck=MyJSON.addString(completeDeck,"username",username);
 		if (completeDeck==null){
 			//do what?
 		}
-		
-		completeDeck=addString(completeDeck,"session_id",sessionId);
+		completeDeck=MyJSON.addString(completeDeck,"session_id",sessionId);
 		if (completeDeck==null){
 			//do what?
 		}
-		
-		completeDeck=addArray(completeDeck,"cards",deck);
+		completeDeck=MyJSON.addArray(completeDeck,"cards",deck);
 		if (completeDeck==null){
 			//do what?
 		}
-		completeDeck=addString(completeDeck,"deck_name",deckname);
+		completeDeck=MyJSON.addString(completeDeck,"deck_name",deckname);
 		if (completeDeck==null){
 			//do what?
 		}
-		completeDeck=addString(completeDeck,"description",descrip);
+		completeDeck=MyJSON.addString(completeDeck,"description",descrip);
 		if (completeDeck==null){
 			//do what?
 		}
-		
 		Log.d("DEBUG sending in CompleteDeck JSON:",completeDeck.toString());
 		
 		String url="http://www.flashyapp.com/api/deck/new/from_lists";
-		HttpResponse httpResponse=sendJSONObject(completeDeck,url);
-		String response=responseChecker(httpResponse);
+		HttpResponse httpResponse=MyJSON.sendJSONObject(completeDeck,url);
+		String response=MyJSON.responseChecker(httpResponse);
 		Log.d("NewDeckHttpResponse",response); 
 		
 	
 		String deckId=null;
+		String error=null;
 		try{
 			
 			JSONObject jresponse=new JSONObject(response);
+			error=MyJSON.errorChecker(jresponse);
 			deckId=jresponse.getString("deck_id");
 			
 		}
@@ -123,6 +108,12 @@ public class NewDeck extends Activity {
 	       
 	    }
 	
+		if (error != null)
+		{
+			TextView tv=new TextView(this);
+			tv.setText(error);
+			PopupWindow popup=new PopupWindow(tv);
+		}
 		if (deckId != null){
 			Log.d("DeckID",deckId+"");
 		}
@@ -142,122 +133,6 @@ public class NewDeck extends Activity {
 	
 	
 	
-	
-	
-	private JSONObject addString(JSONObject json, String key, String value){
-		try{
-			json.put(key, value);
-			return json;
-		}
-		catch(Exception e)
-		{
-			Log.e("JSON FAILURE!","JSON couldn't add the data");
-			e.printStackTrace();
-			return null;
-			
-		}
-		
-	}
-
-	private static String convertStreamToString(InputStream is) {
-
-	    BufferedReader reader = new BufferedReader(new InputStreamReader(is));
-	    StringBuilder sb = new StringBuilder();
-
-	    String line = null;
-	    try {
-	        while ((line = reader.readLine()) != null) {
-	            sb.append(line + "\n");
-	        }
-	    } catch (IOException e) {
-	        e.printStackTrace();
-	    } finally {
-	        try {
-	            is.close();
-	        } catch (IOException e) {
-	            e.printStackTrace();
-	        }
-	    }
-	    return sb.toString();
-	}
-
-	
-	private String responseChecker(HttpResponse httpResponse){
-		try{
-			if(httpResponse!=null){
-				InputStream instream = httpResponse.getEntity().getContent(); //Get the data in the entity
-	            String result= convertStreamToString(instream);
-	            // now you have the string representation of the HTML request        
-	            instream.close();
-	            return result;
-			}
-			else{
-				Log.d("HttpResponse", "Response was NULL");
-			}
-		}
-		catch(Exception e) {
-	        e.printStackTrace();
-	        Log.e("Error", "Cannot get response information");
-	    }
-		return null;
-	}
-	private HttpResponse sendJSONObject(JSONObject json, String url){
-		Log.d("DEBUGGING JSON", json.toString());
-		
-		
-		
-		try{
-			HttpClient httpClient = new DefaultHttpClient();
-			HttpResponse httpResponse;
-			
-			HttpPost httpPost = new HttpPost(url); 
-			 StringEntity se = new StringEntity(json.toString());  
-	         se.setContentType(new BasicHeader(HTTP.CONTENT_TYPE, "application/json"));
-	         httpPost.setEntity(se);
-	         Log.d("Debug","Before executing post");
-	         httpResponse = httpClient.execute(httpPost);
-	         return httpResponse;
-	         
-		} catch(Exception e) {
-	        e.printStackTrace();
-	        Log.e("Error", "Cannot Estabilish Connection");
-	        return null;
-	    }
-		
-		
-		
-	}
-	
-	
-	private JSONObject addArray(JSONObject json, String key, JSONObject[] value){
-		JSONArray array=new JSONArray();
-		try{
-			for (int index =0; index<value.length; index++){
-				array.put(value[index]);
-			}
-	
-		}
-		catch(Exception e)
-		{
-			Log.e("JSON FAILURE!","JSON couldn't add the data");
-			e.printStackTrace();
-			return null;
-			
-		}
-		Log.d("JSONArray: ",array.toString());
-		try{
-			json.put(key, array);
-			return json;
-		}
-		catch(Exception e)
-		{
-			Log.e("JSON FAILURE!","JSON couldn't add the data");
-			e.printStackTrace();
-			return null;
-			
-		}
-		
-	}
 	
 	
 	

@@ -53,24 +53,27 @@ public final class R {
     public static final class layout {
         public static final int activity_decks_page=0x7f030000;
         public static final int activity_main_activity__log_in=0x7f030001;
-        public static final int activity_new_deck=0x7f030002;
-        public static final int activity_registration=0x7f030003;
-        public static final int activity_view_deck=0x7f030004;
-        public static final int activity_view_html=0x7f030005;
+        public static final int activity_my_logout=0x7f030002;
+        public static final int activity_new_deck=0x7f030003;
+        public static final int activity_registration=0x7f030004;
+        public static final int activity_view_deck=0x7f030005;
+        public static final int activity_view_html=0x7f030006;
     }
     public static final class menu {
         public static final int decks_page=0x7f070000;
         public static final int main_activity__log_in=0x7f070001;
-        public static final int new_deck=0x7f070002;
-        public static final int registration=0x7f070003;
-        public static final int view_deck=0x7f070004;
-        public static final int view_html=0x7f070005;
+        public static final int my_logout=0x7f070002;
+        public static final int new_deck=0x7f070003;
+        public static final int registration=0x7f070004;
+        public static final int view_deck=0x7f070005;
+        public static final int view_html=0x7f070006;
     }
     public static final class string {
         public static final int action_settings=0x7f050001;
         public static final int app_name=0x7f050000;
         public static final int button_draw=0x7f05000d;
         public static final int button_login=0x7f05000c;
+        public static final int button_logout=0x7f050019;
         public static final int button_new_deck=0x7f05000f;
         public static final int button_register=0x7f05000b;
         public static final int deckView_text=0x7f050016;
@@ -88,6 +91,7 @@ public final class R {
         public static final int password_hint=0x7f050006;
         public static final int registerpage=0x7f050007;
         public static final int title_activity_decks_page=0x7f05000a;
+        public static final int title_activity_my_logout=0x7f05001a;
         public static final int title_activity_new_deck=0x7f050010;
         public static final int title_activity_registration=0x7f050009;
         public static final int title_activity_view_deck=0x7f050015;

@@ -67,6 +67,10 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="flashyapp.com.DecksPage" />
         </activity>
+        <activity
+            android:name="flashyapp.com.MyLogout"
+            android:label="@string/title_activity_my_logout" >
+        </activity>
     </application>
 
 </manifest>

@@ -1,26 +1,19 @@
 package flashyapp.com;
 
-import java.io.BufferedReader;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.EOFException;
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 
 import org.apache.http.HttpResponse;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.entity.StringEntity;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.message.BasicHeader;
-import org.apache.http.protocol.HTTP;
 import org.json.JSONObject;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -61,11 +54,11 @@ public class MainActivity_LogIn extends Activity {
 			TextView view=(TextView) findViewById(R.id.login_text);
 			view.setText(message);
 		}
- 
+
 		//htmlWrite();
 		//htmlRead();
 	    
-	  
+	 
 	    
 		
 		checkForSessionId();
@@ -179,7 +172,6 @@ public class MainActivity_LogIn extends Activity {
 	
 	
 	
-	
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		// Inflate the menu; this adds items to the action bar if it is present.
@@ -195,33 +187,63 @@ public class MainActivity_LogIn extends Activity {
 		String name=etName.getText().toString();
 		String pswd=etPswd.getText().toString();
 		JSONObject loginJSON=new JSONObject();
-		loginJSON=addString(loginJSON,"username",name);
+		loginJSON=MyJSON.addString(loginJSON,"username",name);
 		if (loginJSON==null){
 			//do what?
 		}
-		loginJSON=addString(loginJSON,"password",pswd);
+		loginJSON=MyJSON.addString(loginJSON,"password",pswd);
 		if (loginJSON==null){
 			//do what?
 		}
 		
 		String url="http://www.flashyapp.com/api/user/login";
-		HttpResponse httpResponse=sendJSONObject(loginJSON,url);
-		String response=responseChecker(httpResponse);
+		HttpResponse httpResponse=MyJSON.sendJSONObject(loginJSON,url);
+		String response=MyJSON.responseChecker(httpResponse);
 		Log.d("LoginHttpResponse",response); 
 		
 		
 		String sessionId=null;
+		String error=null;
+		
 		try{
 			
 			JSONObject jresponse=new JSONObject(response);
-			sessionId=jresponse.getString("session_id");
+			error=MyJSON.errorChecker(jresponse);
+			if (error == null)// no error
+			{
+				sessionId=jresponse.getString("session_id");
+			}
+			else{
+				AlertDialog.Builder ald=new AlertDialog.Builder(this);
+				ald.setTitle("LogIn Error");
+				ald.setMessage(error);
+				ald.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+					@Override
+					public void onClick(DialogInterface dialog, int which) {
+						Log.d("Debug", "Alert Got Clicked");
+					}
+				});
+				
+				
+				
+				AlertDialog other=ald.create();
+				other.show();
+				
+			}
 			
+				
+		
 		}
 		catch(Exception e) {
 			 Log.d("Error", "Cannot turn response to JSON");
 			e.printStackTrace();
 	       
 	    }
+		
+		
+		
+		
+		
 	
 		if (sessionId != null){
 			Log.d("SessionID",sessionId);
@@ -233,7 +255,7 @@ public class MainActivity_LogIn extends Activity {
 		                new DataOutputStream(openFileOutput(SESSION_FILE, Context.MODE_PRIVATE));
 		        out.writeUTF(sessionId);
 		        out.writeUTF(name);
-		       
+		      
 		   
 		    out.close();
 		    }catch (IOException e) {
@@ -259,7 +281,7 @@ public class MainActivity_LogIn extends Activity {
 		
 	}
 	
-	
+	/*
 	private JSONObject addString(JSONObject json, String key, String value){
 		try{
 			json.put(key, value);
@@ -322,7 +344,7 @@ public class MainActivity_LogIn extends Activity {
 	}
 	
 	
-	
+	*/
 	
 	
 	private void registerIntent(){
@@ -330,7 +352,7 @@ public class MainActivity_LogIn extends Activity {
 		startActivity(intent);
 	}
 	
-	private static String convertStreamToString(InputStream is) {
+	/*private static String convertStreamToString(InputStream is) {
 
 	    BufferedReader reader = new BufferedReader(new InputStreamReader(is));
 	    StringBuilder sb = new StringBuilder();
@@ -351,6 +373,7 @@ public class MainActivity_LogIn extends Activity {
 	    }
 	    return sb.toString();
 	}
+*/
 
 	//NOW INVALID!! NEW LINE CODE IN OTHER PROJECT!!!
 	private void drawingLines()

@@ -24,7 +24,9 @@
     <string name="fromList_button_text">Submit the List</string>
     <string name="title_activity_view_deck">ViewDeck</string>
     <string name="deckView_text">A single Deck:</string>
- 	<string name="flip_over_card">Flip This Card Over</string>
- 	<string name="flip_next_card">Next Card</string>
- 	
+    <string name="flip_over_card">Flip This Card Over</string>
+    <string name="flip_next_card">Next Card</string>
+    <string name="button_logout">Logout</string>
+    <string name="title_activity_my_logout">Logout</string>
+
 </resources>

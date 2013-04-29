@@ -1,6 +1,7 @@
 package flashyapp.com;
 
 import java.io.BufferedReader;
+import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -18,6 +19,7 @@ import org.json.JSONObject;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.NavUtils;
@@ -55,103 +57,26 @@ public class DecksPage extends Activity {
 	
 	}
 	
-
-	private JSONObject addString(JSONObject json, String key, String value){
-		try{
-			json.put(key, value);
-			return json;
-		}
-		catch(Exception e)
-		{
-			Log.e("JSON FAILURE!","JSON couldn't add the data");
-			e.printStackTrace();
-			return null;
-			
-		}
-		
+	public void LogoutFunc(View view)
+	{
+		Intent intent =new Intent(this,MyLogout.class);
+		startActivity(intent);
 	}
 	
 	
 	
-	
-	private String responseChecker(HttpResponse httpResponse){
-		try{
-			if(httpResponse!=null){
-				InputStream instream = httpResponse.getEntity().getContent(); //Get the data in the entity
-	            String result= convertStreamToString(instream);
-	            // now you have the string representation of the HTML request        
-	            instream.close();
-	            return result;
-			}
-			else{
-				Log.d("HttpResponse", "Response was NULL");
-			}
-		}
-		catch(Exception e) {
-	        e.printStackTrace();
-	        Log.e("Error", "Cannot get response information");
-	    }
-		return null;
-	}
-	private HttpResponse sendJSONObject(JSONObject json, String url){
-		Log.d("DEBUGGING JSON", json.toString());
-		
-		
-		
-		try{
-			HttpClient httpClient = new DefaultHttpClient();
-			HttpResponse httpResponse;
-			
-			HttpPost httpPost = new HttpPost(url); 
-			 StringEntity se = new StringEntity(json.toString());  
-	         se.setContentType(new BasicHeader(HTTP.CONTENT_TYPE, "application/json"));
-	         httpPost.setEntity(se);
-	         Log.d("Debug","Before executing post");
-	         httpResponse = httpClient.execute(httpPost);
-	         return httpResponse;
-	         
-		} catch(Exception e) {
-	        e.printStackTrace();
-	        Log.e("Error", "Cannot Estabilish Connection");
-	        return null;
-	    }
-		
-		
-		
-	}
-	private static String convertStreamToString(InputStream is) {
-
-	    BufferedReader reader = new BufferedReader(new InputStreamReader(is));
-	    StringBuilder sb = new StringBuilder();
-
-	    String line = null;
-	    try {
-	        while ((line = reader.readLine()) != null) {
-	            sb.append(line + "\n");
-	        }
-	    } catch (IOException e) {
-	        e.printStackTrace();
-	    } finally {
-	        try {
-	            is.close();
-	        } catch (IOException e) {
-	            e.printStackTrace();
-	        }
-	    }
-	    return sb.toString();
-	}
 
 	
 	
 	private void getDecks()
 	{
 		JSONObject deckJSON=new JSONObject();
-		deckJSON=addString(deckJSON,"username",username);
+		deckJSON=MyJSON.addString(deckJSON,"username",username);
 		if (deckJSON==null){
 			//do what?
 		}
 	
-		deckJSON=addString(deckJSON,"session_id",sessionId);
+		deckJSON=MyJSON.addString(deckJSON,"session_id",sessionId);
 		if (deckJSON==null){
 			//do what?
 		}
@@ -161,8 +86,8 @@ public class DecksPage extends Activity {
 		
 	 
 		String url="http://www.flashyapp.com/api/deck/get_decks";
-		HttpResponse httpResponse=sendJSONObject(deckJSON,url);
-		String response=responseChecker(httpResponse);
+		HttpResponse httpResponse=MyJSON.sendJSONObject(deckJSON,url);
+		String response=MyJSON.responseChecker(httpResponse);
 		Log.d("GET_DECKHttpResponse",response); 
 		
 		

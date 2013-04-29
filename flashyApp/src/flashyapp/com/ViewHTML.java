@@ -56,5 +56,5 @@ public class ViewHTML extends Activity {
 		return true;
 	}
 
-	
+
 }

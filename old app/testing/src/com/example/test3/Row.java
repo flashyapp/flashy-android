@@ -3,6 +3,7 @@ package com.example.test3;
 import java.util.ArrayList;
 
 import android.graphics.Path;
+import android.graphics.Path.Direction;
 import android.util.Log;
 
 public class Row {
@@ -49,8 +50,34 @@ public class Row {
 	}
 
 	
-	public Path addToPath(Path path)
+	public Path addToDotPath(Path path)
 	{
+		int radius=3;
+		int minwidth=0;
+		int maxwidth=300;
+		path.addCircle(minwidth, top, radius, Direction.CW);
+		path.addCircle(maxwidth, top, radius, Direction.CW);
+		path.addCircle(minwidth, bottom, radius, Direction.CW);
+		path.addCircle(maxwidth, bottom, radius, Direction.CW);
+		
+		for (Float x: xcoords){
+			
+			path.addCircle(x, bottom, radius, Direction.CW);
+			path.addCircle(x, top, radius, Direction.CW);
+		}
+		return path;
+			
+	}	
+	public Path addToLinePath(Path path)
+	{
+		
+		int minwidth=0;
+		int maxwidth=300;
+		path.moveTo(minwidth, top);
+		path.lineTo(maxwidth, top);
+		/*path.moveTo(minwidth, bottom);
+		path.lineTo(maxwidth, bottom-5);
+		*/
 		for (Float x: xcoords){
 			
 			path.moveTo(x, bottom);
@@ -73,8 +100,9 @@ public class Row {
 	}
 	
 	
-	public void moveVertical(float newX)
+	public void moveVerticalLineHorizontally(float newX)
 	{
+		boolean moved=false;
 		float tolerance =15;
 		for (Float x: xcoords){
 			if (Math.abs(x-newX) <= tolerance){
@@ -82,11 +110,15 @@ public class Row {
 				int index=xcoords.indexOf(x);
 				xcoords.set(index, newX);
 				Log.d("New Value of Vertical:", ""+xcoords.get(index));
+				moved=true;
 				break;
 			}
 				
 			
 		}
+		//return moved;
 	}
+	
+	
 	
 }

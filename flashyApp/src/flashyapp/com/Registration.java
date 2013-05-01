@@ -14,6 +14,8 @@ import org.apache.http.message.BasicHeader;
 import org.apache.http.protocol.HTTP;
 import org.json.JSONObject;
 
+import flashyapp.com.JSONThread.OnResponseListener;
+
 import android.os.Bundle;
 import android.app.Activity;
 import android.util.Log;
@@ -25,9 +27,11 @@ import android.view.View.OnClickListener;
 import android.view.View.OnTouchListener;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ProgressBar;
 import android.support.v4.app.NavUtils;
 import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -39,6 +43,49 @@ public class Registration extends Activity {
 	private EditText etName;
 	private EditText etPswd;
 	private EditText etEmail;
+	
+	
+	
+	 protected OnResponseListener onResponseListener = new OnResponseListener() {
+		 public void onReturnLogin(String error, JSONObject jresponse,String name) {
+		 }
+		 public void onReturnRegister(String error,JSONObject jresponse){
+			 	/*int email_s=1;
+				int password_s=1;
+				int username_s=1;
+				
+				try{
+					
+					email_s=jresponse.getInt("email_s");
+					password_s=jresponse.getInt("password_s");
+					username_s=jresponse.getInt("username_s");
+					
+				}
+				catch(Exception e) {
+					 Log.d("Error", "Cannot turn response to JSON");
+					e.printStackTrace();
+			       
+			    }*/
+				
+				/*if (email_s == 0)
+					etEmail.setError("Email is invalid or has been used already");
+				if (password_s == 0)
+					etPswd.setError("Invalid Password");
+				if (username_s ==0)
+					etName.setError("Invalid Username");
+				if(username_s == 1 && password_s == 1 && email_s == 1){*/
+			 if (error != null){
+					Intent intent = new Intent(Registration.this, MainActivity_LogIn.class);
+					//put extra data and then on homescreen I can check for this extra data and display it saying
+					//to check their email and then login
+					//can pass in a sessionid or something on the intent 
+					String message="You have registered but must now verify your registration by going to your email and confirming, then log in";
+					intent.putExtra(MainActivity_LogIn.INTENT_EXTRA_DATA_REGISTER, message);
+					startActivity(intent);
+				}
+		 }
+	 };
+	
 	
 	
 	
@@ -124,6 +171,12 @@ public class Registration extends Activity {
 	
 	private void returnHomeIntent(){
 		
+		
+		JSONThread thread=new JSONThread((Context)this, onResponseListener, JSONThread.REGISTER);
+		thread.BeforeRegister(etName, etPswd,etEmail);
+		thread.execute(new String[]{null});
+		
+/*
 		String name=etName.getText().toString();
 		String pswd=etPswd.getText().toString();
 		String email=etEmail.getText().toString();
@@ -140,11 +193,11 @@ public class Registration extends Activity {
 		if (loginJSON==null){
 			//do what?
 		}
-		String url="http://www.flashyapp.com/api/user/create_user";
-		HttpResponse httpResponse=MyJSON.sendJSONObject(loginJSON,url);
+		String url="http://www.flashyapp.com/api/user/create_user";*/
+		/*HttpResponse httpResponse=MyJSON.sendJSONObject(loginJSON,url);
 		String response=MyJSON.responseChecker(httpResponse);
-		Log.d("LoginHttpResponse",response); 
-		int email_s=1;
+		Log.d("LoginHttpResponse",response); */
+		/*int email_s=1;
 		int password_s=1;
 		int username_s=1;
 		
@@ -176,7 +229,7 @@ public class Registration extends Activity {
 			String message="You have registered but must now verify your registration by going to your email and confirming, then log in";
 			intent.putExtra(MainActivity_LogIn.INTENT_EXTRA_DATA_REGISTER, message);
 			startActivity(intent);
-		}
+		}*/
 		
 	}
 	

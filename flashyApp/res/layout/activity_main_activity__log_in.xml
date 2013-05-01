@@ -25,8 +25,7 @@
        android:layout_width="200dip"
         android:hint="@string/password_hint" />
 
-     
-     
+    
      <LinearLayout 
     	android:id="@+id/button_login_layout"
    		

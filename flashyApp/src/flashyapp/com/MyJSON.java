@@ -15,10 +15,13 @@ import org.apache.http.protocol.HTTP;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
+import android.os.AsyncTask;
 import android.util.Log;
-import android.widget.PopupWindow;
-import android.widget.TextView;
+import android.view.View;
+import android.widget.ProgressBar;
 
 public class MyJSON {
 
@@ -64,12 +67,13 @@ public class MyJSON {
 
 	
 	
-	public static String errorChecker(JSONObject json)
+	public static String errorChecker(JSONObject json, Context context)
 	{
 		String string = null;
 		Integer error=null;
 		try{
 			 error=(Integer)json.getInt("error");
+			 Log.d("DEBUG", "ErrorCode: "+error);
 		}
 		catch (Exception e)
 		{
@@ -77,22 +81,50 @@ public class MyJSON {
 			 e.printStackTrace();
 		}
 		
-		if (error !=null)
+		if (error != null)
 		{
+			String title=null;
+			
 			switch (error){
 			case 0:
 				string=null;
 				break;
 			case 1:
 				string="error from server";
+				title="Server Error";
+				break;
+			case 101:
+				string="username is incorrect";
+				title="Login Error";
 				break;
 			default:
 				string="other error from server";
+				title="General Error";
 			}
 			
-			Log.d("POPUPPP", "Popup should've appeared"+error+string);
 			
+			
+			if (string != null)
+			{	
+				Log.d("DEBUG", "inside alertDialogue box if statement:   " + string);
 				
+				AlertDialog.Builder ald=new AlertDialog.Builder(context);
+				ald.setTitle(title);
+				ald.setMessage(string);
+				ald.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+					@Override
+					public void onClick(DialogInterface dialog, int which) {
+						Log.d("Debug", "Alert Got Clicked");
+					}
+				});
+				
+				
+			
+				AlertDialog other=ald.create();
+				other.show();
+				
+			}
+			Log.d("POPUPPP", "Popup should've appeared"+error+string);
 			
 		}
 		
@@ -180,4 +212,11 @@ public class MyJSON {
 	
 	
 	
+	
+	
 }
+
+
+
+
+

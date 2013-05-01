@@ -6,14 +6,11 @@ import java.io.EOFException;
 import java.io.File;
 import java.io.IOException;
 
-import org.apache.http.HttpResponse;
 import org.json.JSONObject;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
-import android.app.AlertDialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -28,7 +25,9 @@ import android.view.View.OnClickListener;
 import android.view.View.OnTouchListener;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ProgressBar;
 import android.widget.TextView;
+import flashyapp.com.JSONThread.OnResponseListener;
 
 public class MainActivity_LogIn extends Activity {
 	
@@ -38,6 +37,76 @@ public class MainActivity_LogIn extends Activity {
 	public final static String INTENT_EXTRA_DATA_SESSION = "sessionId";
 	public final static String INTENT_EXTRA_DATA_REGISTER = "sessionId";
 	public final static String INTENT_EXTRA_DATA_USER = "username";
+	
+	
+	
+	
+	 protected OnResponseListener onResponseListener = new OnResponseListener() {
+		 public void onReturnRegister(String error, JSONObject jresponse){}
+		 public void onReturnLogin(String error, JSONObject jresponse,String name) {
+			 String sessionId=null;
+			 			
+			 try{
+					if (error == null)// no error
+					{
+						sessionId=jresponse.getString("session_id");
+					}
+					
+						
+				
+				}
+				catch(Exception e) {
+					 Log.d("Error", "Error reading 'ERROR' from LoginRequest ");
+					e.printStackTrace();
+			       
+			    }
+				
+				
+				
+				
+				
+			
+				if (sessionId != null){
+					Log.d("SessionID",sessionId);
+					
+				    //String fileName=SESSION_FILE;
+				    try {
+				        //writing SessionId
+				        DataOutputStream out = 
+				                new DataOutputStream(openFileOutput(SESSION_FILE, Context.MODE_PRIVATE));
+				        out.writeUTF(sessionId);
+				        out.writeUTF(name);
+				      
+				   
+				    out.close();
+				    }catch (IOException e) {
+				        Log.i("Data Input Sample", "I/O Error");
+				    }
+					
+					Intent intent = new Intent(MainActivity_LogIn.this, DecksPage.class);
+					//can pass in a sessionid or something on the intent 
+					intent.putExtra(INTENT_EXTRA_DATA_SESSION, sessionId);
+					intent.putExtra(INTENT_EXTRA_DATA_USER, name);
+					startActivity(intent);
+				}
+					
+				else{
+					//if sessionId isn't null....?
+					//check for error codes etc
+					Log.e("SessionId","No SessionId was found--Check the errors");
+					Log.d("Alert Dialog", "Should have appeared!");
+				}
+				
+			 
+		 }
+		 
+	 };
+	
+	
+	
+	
+	
+	
 	
 	@SuppressLint("NewApi")
 	@Override
@@ -57,9 +126,22 @@ public class MainActivity_LogIn extends Activity {
 
 		//htmlWrite();
 		//htmlRead();
-	    
-	 
-	    
+		
+		
+		/*FIX ADAM!*/
+		/*
+		 * 
+		 * 
+		 * 
+		 * 
+		 * 
+		 * 
+		 * 
+		 */
+		/*Make it so when a thread is happening, a layout gets invisible or rather gone is better*/
+	    /*LinearLayout llb=(LinearLayout)findViewById(R.id.button_login_layout);
+	    llb.setVisibility(View.INVISIBLE);*/
+		
 		
 		checkForSessionId();
 		
@@ -184,7 +266,27 @@ public class MainActivity_LogIn extends Activity {
 
 	private void loginIntent(){
 		
-		String name=etName.getText().toString();
+		JSONThread thread=new JSONThread((Context)this, onResponseListener, JSONThread.LOGIN);
+		thread.BeforeLogin(etName, etPswd);
+		thread.execute(new String[]{null});
+		/*String sessionId=thread.AfterLogin();
+		
+		Log.d("SessionID After thread stuff","..."+sessionId);*/
+		
+		/*FIX ADAM*/
+		/*
+		 * 
+		 * 
+		 * 
+		 * 
+		 * 
+		 * 
+		 * 
+		 */
+		/*make threads more versatile and pass in a layout to make it invisible.*/
+		
+		
+		/*String name=etName.getText().toString();
 		String pswd=etPswd.getText().toString();
 		JSONObject loginJSON=new JSONObject();
 		loginJSON=MyJSON.addString(loginJSON,"username",name);
@@ -208,7 +310,9 @@ public class MainActivity_LogIn extends Activity {
 		try{
 			
 			JSONObject jresponse=new JSONObject(response);
-			error=MyJSON.errorChecker(jresponse);
+			error=MyJSON.errorChecker(jresponse,this);
+			Log.d("DEBUG", "RETURN String of errorChecker"+error);
+			
 			if (error == null)// no error
 			{
 				sessionId=jresponse.getString("session_id");
@@ -228,7 +332,7 @@ public class MainActivity_LogIn extends Activity {
 				
 				AlertDialog other=ald.create();
 				other.show();
-				
+				Log.d("Debug", "Else statement of alert");
 			}
 			
 				
@@ -275,106 +379,17 @@ public class MainActivity_LogIn extends Activity {
 			Log.e("SessionId","No SessionId was found--Check the errors");
 		}
 		
-		
-		
-		
-		
-	}
-	
-	/*
-	private JSONObject addString(JSONObject json, String key, String value){
-		try{
-			json.put(key, value);
-			return json;
-		}
-		catch(Exception e)
-		{
-			Log.e("JSON FAILURE!","JSON couldn't add the data");
-			e.printStackTrace();
-			return null;
-			
-		}
-		
-	}
-	
-	private String responseChecker(HttpResponse httpResponse){
-		try{
-			if(httpResponse!=null){
-				InputStream instream = httpResponse.getEntity().getContent(); //Get the data in the entity
-	            String result= convertStreamToString(instream);
-	            // now you have the string representation of the HTML request        
-	            instream.close();
-	            return result;
-			}
-			else{
-				Log.d("HttpResponse", "Response was NULL");
-			}
-		}
-		catch(Exception e) {
-	        e.printStackTrace();
-	        Log.e("Error", "Cannot get response information");
-	    }
-		return null;
-	}
-	private HttpResponse sendJSONObject(JSONObject json, String url){
-		Log.d("DEBUGGING JSON", json.toString());
-		
-		
-		
-		try{
-			HttpClient httpClient = new DefaultHttpClient();
-			HttpResponse httpResponse;
-			
-			HttpPost httpPost = new HttpPost(url); 
-			 StringEntity se = new StringEntity(json.toString());  
-	         se.setContentType(new BasicHeader(HTTP.CONTENT_TYPE, "application/json"));
-	         httpPost.setEntity(se);
-	         Log.d("Debug","Before executing post");
-	         httpResponse = httpClient.execute(httpPost);
-	         return httpResponse;
-	         
-		} catch(Exception e) {
-	        e.printStackTrace();
-	        Log.e("Error", "Cannot Estabilish Connection");
-	        return null;
-	    }
+		*/
 		
 		
 		
 	}
-	
-	
-	*/
-	
 	
 	private void registerIntent(){
 		Intent intent = new Intent(this, Registration.class);
 		startActivity(intent);
 	}
 	
-	/*private static String convertStreamToString(InputStream is) {
-
-	    BufferedReader reader = new BufferedReader(new InputStreamReader(is));
-	    StringBuilder sb = new StringBuilder();
-
-	    String line = null;
-	    try {
-	        while ((line = reader.readLine()) != null) {
-	            sb.append(line + "\n");
-	        }
-	    } catch (IOException e) {
-	        e.printStackTrace();
-	    } finally {
-	        try {
-	            is.close();
-	        } catch (IOException e) {
-	            e.printStackTrace();
-	        }
-	    }
-	    return sb.toString();
-	}
-*/
-
 	//NOW INVALID!! NEW LINE CODE IN OTHER PROJECT!!!
 	private void drawingLines()
 	{

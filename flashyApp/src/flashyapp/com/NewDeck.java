@@ -98,9 +98,9 @@ public class NewDeck extends Activity {
 		try{
 			
 			JSONObject jresponse=new JSONObject(response);
-			error=MyJSON.errorChecker(jresponse);
+			error=MyJSON.errorChecker(jresponse,this);
 			deckId=jresponse.getString("deck_id");
-			
+		
 		}
 		catch(Exception e) {
 			 Log.d("Error", "Cannot turn response to JSON");

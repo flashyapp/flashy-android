@@ -47,13 +47,15 @@ public class Registration extends Activity {
 	
 	
 	 protected OnResponseListener onResponseListener = new OnResponseListener() {
-		 public void onReturnLogin(String error, JSONObject jresponse,String name) {
-		 }
+		 public void onReturnLogin(String error, JSONObject jresponse,String name) {}
+		 public void onReturnLogout(String error){}
+		 public void onReturnDeckFromImage(Context context){}
+		 public void onReturnDecksPage(String error, JSONObject jresponse, Context context){}
 		 public void onReturnRegister(String error,JSONObject jresponse){
 			 	/*int email_s=1;
 				int password_s=1;
 				int username_s=1;
-				
+			
 				try{
 					
 					email_s=jresponse.getInt("email_s");

@@ -28,5 +28,10 @@
     <string name="flip_next_card">Next Card</string>
     <string name="button_logout">Logout</string>
     <string name="title_activity_my_logout">Logout</string>
+    <string name="title_activity_deck_list_maker">List of Decks</string>
+    <string name="makePic_string">TakePic</string>
+    <string name="button_fromImage">New Photo Deck</string>
+    <string name="title_activity_draw_lines">Align Lines To Make Cards</string>
+    <string name="title_activity_submit_lines">SubmitLines</string>
 
 </resources>

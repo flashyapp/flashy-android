@@ -71,6 +71,26 @@
             android:name="flashyapp.com.MyLogout"
             android:label="@string/title_activity_my_logout" >
         </activity>
+        <activity
+            android:name="flashyapp.com.DeckListMaker"
+            android:label="@string/title_activity_deck_list_maker"
+            android:parentActivityName="flashyapp.com.DecksPage" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="flashyapp.com.DecksPage" />
+        </activity>
+        <activity
+            android:name="flashyapp.com.DrawLines"
+            android:label="@string/title_activity_draw_lines"
+            android:parentActivityName="flashyapp.com.DeckListMaker" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="flashyapp.com.DeckListMaker" />
+        </activity>
+        <activity
+            android:name="flashyapp.com.SubmitLines"
+            android:label="@string/title_activity_submit_lines" >
+        </activity>
     </application>
 
 </manifest>

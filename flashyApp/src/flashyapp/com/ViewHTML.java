@@ -43,6 +43,13 @@ public class ViewHTML extends Activity {
 		/*should handle other tags eventually instead of the null*/
 		//Spanned withImage=Html.fromHtml(htmlStr, imgget, null);
 		view.loadUrl("file:///android_asset/htmlTest.html");
+		/*String photoPath="file:///android_asset/FlashCardsPhoto.jpg";
+	    String htmlString="<html><head><title>TITLeeeEE</title></head><body><i>Middle</i> of the<b> body!</b>" +
+	    		"<img src="+photoPath+" alt=\"Ninja Pic\" > </body></html>";
+		view.loadData(htmlString, "text/html; charset=UTF-8",null);*/
+		
+		
+		
 		
 
 		Log.d("VIEWING", "HTML Should now be visable");

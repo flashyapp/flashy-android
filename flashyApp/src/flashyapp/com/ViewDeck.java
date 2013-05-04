@@ -44,7 +44,7 @@ public class ViewDeck extends Activity {
 		setContentView(R.layout.activity_view_deck);
 		// Show the Up button in the action bar.
 		Intent intent =getIntent();
-		deckId = intent.getStringExtra("deckId");
+		deckId = intent.getStringExtra(MainActivity_LogIn.INTENT_EXTRA_DATA_DECKID);
 		sessionId = intent.getStringExtra(MainActivity_LogIn.INTENT_EXTRA_DATA_SESSION);
 		username=intent.getStringExtra(MainActivity_LogIn.INTENT_EXTRA_DATA_USER);
 		

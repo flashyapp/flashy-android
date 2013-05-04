@@ -1,5 +1,7 @@
 package flashyapp.com;
 
+import java.io.File;
+
 import org.apache.http.HttpResponse;
 import org.json.JSONObject;
 
@@ -7,9 +9,7 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.os.AsyncTask;
 import android.util.Log;
-import android.view.View;
 import android.widget.EditText;
-import android.widget.ProgressBar;
 
 
 
@@ -18,6 +18,9 @@ import android.widget.ProgressBar;
 		public static final int REGISTER=2;
 		public static final int NEWDECK=3;
 		public static final int GETDECKLIST=4;
+		public static final int LOGOUT=5;
+		public static final int VIEWDECK=6;
+		public static final int DECKFROMIMAGE=7;
 		
 		
 		
@@ -91,19 +94,86 @@ import android.widget.ProgressBar;
 			url="http://www.flashyapp.com/api/user/create_user";
 			jsend=loginJSON;
 			mError=null;
+	    
+	    }
+	    
+	    public void BeforeDecksPage(String user, String session)
+	    {
+	    	JSONObject deckJSON=new JSONObject();
+			deckJSON=MyJSON.addString(deckJSON,"username",user);
+			if (deckJSON==null){
+				//do what?
+			}
+		
+			deckJSON=MyJSON.addString(deckJSON,"session_id",session);
+			if (deckJSON==null){
+				//do what?
+			}
+			
+			username=user;
+			
+			jsend=deckJSON;
+			mError=null;
+			url="http://www.flashyapp.com/api/deck/get_decks";
+	    }
+	    
+	    /*public void BeforeMakePic(String user, String session, String pathName)
+	    {
+	    	JSONObject deckJSON=new JSONObject();
+			deckJSON=MyJSON.addString(deckJSON,"username",user);
+			if (deckJSON==null){
+				//do what?
+			}
+		
+			deckJSON=MyJSON.addString(deckJSON,"session_id",session);
+			if (deckJSON==null){
+				//do what?
+			}
+			*
+			
+	    	
+	    
+	    	File imgFile = new  File(pathName);
+	    	
+	    	url="http://www.flashyapp.com/api/deck/new/upload_image";
+			MyJSON.HttpPost(url, imgFile,session,user);
+			
+			username=user;
+			jsend=null;
+			url=null;
+			//jsend=deckJSON;
+			mError=null;
+			
+	    }*/
+	    public void BeforeLogout(String user, String session)
+	    {
+	    	JSONObject logoutJSON=new JSONObject();
+			logoutJSON=MyJSON.addString(logoutJSON,"username",user);
+			if (logoutJSON==null){
+				//do what?
+			}
+		
+			logoutJSON=MyJSON.addString(logoutJSON,"session_id",session);
+			if (logoutJSON==null){
+				//do what?
+			}
+			
+			username=user;
+			
+			jsend=logoutJSON;
+			mError=null;
+			url="http://www.flashyapp.com/api/user/logout";
+	    }
+	    
+	    public void BeforeLineSubmission(JSONObject param)
+	    {
+	    	url="http://www.flashyapp.com/api/deck/new/from_image";
+	    	jsend=param;
 	    	
 	    }
 	    
-	    
-	    
-	    
 	    @Override
 	    protected String doInBackground(String... urls) {
-	    	
-	    	
-	    	
-	    	
-	    	
 	    	
 			HttpResponse httpResponse=MyJSON.sendJSONObject(jsend,url);
 			String response=MyJSON.responseChecker(httpResponse);
@@ -159,6 +229,23 @@ import android.widget.ProgressBar;
 	        	break;
 	        case REGISTER:
 	        	morl.onReturnRegister(mError,jresponse);
+	        	break;
+	        case GETDECKLIST:
+	        	morl.onReturnDecksPage(mError, jresponse,mcontext);
+	        	break;
+	        case LOGOUT:
+	        	morl.onReturnLogout(mError);
+	        	break;
+	        case VIEWDECK:
+	        	/*
+	        	 * 
+	        	 * 
+	        	 * 
+	        	 */
+	        	break;
+	        case DECKFROMIMAGE:
+	        	morl.onReturnDeckFromImage(mcontext);
+	        	break;
 			default:
 				
 	        }
@@ -187,7 +274,10 @@ import android.widget.ProgressBar;
 		public interface OnResponseListener {
 			public void onReturnLogin(String error, JSONObject jresponse,String name);
 			public void onReturnRegister(String error, JSONObject jresponse);
-			//public void onFailure(String message);
+			public void onReturnDecksPage(String error, JSONObject jresponse, Context context);
+			public void onReturnLogout(String error);
+			public void onReturnDeckFromImage(Context context);
+			
 			}
 
 	    

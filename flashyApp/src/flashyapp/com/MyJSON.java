@@ -1,14 +1,20 @@
 package flashyapp.com;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 
 import org.apache.http.HttpResponse;
+import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
+import org.apache.http.entity.mime.HttpMultipartMode;
+import org.apache.http.entity.mime.MultipartEntity;
+import org.apache.http.entity.mime.content.FileBody;
+import org.apache.http.entity.mime.content.StringBody;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicHeader;
 import org.apache.http.protocol.HTTP;
@@ -18,10 +24,7 @@ import org.json.JSONObject;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.os.AsyncTask;
 import android.util.Log;
-import android.view.View;
-import android.widget.ProgressBar;
 
 public class MyJSON {
 
@@ -94,7 +97,7 @@ public class MyJSON {
 				title="Server Error";
 				break;
 			case 101:
-				string="username is incorrect";
+				string="username or password is incorrect";
 				title="Login Error";
 				break;
 			default:
@@ -178,6 +181,50 @@ public class MyJSON {
 		
 		
 	}
+	
+	public static HttpResponse sendMIMEPost(String url, File f, String session, String name)
+	{
+		 	HttpClient httpClient = new DefaultHttpClient();
+
+		    
+		    HttpPost httpPost = new HttpPost(url); 
+
+		    MultipartEntity entity = new MultipartEntity(HttpMultipartMode.BROWSER_COMPATIBLE);
+
+			 Log.d("BEFORE READING", "RIGHT BEFORE I READ");
+		    
+		    try{
+		    	entity.addPart("file", new FileBody(f));
+		    	entity.addPart("username", new StringBody(name));
+		    	entity.addPart("session_id",new StringBody(session));
+		    	httpPost.setEntity(entity);
+		    
+		    } catch (Exception e)
+		    {
+		    	Log.d("DEBUG","Error writing multipart");
+		    }
+		    
+		    Log.d("DEBUGGING","before execute!");
+		    HttpResponse response=null;
+		    try {
+		    	response = httpClient.execute(httpPost);
+		        if (response != null)
+		        	return response;
+		     
+		    } catch (ClientProtocolException e) {
+		    	 Log.d("DEBUGGING","FAILEDDD on exception");
+		    	
+		    	// writing exception to log
+		        e.printStackTrace();
+		     
+		    } catch (IOException e) {
+		    	Log.d("DEBUGGING","FAILEDDD on exception");
+		        // writing exception to log
+		        e.printStackTrace();
+		    }
+		    return null;
+	}
+	
 	
 	
 	public static JSONObject addArray(JSONObject json, String key, JSONObject[] value){

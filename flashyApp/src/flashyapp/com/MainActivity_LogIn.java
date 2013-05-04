@@ -34,15 +34,20 @@ public class MainActivity_LogIn extends Activity {
 	private EditText etName;
 	private EditText etPswd;
 	public final static String SESSION_FILE= "sessionId.txt";
+	public final static String GETDECKS_FILE="getDecks.txt";
 	public final static String INTENT_EXTRA_DATA_SESSION = "sessionId";
 	public final static String INTENT_EXTRA_DATA_REGISTER = "sessionId";
 	public final static String INTENT_EXTRA_DATA_USER = "username";
-	
+	public final static String INTENT_EXTRA_DATA_DECKID="deckId";
+	public final static String INTENT_EXTRA_DATA_DECKLIST="deckList";
 	
 	
 	
 	 protected OnResponseListener onResponseListener = new OnResponseListener() {
 		 public void onReturnRegister(String error, JSONObject jresponse){}
+		 public void onReturnLogout(String error){}
+		 public void onReturnDeckFromImage(Context context){}
+		 public void onReturnDecksPage(String error, JSONObject jresponse, Context context){}
 		 public void onReturnLogin(String error, JSONObject jresponse,String name) {
 			 String sessionId=null;
 			 			
@@ -127,7 +132,7 @@ public class MainActivity_LogIn extends Activity {
 		//htmlWrite();
 		//htmlRead();
 		
-		
+	
 		/*FIX ADAM!*/
 		/*
 		 * 
@@ -428,11 +433,11 @@ public class MainActivity_LogIn extends Activity {
 	private void htmlWrite(){
 		Log.d("WRITING HTML FILE","Before Writing html");
 		
-		File path = Environment.getExternalStorageDirectory();
+		/*File path = Environment.getExternalStorageDirectory();
 		    //String StrPath=path.getPath();
 		String photoName="cameraFile.jpg";
 		
-		File f = new File(path,photoName);
+		File f = new File(path,photoName);*/
 	    //was takePictureIntent
 	    // String mCurrentPhotoPath = "\""+f.getAbsolutePath()+"\"";
 	     String photoPath="file:///android_asset/FlashCardsPhoto.jpg";

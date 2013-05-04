@@ -1,19 +1,12 @@
 package flashyapp.com;
 
-import java.io.BufferedReader;
+import java.io.DataInputStream;
 import java.io.DataOutputStream;
+import java.io.EOFException;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.util.ArrayList;
 
-import org.apache.http.HttpResponse;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.entity.StringEntity;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.message.BasicHeader;
-import org.apache.http.protocol.HTTP;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -21,18 +14,85 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Color;
+import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
+import android.provider.MediaStore;
 import android.support.v4.app.NavUtils;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
+import flashyapp.com.JSONThread.OnResponseListener;
+import flashyapp.com.MIMEThread.OnResponseMIMEListener;
 
 public class DecksPage extends Activity {
  
 	private String sessionId;
 	private String username;
+	
+	
+	
+	
+	
+	
+	protected OnResponseListener onResponseListener = new OnResponseListener() {
+		 public void onReturnRegister(String error, JSONObject jresponse){}
+		 public void onReturnLogout(String error){}
+		 public void onReturnLogin(String error, JSONObject jresponse, String name){}
+		 public void onReturnDeckFromImage(Context context){}
+		 public void onReturnDecksPage(String error, JSONObject jresponse, Context context){
+			 JSONArray deckArray=null;
+				try{
+					
+					if (error==null)
+						deckArray=jresponse.getJSONArray("decks");
+					
+					
+				
+				}
+				catch(Exception e) {
+					 Log.d("Error", "Cannot turn response to JSON");
+					e.printStackTrace();
+			       
+			    }
+				
+				//Log.d("DEBUG DeckList", "Before if statement");
+				if (deckArray != null)
+				{
+			
+					try {
+				        //writing list of decks 
+				        DataOutputStream out = 
+				                new DataOutputStream(openFileOutput(MainActivity_LogIn.GETDECKS_FILE, Context.MODE_PRIVATE));
+				        out.writeUTF(deckArray.toString());
+				        
+				      
+				   
+				        out.close();
+				        
+				    	
+				    }catch (IOException e) {
+				        Log.i("Data Input Sample", "I/O Error");
+				    }
+					
+					Intent intent =new Intent(context,DeckListMaker.class);
+					intent.putExtra(MainActivity_LogIn.INTENT_EXTRA_DATA_SESSION, sessionId);
+					intent.putExtra(MainActivity_LogIn.INTENT_EXTRA_DATA_USER, username);
+					intent.putExtra(MainActivity_LogIn.INTENT_EXTRA_DATA_DECKLIST, deckArray.toString());
+					startActivity(intent);
+				}
+			 
+			 
+		 }
+	};
+	
+	
+	
 	
 	
 	@SuppressLint("NewApi")
@@ -42,6 +102,9 @@ public class DecksPage extends Activity {
 		setContentView(R.layout.activity_decks_page);
 		// Show the Up button in the action bar.
 		//setupActionBar();
+		
+		
+		
 		
 		
 		Intent intent =getIntent();
@@ -60,6 +123,8 @@ public class DecksPage extends Activity {
 	public void LogoutFunc(View view)
 	{
 		Intent intent =new Intent(this,MyLogout.class);
+		intent.putExtra(MainActivity_LogIn.INTENT_EXTRA_DATA_SESSION, sessionId);
+		intent.putExtra(MainActivity_LogIn.INTENT_EXTRA_DATA_USER, username);
 		startActivity(intent);
 	}
 	
@@ -70,7 +135,50 @@ public class DecksPage extends Activity {
 	
 	private void getDecks()
 	{
-		JSONObject deckJSON=new JSONObject();
+		/*JSONThread thread=new JSONThread((Context)this, onResponseListener, JSONThread.GETDECKLIST);
+		thread.BeforeDecksPage(username,sessionId);
+		thread.execute(new String[]{null});*/
+		JSONArray jarray=null;
+		
+		 try {
+			
+			        
+		    
+		    	DataInputStream in = new DataInputStream(openFileInput(MainActivity_LogIn.GETDECKS_FILE));
+		       
+		        
+		    	try {
+		    		
+		    			
+		    		
+		    			String list=in.readUTF();
+		    			if (list != null){
+		    				
+		    				Log.i("Data Input Decks in json list", list);
+		              	
+		    				jarray=new JSONArray(list);
+		    			}
+		    			
+		    		
+		          
+		        } catch (EOFException e) {
+		            Log.i("Data Input Sample from MAIN", "End of file reached");
+		        }
+		        in.close();
+		    } catch (IOException e) {
+		        Log.i("Data Input Sample", "I/O Error--file isn't there!");
+		        JSONThread thread=new JSONThread((Context)this, onResponseListener, JSONThread.GETDECKLIST);
+				thread.BeforeDecksPage(username,sessionId);
+				thread.execute(new String[]{null});
+		        return;
+		    } catch (Exception e){
+		    	Log.i("Data Input Sample", "Could not parse list into a JSONArray");
+		    	return;
+		    }
+		    
+		
+		
+		/*JSONObject deckJSON=new JSONObject();
 		deckJSON=MyJSON.addString(deckJSON,"username",username);
 		if (deckJSON==null){
 			//do what?
@@ -85,13 +193,13 @@ public class DecksPage extends Activity {
 		
 		
 	 
-		String url="http://www.flashyapp.com/api/deck/get_decks";
-		HttpResponse httpResponse=MyJSON.sendJSONObject(deckJSON,url);
+		String url="http://www.flashyapp.com/api/deck/get_decks";*/
+		/*HttpResponse httpResponse=MyJSON.sendJSONObject(deckJSON,url);
 		String response=MyJSON.responseChecker(httpResponse);
-		Log.d("GET_DECKHttpResponse",response); 
+		Log.d("GET_DECKHttpResponse",response); */
 		
 		
-		JSONArray deckArray=null;
+		/*JSONArray deckArray=null;
 		try{
 			
 			JSONObject jresponse=new JSONObject(response);
@@ -106,10 +214,16 @@ public class DecksPage extends Activity {
 	       
 	    }
 		
-		
-		if (deckArray != null)
+		*/
+		if (jarray != null)
 		{
-			handleDecks(deckArray);
+
+			Log.d("BEFORE INTENT", "Before I call DeckListMakerIntent");
+			Intent intent =new Intent(this,DeckListMaker.class);
+			intent.putExtra(MainActivity_LogIn.INTENT_EXTRA_DATA_SESSION, sessionId);
+			intent.putExtra(MainActivity_LogIn.INTENT_EXTRA_DATA_USER, username);
+			intent.putExtra(MainActivity_LogIn.INTENT_EXTRA_DATA_DECKLIST, jarray.toString());
+			startActivity(intent);
 			
 		}
 	
@@ -119,55 +233,6 @@ public class DecksPage extends Activity {
 	
 	
 	
-	private void handleDecks(JSONArray deckArray)
-	{
-		ArrayList<String> deckIds=new ArrayList<String>();
-		ArrayList<String> deckNames=new ArrayList<String>();
-		LinearLayout layout=(LinearLayout)findViewById(R.id.deck_layout);
-		
-		for (int index=0; index<deckArray.length(); index++)
-		{
-			try{
-				JSONObject tempDeck=deckArray.getJSONObject(index);
-				String deckid=tempDeck.getString("deck_id");
-				String name=tempDeck.getString("name");
-				deckIds.add(index, deckid);
-				deckNames.add(index,name);
-				Log.d("DEBUG name",name);
-				Log.d("DEBUG id",deckid);
-				
-				
-				Button b=new Button(this);
-				b.setText(name);
-				b.setTag(deckid);
-				b.setWidth(100);
-				b.setHeight(50);
-				b.setOnClickListener(new View.OnClickListener() {
-		             public void onClick(View view) {
-		                 // Perform action on click
-		            	 Log.d("DEBUG clicked and got tag:", view.getTag().toString());
-		            	 Intent intent =new Intent(view.getContext() , ViewDeck.class);
-		            	 intent.putExtra("deckId",view.getTag().toString());
-		            	 intent.putExtra(MainActivity_LogIn.INTENT_EXTRA_DATA_SESSION, sessionId);
-		         	    intent.putExtra(MainActivity_LogIn.INTENT_EXTRA_DATA_USER,username);
-		         		startActivity(intent);
-		             }
-		         });
-				layout.addView(b);
-				
-				
-				
-			}
-			catch(Exception e) {
-				 Log.d("Error", "Cannot turn parse JSONArray of decks_list");
-				e.printStackTrace();
-		       
-		    }
-		}
-		
-		
-		layout.invalidate();
-	}
 	
 	
 
@@ -200,4 +265,16 @@ public class DecksPage extends Activity {
 		
 		
 	}
+	
+	
+	
+	
+	
+	
+	
+	
+	//File imgFile = new  File(mCurrentPhotoPath);
+	
+	
+	
 }

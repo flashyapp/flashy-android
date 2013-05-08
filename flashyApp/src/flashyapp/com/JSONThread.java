@@ -21,6 +21,7 @@ import android.widget.EditText;
 		public static final int LOGOUT=5;
 		public static final int VIEWDECK=6;
 		public static final int DECKFROMIMAGE=7;
+		public static final int SAVERESOURCE=8;
 		
 		
 		
@@ -94,7 +95,7 @@ import android.widget.EditText;
 			url="http://www.flashyapp.com/api/user/create_user";
 			jsend=loginJSON;
 			mError=null;
-	    
+	   
 	    }
 	    
 	    public void BeforeDecksPage(String user, String session)
@@ -115,6 +116,37 @@ import android.widget.EditText;
 			jsend=deckJSON;
 			mError=null;
 			url="http://www.flashyapp.com/api/deck/get_decks";
+	    }
+	    public void BeforeSaveResource(String user, String session,String resourceName)
+	    {
+	    	/*JSONObject resourceJSON=new JSONObject();
+			resourceJSON=MyJSON.addString(resourceJSON,"username",user);
+			if (resourceJSON==null){
+				//do what?
+			}
+		
+			resourceJSON=MyJSON.addString(resourceJSON,"session_id",session);
+			if (resourceJSON==null){
+				//do what?
+			}*/
+			/*
+			 * 
+			 * post resource name and w.e. else is needed!
+			 * 
+			 * 
+			 */
+			
+			/*
+			 * 
+			 * FIX CASE STATEMENT AT BOTTOM AS WELL!!!!!
+			 * 
+			 */
+			username=user;
+			
+			//jsend=resourceJSON;
+			jsend=null;
+			mError=null;
+			url="www.flashyapp.com/resources/"+resourceName;
 	    }
 	    
 	    /*public void BeforeMakePic(String user, String session, String pathName)
@@ -244,8 +276,10 @@ import android.widget.EditText;
 	        	 */
 	        	break;
 	        case DECKFROMIMAGE:
-	        	morl.onReturnDeckFromImage(mcontext);
+	        	morl.onReturnDeckFromImage(mcontext,mError,jresponse);
 	        	break;
+	       // case SAVERESOURCE:
+	        	
 			default:
 				
 	        }
@@ -276,7 +310,7 @@ import android.widget.EditText;
 			public void onReturnRegister(String error, JSONObject jresponse);
 			public void onReturnDecksPage(String error, JSONObject jresponse, Context context);
 			public void onReturnLogout(String error);
-			public void onReturnDeckFromImage(Context context);
+			public void onReturnDeckFromImage(Context context, String mError, JSONObject jresponse);
 			
 			}
 

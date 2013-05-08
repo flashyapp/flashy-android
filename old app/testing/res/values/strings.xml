@@ -12,5 +12,8 @@
     <string name="http_word">HTTP</string>
     <string name="draw_word">DRAW</string>
     <string name="title_activity_draws">Draws</string>
-
+    <string name="button_temp_send">TEMP TEST</string>
+    <string name="title_activity_test_page">TestPage</string>
+    <string name="title_activity_test_page2">TestPage2</string>
+	<string name="MenuThing">Menu?</string>
 </resources>

@@ -110,8 +110,9 @@ public class Row {
 	
 	public void moveVerticalLineHorizontally(int newX)
 	{
+		//Log.d("DEBUG", "START move motion");
 		boolean moved=false;
-		float tolerance =15;
+		float tolerance =25;
 		for (int x: xcoords){
 			if (Math.abs(x-newX) <= tolerance){
 				Log.d("Moved a Vertical", x + "to " + newX);
@@ -126,6 +127,34 @@ public class Row {
 		}
 		//return moved;
 	}
+	
+	
+	
+	public void deleteLine(int newX)
+	{
+		
+		float tolerance =15;
+		for (int x: xcoords){
+			if (Math.abs(x-newX) <= tolerance){
+				Log.d("Found a line", x + "from the ClickPoint:" + newX);
+				int index=xcoords.indexOf(x);
+				
+				
+				xcoords.remove(index);
+				
+				break;
+			}
+				
+			
+		}
+		//return moved;
+	}
+	
+	
+	
+	
+	
+	
 	
 	public JSONArray makeJSONcoords()
 	{
@@ -148,5 +177,26 @@ public class Row {
 	       
 	    }
 		return ret;
+	}
+	
+	public void setTop(int newTop)
+	{
+		top=newTop;
+	}
+	public int getTop()
+	{
+		return top;
+	}
+	public void setBot(int newBot)
+	{
+		bottom=newBot;
+	}
+	public int getBottom()
+	{
+		return bottom;
+	}
+	public ArrayList<Integer> getDivs()
+	{
+		return xcoords;
 	}
 }

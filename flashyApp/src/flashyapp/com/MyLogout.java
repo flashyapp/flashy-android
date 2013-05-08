@@ -23,7 +23,7 @@ public class MyLogout extends Activity {
 	protected OnResponseListener onResponseListener = new OnResponseListener() {
 		 public void onReturnRegister(String error, JSONObject jresponse){}
 		 public void onReturnLogin(String error, JSONObject jresponse, String name){}
-		 public void onReturnDeckFromImage(Context context){}
+		 public void onReturnDeckFromImage(Context context, String mError, JSONObject jresponse){}
 		 public void onReturnDecksPage(String error, JSONObject jresponse, Context context){}
 		 public void onReturnLogout(String error){
 			 

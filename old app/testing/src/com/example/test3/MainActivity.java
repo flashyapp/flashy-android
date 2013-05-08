@@ -573,7 +573,11 @@ public class MainActivity extends Activity {
 	
 	
 
-	
+	public void tempFunc(View v)
+	{
+		Intent intent = new Intent(this, TestPage2.class);
+		startActivity(intent);
+	}
 	
 	
 	

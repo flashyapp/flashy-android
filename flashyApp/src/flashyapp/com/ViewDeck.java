@@ -1,29 +1,24 @@
 package flashyapp.com;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.EOFException;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.util.ArrayList;
 
-import org.apache.http.HttpResponse;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.entity.StringEntity;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.message.BasicHeader;
-import org.apache.http.protocol.HTTP;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
-import android.graphics.Color;
 import android.os.Bundle;
+import android.os.Environment;
 import android.util.Log;
 import android.view.Menu;
 import android.view.View;
-import android.widget.Button;
+import android.webkit.WebView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -36,7 +31,8 @@ public class ViewDeck extends Activity {
 	private int index;
 	private ArrayList<String> sideA;
 	private ArrayList<String> sideB;
-	private TextView cardView;
+	private WebView webView;
+	private String nickResource;
  
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -52,8 +48,15 @@ public class ViewDeck extends Activity {
 		Log.d("deckId in DeckView:", deckId+ "    "+username + sessionId);
 		deckArray=null;
 		index=0;
-		cardView=(TextView)findViewById(R.id.deckView_textView);
-		cardView.setTag("A");
+		/*cardView=(TextView)findViewById(R.id.deckView_textView);
+		cardView.setTag("A");*/
+		
+		LinearLayout ll=(LinearLayout)findViewById(R.id.ViewDeck_layout);
+		WebView webview=new WebView(this);
+		webView=webview;
+		webView.setTag("A");
+		ll.addView(webview);
+		
 		
 		
 		loadDeck();
@@ -65,7 +68,7 @@ public class ViewDeck extends Activity {
 	
 	private void loadDeck(){
 		
-		JSONObject deckJSON=new JSONObject();
+		/*JSONObject deckJSON=new JSONObject();
 		deckJSON=MyJSON.addString(deckJSON,"username",username);
 		if (deckJSON==null){
 			//do what?
@@ -84,29 +87,60 @@ public class ViewDeck extends Activity {
 		HttpResponse httpResponse=MyJSON.sendJSONObject(deckJSON,url);
 		String response=MyJSON.responseChecker(httpResponse);
 		Log.d("GET_DECKHttpResponse",response); 
+		*/
 		
-		
-		
+		String deckString=null;
 		try{
 			
-			JSONObject jresponse=new JSONObject(response);
-			deckArray=jresponse.getJSONArray("cards");
+			/*JSONObject jresponse=new JSONObject(response);
+			deckArray=jresponse.getJSONArray("cards");*/
 			
 			
+			
+		        //reading SessionId
+		       
+		    
+		    	DataInputStream in = new DataInputStream(openFileInput(deckId+".txt"));
+		       //InputStream is=new InputStream(openFileInput(SESSION_FILE));
+		        
+		    	try {
+		    //		username=in.readUTF();
+		    		
+		    		
+		    			String commonName=in.readUTF();
+		    			String descrip=in.readUTF();
+		    			String deckArrayString=in.readUTF();
+		    			//username=in.readUTF();
+		    		
+		            	Log.i("Deck info!", "name: "+commonName + " \ndescrip: "+ descrip + " \n "+ deckArray);
+		              	
+		    			deckArray=new JSONArray(deckArrayString);
+		            	
+		          
+		        } catch (EOFException e) {
+		            Log.i("Data Input Sample from MAIN", "End of file reached");
+		        }
+		        in.close();
+		   /* } catch (IOException e) {
+		        Log.i("Data Input Sample", "I/O Error--file isn't there!");
+		        return;
+		    }
+		    */
 		
 		}
 		catch(Exception e) {
-			 Log.d("Error", "Cannot get response to JSON from Deck_get");
+			 Log.d("Error", "Cannot read in deck data");
 			e.printStackTrace();
 	       
 	    }
 		
 		makeIndividualCards();
-		cardView.setWidth(200);
+		/*cardView.setWidth(200);
 		cardView.setHeight(100);
 		cardView.setTextColor(Color.RED);
 		cardView.setTextSize(50);
 		
+		*/
 		presentCardAction();
 		
 		
@@ -120,20 +154,61 @@ public class ViewDeck extends Activity {
 		sideB=new ArrayList<String>();
 		for (int i=0; i<deckArray.length(); i++)
 		{
+			
 			try{
+				Log.d("Debug array", deckArray.toString());
 				JSONObject tempDeck=deckArray.getJSONObject(i);
 				String Aside=tempDeck.getString("sideA");
+				
+				String regex="(<img src=\")(\\[FLASHYRESOURCE:)(\\w{8,})(\\])(\" />)";
+		    	//String regex2="\\[\\]";
+		    	String resourceA=Aside.replaceAll(regex, "$3");
+		    	nickResource=resourceA;
+				
 				String Bside=tempDeck.getString("sideB");
+				String resourceB=Bside.replaceAll(regex, "$3");
+				
 				String cardIndex=tempDeck.getString("index");
 				//int pos=Integer.parseInt(cardIndex);
 				
 				
-				sideA.add(i, Aside);
-				sideB.add(i,Bside);
-				Log.d("DEBUG sideA",Aside);
-				Log.d("DEBUG sideB",Bside);
+				//sideA.add(i, Aside);
+				//sideB.add(i,Bside);
+				Log.d("DEBUG resourceA",resourceA);
+				Log.d("DEBUG resourceB",resourceB);
 				
-			
+				sideA.add(i,resourceA);
+				sideB.add(i,resourceB);
+				
+				
+				/*String fileNameA=deckId+i+"A"+".html";
+				String fileNameB=deckId+i+"B"+".html";
+				
+				
+				String external=Environment.getExternalStorageDirectory().getAbsolutePath(); 
+				File A=new File(external,fileNameA);
+				File B=new File(external,fileNameB);
+				
+				
+				String html="<html><head></head><body><i>AUGHHH</i></body></html>";
+				
+				
+				Log.d("DEBUG fileA",A.getAbsolutePath());
+				Log.d("DEBUG fileB",B.getAbsolutePath());
+				
+				DataOutputStream outA = new DataOutputStream(new FileOutputStream(A));
+		               // new DataOutputStream(openFileOutput(A, Context.MODE_PRIVATE));
+		        outA.writeChars(html);
+		        outA.flush();
+		        DataOutputStream outB = new DataOutputStream(new FileOutputStream(B));
+		                //new DataOutputStream(openFileOutput(B, Context.MODE_PRIVATE));
+		        outB.writeChars(html);
+		        Log.d("DEBUG", "done writing html mini files");
+		        
+		        outB.flush();
+		        
+		        outA.close();
+		        outB.close();*/
 			}
 			catch(Exception e) {
 				 Log.d("Error", "Cannot turn parse JSONArray of decks_list");
@@ -147,18 +222,18 @@ public class ViewDeck extends Activity {
 	}
 	public void flipOver(View view)
 	{
-		String tag=(String)cardView.getTag();
+		String tag=(String)webView.getTag();
 		
 		if (tag.equals("A"))
-			cardView.setTag("B");
+			webView.setTag("B");
 		else
-			cardView.setTag("A");
+			webView.setTag("A");
 		presentCardAction();
 	}
 	
 	public void nextCard(View view)
 	{
-		if (index < sideA.size()-1)
+		if (index < deckArray.length()-1)
 			index++;
 		else
 			index=0;
@@ -167,13 +242,37 @@ public class ViewDeck extends Activity {
 	private void presentCardAction()
 	{
 		
-		String tag=(String)cardView.getTag();
+		String tag=(String)webView.getTag();
 		String text;
-		if (tag.equals("A"))
-			text=sideA.get(index);
+	
+		
+	
+		File f=Environment.getExternalStorageDirectory();
+		String resource;
+		if (webView.getTag().equals("A"))
+			resource=sideA.get(index);
 		else
-			text=sideB.get(index);
-		cardView.setText(text);
+			resource=sideB.get(index);
+		
+		
+		String imgTag="<img src=\"file:///sdcard/"+resource+".jpg\" alt=\"Ninja Pic\" >";
+		
+		Log.d("RESOURCEEEEEEEEE", imgTag + " baseeeeee "+ f.getAbsolutePath());
+		String html="<html><head></head><body>"+imgTag+"</body></html>";
+		
+		if (tag.equals("A")){
+			//webView.loadUrl("file://"+f.getAbsolutePath() +"/"+ deckId+index+"A"+".html");
+			webView.loadDataWithBaseURL("file://"+f.getAbsolutePath(), html, "text/html", "utf-8", null);
+			webView.invalidate();
+		}
+		else {
+			webView.loadDataWithBaseURL("file://"+f.getAbsolutePath(), html, "text/html", "utf-8", null);
+			webView.invalidate();
+		}	
+		
+		
+		
+		//webView.setText(text);
 		LinearLayout layout=(LinearLayout)findViewById(R.id.ViewDeck_layout);
 		layout.invalidate();
 		

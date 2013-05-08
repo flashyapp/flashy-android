@@ -1,7 +1,10 @@
 package flashyapp.com;
 
+import java.io.DataInputStream;
+import java.io.EOFException;
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 
 import org.json.JSONArray;
@@ -11,6 +14,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
@@ -106,6 +110,11 @@ public class DeckListMaker extends Activity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		
+		Log.d("DEBUGGG", "DeckListMaker was started");
+		
+		
+		
 		setContentView(R.layout.activity_deck_list_maker);
 		// Show the Up button in the action bar.
 		LinearLayout ll=(LinearLayout)findViewById(R.id.DeckList_layout);
@@ -119,9 +128,39 @@ public class DeckListMaker extends Activity {
 		Intent intent =getIntent();
 		sessionId = intent.getStringExtra(MainActivity_LogIn.INTENT_EXTRA_DATA_SESSION);
 		username=intent.getStringExtra(MainActivity_LogIn.INTENT_EXTRA_DATA_USER);
-		String deckString=intent.getStringExtra(MainActivity_LogIn.INTENT_EXTRA_DATA_DECKLIST);
+		/*//String deckString=intent.getStringExtra(MainActivity_LogIn.INTENT_EXTRA_DATA_DECKLIST);*/
 		
-		Log.d("INTENT inputs: ", sessionId+"\n"+username+"\n"+deckString);
+		String deckString=null;
+		try {
+	        //reading SessionId
+	       
+	    
+	    	DataInputStream in = new DataInputStream(openFileInput(MainActivity_LogIn.GETDECKS_FILE));
+	       //InputStream is=new InputStream(openFileInput(SESSION_FILE));
+	        
+	    	try {
+	    //		username=in.readUTF();
+	    		
+	    			
+	    		
+	    			deckString=in.readUTF();
+	    			//username=in.readUTF();
+	    		
+	            	Log.i("Data Input List of decks!", deckString);
+	              	
+	    			
+	    		
+	          
+	        } catch (EOFException e) {
+	            Log.i("Data Input Sample from MAIN", "End of file reached");
+	        }
+	        in.close();
+	    } catch (IOException e) {
+	        Log.i("Data Input Sample", "I/O Error--file isn't there!");
+	        return;
+	    }
+	    
+		
 		
 		jarray=null;
 		try {
@@ -137,7 +176,7 @@ public class DeckListMaker extends Activity {
 		}
 	
 		handleDecks(jarray);
-		
+	
 		/*File f=new File(MainActivity_LogIn.GETDECKS_FILE);
 		f.delete();*/
 	}
@@ -158,7 +197,9 @@ public class DeckListMaker extends Activity {
 		ArrayList<String> deckNames=new ArrayList<String>();
 		
 		LinearLayout layout=(LinearLayout)findViewById(R.id.DeckList_layout_bottom);
-		layout.setBackgroundResource(R.drawable.blue_background);
+		
+		layout.setBackgroundColor(Color.DKGRAY);
+		//layout.setBackgroundResource(R.drawable.blue_background);
 		ScrollView scroll=new ScrollView(this);
 		
 		LinearLayout layoutOfLayouts=new LinearLayout(this);
@@ -201,7 +242,7 @@ public class DeckListMaker extends Activity {
 			Log.d("Debug", "In Remainder List of ListMaker");
 			Button b=makeListButtonHelper(deckIds,deckNames,deckArray,index);
 			lastRow.addView(b);
-			
+		
 		}
 		if (deckArray.length()%3 != 0){
 			layoutOfLayouts.addView(lastRow);
@@ -256,7 +297,7 @@ public class DeckListMaker extends Activity {
 			b.setTag(deckid);
 			b.setWidth(100);
 			b.setHeight(50);
-			/*b.setOnClickListener(new View.OnClickListener() {
+			b.setOnClickListener(new View.OnClickListener() {
 	             public void onClick(View view) {
 	                 // Perform action on click
 	            	 Log.d("DEBUG clicked and got tag:", view.getTag().toString());
@@ -266,7 +307,7 @@ public class DeckListMaker extends Activity {
 	         	    intent.putExtra(MainActivity_LogIn.INTENT_EXTRA_DATA_USER,username);
 	         		startActivity(intent);
 	             }
-	         });*/
+	         });
 			Log.d("DEBUG", "Before adding button to scrollview");
 			return b;
 			

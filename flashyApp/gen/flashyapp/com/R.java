@@ -24,11 +24,13 @@ public final class R {
         public static final int black_bar_grad=0x7f020000;
         public static final int blue_back_two=0x7f020001;
         public static final int blue_background=0x7f020002;
-        public static final int flashy_icon_f=0x7f020003;
-        public static final int flashy_logo_word=0x7f020004;
-        public static final int gray_button_back=0x7f020005;
-        public static final int ic_launcher=0x7f020006;
-        public static final int orange_back=0x7f020007;
+        public static final int checkmark=0x7f020003;
+        public static final int flashy_icon_f=0x7f020004;
+        public static final int flashy_logo_word=0x7f020005;
+        public static final int gray_button_back=0x7f020006;
+        public static final int ic_launcher=0x7f020007;
+        public static final int orange_back=0x7f020008;
+        public static final int redx=0x7f020009;
     }
     public static final class id {
         public static final int DeckList_layout=0x7f080000;
@@ -48,6 +50,8 @@ public final class R {
         public static final int login_name_register=0x7f080014;
         public static final int login_text=0x7f080004;
         public static final int makePic_button=0x7f080006;
+        public static final int menuAddRow=0x7f08001d;
+        public static final int menuDeleteRow=0x7f08001e;
         public static final int new_deck_button=0x7f080002;
         public static final int new_deck_description=0x7f080011;
         public static final int new_deck_fromList_button=0x7f080012;
@@ -106,6 +110,8 @@ public final class R {
         public static final int login_hint=0x7f050004;
         public static final int loginpage=0x7f050003;
         public static final int makePic_string=0x7f05001c;
+        public static final int menuAddRow=0x7f050020;
+        public static final int menuDeleteRow=0x7f050021;
         public static final int new_deck_text=0x7f050011;
         public static final int password_hint=0x7f050006;
         public static final int registerpage=0x7f050007;

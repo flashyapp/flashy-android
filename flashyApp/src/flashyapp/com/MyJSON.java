@@ -9,6 +9,7 @@ import java.io.InputStreamReader;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.entity.mime.HttpMultipartMode;
@@ -181,7 +182,30 @@ public class MyJSON {
 		
 		
 	}
-	
+	public static HttpResponse getResource( String url){
+		//Log.d("DEBUGGING JSON", json.toString());
+		
+		
+		
+		try{
+			HttpClient httpClient = new DefaultHttpClient();
+			HttpResponse httpResponse;
+			
+			HttpGet httpGet = new HttpGet(url); 
+			
+	         Log.d("Debug","Before executing post");
+	         httpResponse = httpClient.execute(httpGet);
+	         return httpResponse;
+	         
+		} catch(Exception e) {
+	        e.printStackTrace();
+	        Log.e("Error", "Cannot Estabilish Connection");
+	        return null;
+	    }
+		
+		
+		
+	}
 	public static HttpResponse sendMIMEPost(String url, File f, String session, String name)
 	{
 		 	HttpClient httpClient = new DefaultHttpClient();

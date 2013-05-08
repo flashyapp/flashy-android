@@ -44,7 +44,7 @@ public class DecksPage extends Activity {
 		 public void onReturnRegister(String error, JSONObject jresponse){}
 		 public void onReturnLogout(String error){}
 		 public void onReturnLogin(String error, JSONObject jresponse, String name){}
-		 public void onReturnDeckFromImage(Context context){}
+		 public void onReturnDeckFromImage(Context context, String mError, JSONObject jresponse){}
 		 public void onReturnDecksPage(String error, JSONObject jresponse, Context context){
 			 JSONArray deckArray=null;
 				try{
@@ -83,7 +83,7 @@ public class DecksPage extends Activity {
 					Intent intent =new Intent(context,DeckListMaker.class);
 					intent.putExtra(MainActivity_LogIn.INTENT_EXTRA_DATA_SESSION, sessionId);
 					intent.putExtra(MainActivity_LogIn.INTENT_EXTRA_DATA_USER, username);
-					intent.putExtra(MainActivity_LogIn.INTENT_EXTRA_DATA_DECKLIST, deckArray.toString());
+					//intent.putExtra(MainActivity_LogIn.INTENT_EXTRA_DATA_DECKLIST, deckArray.toString());
 					startActivity(intent);
 				}
 			 

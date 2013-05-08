@@ -49,7 +49,7 @@ public class Registration extends Activity {
 	 protected OnResponseListener onResponseListener = new OnResponseListener() {
 		 public void onReturnLogin(String error, JSONObject jresponse,String name) {}
 		 public void onReturnLogout(String error){}
-		 public void onReturnDeckFromImage(Context context){}
+		 public void onReturnDeckFromImage(Context context, String mError, JSONObject jresponse){}
 		 public void onReturnDecksPage(String error, JSONObject jresponse, Context context){}
 		 public void onReturnRegister(String error,JSONObject jresponse){
 			 	/*int email_s=1;

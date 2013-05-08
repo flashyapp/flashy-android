@@ -46,7 +46,7 @@ public class MainActivity_LogIn extends Activity {
 	 protected OnResponseListener onResponseListener = new OnResponseListener() {
 		 public void onReturnRegister(String error, JSONObject jresponse){}
 		 public void onReturnLogout(String error){}
-		 public void onReturnDeckFromImage(Context context){}
+		 public void onReturnDeckFromImage(Context context, String mError, JSONObject jresponse){}
 		 public void onReturnDecksPage(String error, JSONObject jresponse, Context context){}
 		 public void onReturnLogin(String error, JSONObject jresponse,String name) {
 			 String sessionId=null;
@@ -441,7 +441,7 @@ public class MainActivity_LogIn extends Activity {
 	    //was takePictureIntent
 	    // String mCurrentPhotoPath = "\""+f.getAbsolutePath()+"\"";
 	     String photoPath="file:///android_asset/FlashCardsPhoto.jpg";
-	     
+	    
 	    String fileName="Test.html";
 	    String htmlString="<html><head><title>TITLeeeEE</title></head><body><i>Middle</i> of the<b> body!</b>" +
 	    		"<img src="+photoPath+" alt=\"Ninja Pic\" > </body></html>";

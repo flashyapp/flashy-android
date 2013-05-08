@@ -38,6 +38,18 @@
             android:name="com.example.test3.Draws"
             android:label="@string/title_activity_draws" >
         </activity>
+        <activity
+            android:name="com.example.test3.TestPage"
+            android:label="@string/title_activity_test_page" >
+        </activity>
+        <activity
+            android:name="com.example.test3.TestPage2"
+            android:label="@string/title_activity_test_page2"
+            android:parentActivityName="com.example.test3.MainActivity" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.example.test3.MainActivity" />
+        </activity>
     </application>
 
 </manifest>

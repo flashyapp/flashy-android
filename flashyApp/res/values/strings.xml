@@ -33,5 +33,6 @@
     <string name="button_fromImage">New Photo Deck</string>
     <string name="title_activity_draw_lines">Align Lines To Make Cards</string>
     <string name="title_activity_submit_lines">SubmitLines</string>
-
+	<string name="menuAddRow">Add Row</string>
+	<string name="menuDeleteRow">Delete Row</string>
 </resources>

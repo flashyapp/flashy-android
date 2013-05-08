@@ -25,7 +25,8 @@
     <string name="title_activity_view_deck">ViewDeck</string>
     <string name="deckView_text">A single Deck:</string>
     <string name="flip_over_card">Flip This Card Over</string>
-    <string name="flip_next_card">Next Card</string>
+    <string name="flip_next_card">Next</string>
+    <string name="flip_prev_card">Previous</string>
     <string name="button_logout">Logout</string>
     <string name="title_activity_my_logout">Logout</string>
     <string name="title_activity_deck_list_maker">List of Decks</string>
@@ -35,4 +36,9 @@
     <string name="title_activity_submit_lines">SubmitLines</string>
 	<string name="menuAddRow">Add Row</string>
 	<string name="menuDeleteRow">Delete Row</string>
+	<string name="menuAddCol">Add Column</string>
+	<string name="menuDeleteCol">Delete Column</string>
+	<string name="FlashyWord">Flashy</string>
+	<string name="menuNewLineDeck">New Deck from Text</string>
+	<string name="menuNewPhotoDeck">New Deck from Photo</string>
 </resources>

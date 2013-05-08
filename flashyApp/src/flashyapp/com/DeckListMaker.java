@@ -22,12 +22,13 @@ import android.provider.MediaStore;
 import android.support.v4.app.NavUtils;
 import android.util.Log;
 import android.view.Gravity;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.LinearLayout;
-import android.widget.PopupWindow;
 import android.widget.ScrollView;
+import android.widget.TextView;
 import flashyapp.com.MIMEThread.OnResponseMIMEListener;
 
 public class DeckListMaker extends Activity {
@@ -198,7 +199,8 @@ public class DeckListMaker extends Activity {
 		
 		LinearLayout layout=(LinearLayout)findViewById(R.id.DeckList_layout_bottom);
 		
-		layout.setBackgroundColor(Color.DKGRAY);
+		layout.setBackgroundColor(Color.rgb(192, 192, 192));
+		//layout.setBackgroundColor(Color.BLACK);
 		//layout.setBackgroundResource(R.drawable.blue_background);
 		ScrollView scroll=new ScrollView(this);
 		
@@ -217,9 +219,9 @@ public class DeckListMaker extends Activity {
 			
 			LinearLayout innerLayout=new LinearLayout(this);
 			innerLayout.setOrientation(LinearLayout.HORIZONTAL);
-			Button b0=makeListButtonHelper(deckIds,deckNames,deckArray,indexBase);
-			Button b1=makeListButtonHelper(deckIds,deckNames,deckArray,indexBase+1);
-			Button b2=makeListButtonHelper(deckIds,deckNames,deckArray,indexBase+2);
+			TextView b0=makeListButtonHelper(deckIds,deckNames,deckArray,indexBase);
+			TextView b1=makeListButtonHelper(deckIds,deckNames,deckArray,indexBase+1);
+			TextView b2=makeListButtonHelper(deckIds,deckNames,deckArray,indexBase+2);
 			innerLayout.addView(b0);
 			innerLayout.addView(b1);
 			innerLayout.addView(b2);
@@ -240,7 +242,7 @@ public class DeckListMaker extends Activity {
 		for (;index<(deckArray.length());index++)
 		{
 			Log.d("Debug", "In Remainder List of ListMaker");
-			Button b=makeListButtonHelper(deckIds,deckNames,deckArray,index);
+			TextView b=makeListButtonHelper(deckIds,deckNames,deckArray,index);
 			lastRow.addView(b);
 		
 		}
@@ -266,9 +268,9 @@ public class DeckListMaker extends Activity {
 	
 	public void makePicture(View view)
 	{
+		
 		 Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-		 startActivityForResult(takePictureIntent, 4);
-		 
+		 startActivityForResult(takePictureIntent, 4); 
 		
 	}
 	
@@ -276,7 +278,7 @@ public class DeckListMaker extends Activity {
 	
 	
 	
-	private Button makeListButtonHelper(ArrayList<String> deckIds, ArrayList<String> deckNames,JSONArray deckArray, int index)
+	private TextView makeListButtonHelper(ArrayList<String> deckIds, ArrayList<String> deckNames,JSONArray deckArray, int index)
 	{
 		
 		try{
@@ -291,7 +293,7 @@ public class DeckListMaker extends Activity {
 			Log.d("DEBUG id",deckid);
 			
 		
-			Button b=new Button(this);
+			/*Button b=new Button(this);
 			//b.setBackgroundResource(R.drawable.gray_button_back);
 			b.setText(name);
 			b.setTag(deckid);
@@ -308,15 +310,38 @@ public class DeckListMaker extends Activity {
 	         		startActivity(intent);
 	             }
 	         });
-			Log.d("DEBUG", "Before adding button to scrollview");
-			return b;
+			Log.d("DEBUG", "Before adding button to scrollview");*/
 			
+			TextView tv=new TextView(this);
+			tv.setText(name);
+			tv.setTag(deckid);
+			tv.setTextColor(Color.WHITE);
+			tv.setTextSize(15);
+			tv.setCompoundDrawablesWithIntrinsicBounds(0, R.drawable.deck_logo, 0, 0);
+			tv.setWidth(100);
+			tv.setHeight(50);
+			tv.setGravity(Gravity.CENTER_HORIZONTAL);
+			tv.setOnClickListener(new View.OnClickListener() {
+	             public void onClick(View view) {
+	                 // Perform action on click
+	            	 Log.d("DEBUG clicked and got tag:", view.getTag().toString());
+	            	 Intent intent =new Intent(view.getContext() , ViewDeck.class);
+	            	 intent.putExtra(MainActivity_LogIn.INTENT_EXTRA_DATA_DECKID,view.getTag().toString());
+	            	 intent.putExtra(MainActivity_LogIn.INTENT_EXTRA_DATA_SESSION, sessionId);
+	         	    intent.putExtra(MainActivity_LogIn.INTENT_EXTRA_DATA_USER,username);
+	         		startActivity(intent);
+	             }
+	         });
+			Log.d("DEBUG", "Before adding textview to scrollview");
+			
+			return tv;
+
 			}
-			
+		
 			
 		
 		catch(Exception e) {
-			 Log.d("Error", "Cannot turn parse JSONArray of decks_list");
+			 Log.d("Error", "Cannot turn parse JSONArray of decks_list in deckListButtonHelper maker");
 			e.printStackTrace();
 	       
 	    }
@@ -407,6 +432,12 @@ public class DeckListMaker extends Activity {
 	
 	
 	
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		// Inflate the menu; this adds items to the action bar if it is present.
+		getMenuInflater().inflate(R.menu.deck_list_maker, menu);
+		return true;
+	}
 	
 	
 	
@@ -422,6 +453,22 @@ public class DeckListMaker extends Activity {
 			// http://developer.android.com/design/patterns/navigation.html#up-vs-back
 			//
 			NavUtils.navigateUpFromSameTask(this);
+			return true;
+		case R.id.listMakerNewPhotoDeck:
+			 Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+			 startActivityForResult(takePictureIntent, 4);
+			return true;
+		case R.id.listMakerLogout:
+			Intent intent =new Intent(this,MyLogout.class);
+			intent.putExtra(MainActivity_LogIn.INTENT_EXTRA_DATA_SESSION, sessionId);
+			intent.putExtra(MainActivity_LogIn.INTENT_EXTRA_DATA_USER, username);
+			startActivity(intent);
+			return true;
+		case R.id.listMakerNewLineDeck:
+			Intent lineintent=new Intent(this,NewDeck.class);
+			lineintent.putExtra(MainActivity_LogIn.INTENT_EXTRA_DATA_SESSION, sessionId);
+		    lineintent.putExtra(MainActivity_LogIn.INTENT_EXTRA_DATA_USER,username);
+			startActivity(lineintent);
 			return true;
 		}
 		return super.onOptionsItemSelected(item);

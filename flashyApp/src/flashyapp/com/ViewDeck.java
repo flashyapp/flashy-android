@@ -1,18 +1,16 @@
 package flashyapp.com;
 
 import java.io.DataInputStream;
-import java.io.DataOutputStream;
 import java.io.EOFException;
 import java.io.File;
-import java.io.FileOutputStream;
 import java.util.ArrayList;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
 
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Environment;
 import android.util.Log;
@@ -20,7 +18,7 @@ import android.view.Menu;
 import android.view.View;
 import android.webkit.WebView;
 import android.widget.LinearLayout;
-import android.widget.TextView;
+import android.widget.RelativeLayout;
 
 public class ViewDeck extends Activity {
 
@@ -43,19 +41,29 @@ public class ViewDeck extends Activity {
 		deckId = intent.getStringExtra(MainActivity_LogIn.INTENT_EXTRA_DATA_DECKID);
 		sessionId = intent.getStringExtra(MainActivity_LogIn.INTENT_EXTRA_DATA_SESSION);
 		username=intent.getStringExtra(MainActivity_LogIn.INTENT_EXTRA_DATA_USER);
-		
-		
-		Log.d("deckId in DeckView:", deckId+ "    "+username + sessionId);
+	
+			Log.d("deckId in DeckView:", deckId+ "    "+username + sessionId);
 		deckArray=null;
 		index=0;
 		/*cardView=(TextView)findViewById(R.id.deckView_textView);
 		cardView.setTag("A");*/
-		
+	
 		LinearLayout ll=(LinearLayout)findViewById(R.id.ViewDeck_layout);
-		WebView webview=new WebView(this);
+		ll.setBackgroundColor(Color.BLACK);
+		//RelativeLayout rl=(RelativeLayout)findViewById(R.id.)
+		
+		WebView webview=(WebView)findViewById(R.id.cardViewer);
+		
+		/*RelativeLayout.LayoutParams layoutParams = 
+		    (RelativeLayout.LayoutParams)webview.getLayoutParams();
+		layoutParams.addRule(RelativeLayout.CENTER_IN_PARENT, 0);
+		webview.setLayoutParams(layoutParams);*/
+		
+		
+		
 		webView=webview;
 		webView.setTag("A");
-		ll.addView(webview);
+		//ll.addView(webview);
 		
 		
 		
@@ -239,6 +247,16 @@ public class ViewDeck extends Activity {
 			index=0;
 		presentCardAction();
 	}
+	
+	public void prevCard(View view)
+	{
+		if (index >0)
+			index--;
+		else
+			index=deckArray.length();
+		presentCardAction();
+	}
+	
 	private void presentCardAction()
 	{
 		

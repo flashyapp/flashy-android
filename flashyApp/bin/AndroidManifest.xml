@@ -15,12 +15,12 @@
 
     <application
         android:allowBackup="true"
-        android:icon="@drawable/ic_launcher"
+        android:icon="@drawable/flashy_icon_f"
         android:label="@string/app_name"
         android:theme="@style/AppTheme" >
         <activity
             android:name="flashyapp.com.MainActivity_LogIn"
-            android:label="@string/app_name" >
+            android:label="@string/FlashyWord" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -29,7 +29,7 @@
         </activity>
         <activity
             android:name="flashyapp.com.Registration"
-            android:label="@string/title_activity_registration"
+            android:label="@string/FlashyWord"
             android:parentActivityName="flashyapp.com.MainActivity_LogIn" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
@@ -37,7 +37,7 @@
         </activity>
         <activity
             android:name="flashyapp.com.DecksPage"
-            android:label="@string/title_activity_decks_page"
+            android:label="@string/FlashyWord"
             android:parentActivityName="flashapp.com.MainActivity_LogIn" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
@@ -45,7 +45,7 @@
         </activity>
         <activity
             android:name="flashyapp.com.ViewHTML"
-            android:label="@string/title_activity_view_html"
+            android:label="@string/FlashyWord"
             android:parentActivityName="flashyapp.com.MainActivity_LogIn" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
@@ -53,7 +53,7 @@
         </activity>
         <activity
             android:name="flashyapp.com.NewDeck"
-            android:label="@string/title_activity_new_deck"
+            android:label="@string/FlashyWord"
             android:parentActivityName="flashyapp.com.DecksPage" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
@@ -61,7 +61,7 @@
         </activity>
         <activity
             android:name="flashyapp.com.ViewDeck"
-            android:label="@string/title_activity_view_deck"
+            android:label="@string/FlashyWord"
             android:parentActivityName="flashyapp.com.DecksPage" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
@@ -69,11 +69,11 @@
         </activity>
         <activity
             android:name="flashyapp.com.MyLogout"
-            android:label="@string/title_activity_my_logout" >
+            android:label="@string/FlashyWord" >
         </activity>
         <activity
             android:name="flashyapp.com.DeckListMaker"
-            android:label="@string/title_activity_deck_list_maker"
+            android:label="@string/FlashyWord"
             android:parentActivityName="flashyapp.com.DecksPage" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
@@ -81,7 +81,7 @@
         </activity>
         <activity
             android:name="flashyapp.com.DrawLines"
-            android:label="@string/title_activity_draw_lines"
+            android:label="@string/FlashyWord"
             android:parentActivityName="flashyapp.com.DeckListMaker" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
@@ -89,7 +89,7 @@
         </activity>
         <activity
             android:name="flashyapp.com.SubmitLines"
-            android:label="@string/title_activity_submit_lines" >
+            android:label="@string/FlashyWord" >
         </activity>
     </application>
 

@@ -6,28 +6,50 @@
     android:layout_height="fill_parent"
     android:orientation="vertical" >
 
-    <TextView
-        android:id="@+id/deckView_textView"
-        android:layout_width="wrap_content"
+    <RelativeLayout
+        android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:text="@string/deckView_text" />
-
+        
+        >
+	<ImageButton
+            android:id="@+id/flip_previous_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:onClick="prevCard"
+            android:src="@drawable/redx"
+            android:layout_alignParentLeft="true"
+            />
+        <Button
+            android:id="@+id/flip_over_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_centerHorizontal="true"
+            android:onClick="flipOver"
+            android:text="@string/flip_over_card" />
+        
+        <ImageButton
+            android:id="@+id/flip_next_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:onClick="nextCard"
+            android:src="@drawable/checkmark" />
+        
+        
+    </RelativeLayout>
     
-     <Button
-         android:id="@+id/flip_over_button"
-         android:layout_width="wrap_content"
-         android:layout_height="wrap_content"
-         android:text="@string/flip_over_card"
-         android:onClick="flipOver" />
-      <Button
-         android:id="@+id/flip_next_button"
-         android:layout_width="wrap_content"
-         android:layout_height="wrap_content"
-         android:text="@string/flip_next_card"
-         android:onClick="nextCard" />
-      
-      
-      
-      
-      
+    <RelativeLayout
+        android:id="@+id/outerWebLayout"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        >
+         <WebView
+                android:id="@+id/cardViewer"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:height="250dp"
+                android:width="250dp" />
+      </RelativeLayout>
 </LinearLayout>

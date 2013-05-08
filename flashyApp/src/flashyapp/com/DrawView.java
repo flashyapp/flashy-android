@@ -38,8 +38,8 @@ public class DrawView extends View /*implements OnLongClickListener*/{
     private int photoWidth;
     private int photoHeight;
     private Bitmap backBitmap;
-    private ToggleButton mdeleteLine;
-    private ToggleButton maddLine;
+   /* private ToggleButton mdeleteLine;
+    private ToggleButton maddLine;*/
     private GestureDetector gd;
     private int movVrowIndex;
    
@@ -105,15 +105,17 @@ public class DrawView extends View /*implements OnLongClickListener*/{
     {
     	int x =(int) event.getX();
         int y = (int)event.getY();
-       
-        Boolean dChecked=mdeleteLine.isChecked();
-		//Log.d("Delete Button status", ""+dChecked);
-		Boolean addChecked=maddLine.isChecked();
-		DrawLines dl=(DrawLines)mcontext;
+        DrawLines dl=(DrawLines)mcontext;
         boolean addRowbool=dl.getMenuAddRow();
+        boolean addColbool=dl.getMenuAddCol();
+        
+       /* Boolean dChecked=mdeleteLine.isChecked();
+		//Log.d("Delete Button status", ""+dChecked);
+		Boolean addChecked=maddLine.isChecked();*/
 		
 		
-        if(addChecked)
+		
+        if(addColbool)
         {
         	for(Row r: rows)
         	{
@@ -205,12 +207,21 @@ public class DrawView extends View /*implements OnLongClickListener*/{
     public void onLongPress(MotionEvent event) {
     	int x =(int) event.getX();
         int y = (int)event.getY();
-        Boolean dChecked=mdeleteLine.isChecked();
+        
+        
+        
+        DrawLines dl=(DrawLines)mcontext;
+        boolean deleteRowbool=dl.getMenuDeleteRow();
+        boolean deleteColbool=dl.getMenuDeleteCol();
+        
+        
+        
+        /*Boolean dChecked=mdeleteLine.isChecked();
 		//Log.d("Delete Button status", ""+dChecked);
-		Boolean addChecked=maddLine.isChecked();
+		Boolean addChecked=maddLine.isChecked();*/
 		
 		
-		if (dChecked)
+		if (deleteColbool)
    	 	{
    	 		Log.d("BEFORE I DELETE!!", "This is right before the row delete call");
    	 		movVrow.deleteLine(x);
@@ -220,8 +231,7 @@ public class DrawView extends View /*implements OnLongClickListener*/{
    	 	}
    	 	
 		
-		DrawLines dl=(DrawLines)mcontext;
-        boolean deleteRowbool=dl.getMenuDeleteRow();
+		
         if (deleteRowbool)
         {
         	
@@ -392,7 +402,7 @@ public class DrawView extends View /*implements OnLongClickListener*/{
     
     
     
-    public DrawView(Context context, String coords, ArrayList<Row> inrows, ToggleButton deleteLine, ToggleButton addLine) {
+    public DrawView(Context context, String coords, ArrayList<Row> inrows/*, ToggleButton deleteLine, ToggleButton addLine*/) {
         super(context);
      
        /* this.setOnLongClickListener(this);*/
@@ -400,8 +410,8 @@ public class DrawView extends View /*implements OnLongClickListener*/{
         gd = new GestureDetector(context, sogl);
         //gd.setIsLongpressEnabled(false);
         
-        mdeleteLine=deleteLine;
-        maddLine=addLine;
+       /* mdeleteLine=deleteLine;
+        maddLine=addLine;*/
         dotpaint=new Paint();
         dotpaint.setStyle(Paint.Style.FILL);
         dotpaint.setColor(Color.BLACK);
@@ -607,15 +617,19 @@ public class DrawView extends View /*implements OnLongClickListener*/{
     @Override
     public boolean onTouchEvent(MotionEvent event) {
     	
-    	
-    	 Boolean dChecked=mdeleteLine.isChecked();
+    	DrawLines dl=(DrawLines)mcontext;
+    	boolean deleteRowbool=dl.getMenuDeleteRow();
+    	boolean deleteColbool=dl.getMenuDeleteCol();
+    	boolean addRowbool=dl.getMenuAddRow();
+    	boolean addColbool=dl.getMenuAddCol();
+    	 /*Boolean dChecked=mdeleteLine.isChecked();
     		//Log.d("Delete Button status", ""+dChecked);
-    		Boolean addChecked=maddLine.isChecked();
+    		Boolean addChecked=maddLine.isChecked();*/
     		//Log.d("Add Button status", ""+addChecked);
     	
     	
     	
-    	if (event.getAction()==MotionEvent.ACTION_MOVE && !dChecked && !addChecked){
+    	if (event.getAction()==MotionEvent.ACTION_MOVE && !deleteRowbool && !deleteColbool && !addRowbool && !addColbool){
     		//Log.d("MOVE ACTION", "Not passed to gesture!");
     		int x =(int) event.getX();
             int y = (int)event.getY();

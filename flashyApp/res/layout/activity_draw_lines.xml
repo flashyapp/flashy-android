@@ -1,17 +1,57 @@
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/DrawLines_layout"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:paddingBottom="@dimen/activity_vertical_margin"
-    android:paddingLeft="@dimen/activity_horizontal_margin"
-    android:paddingRight="@dimen/activity_horizontal_margin"
-    android:paddingTop="@dimen/activity_vertical_margin"
-    tools:context=".DrawLines" >
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:orientation="vertical" >
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/hello_world" />
+     <LinearLayout
+         android:id="@+id/drawLines_layout_top"
+         android:layout_width="fill_parent"
+         android:layout_height="wrap_content"
+        
+         android:background="@drawable/black_bar_grad"
+         android:orientation="horizontal" >
+
+         
+     </LinearLayout>
     
+    <LinearLayout
+        android:id="@+id/drawLines_layout_bottom"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:orientation="vertical" >
+    
+     <EditText android:id="@+id/new_Photodeck_name"
+        android:singleLine="true"
+       android:layout_width="200dip"
+        android:layout_height="40dip"
+        android:hint="@string/deck_name_hint" />
+    
+     <EditText android:id="@+id/new_Photodeck_description"
+        
+        android:layout_height="wrap_content"
+        android:singleLine="true"
+       android:layout_width="200dip"
+        android:hint="@string/deck_description_hint" />
 
-</RelativeLayout>
+    
+     
+     
+    
+     <Button
+         android:id="@+id/new_deck_fromPhoto_button"
+         android:layout_width="wrap_content"
+         android:layout_height="wrap_content"
+         
+         android:text="@string/fromList_button_text" />
+    </LinearLayout>
+    
+    
+   
+   
+
+    
+    
+</LinearLayout>

@@ -1,5 +1,30 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android" >
 
+    
+    
+    
+    <item
+        android:id="@+id/menuAddCol"
+        android:orderInCategory="80"
+        android:checkable="true"
+        android:checked="false"
+        android:title="@string/menuAddCol"/>
+	<item
+        android:id="@+id/menuDeleteCol"
+        android:orderInCategory="85"
+        android:checkable="true"
+        android:checked="false"
+        android:title="@string/menuDeleteCol"/>
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
     <item
         android:id="@+id/menuAddRow"
         android:orderInCategory="90"

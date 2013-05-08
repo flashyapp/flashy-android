@@ -1,9 +1,19 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android" >
 
     <item
-        android:id="@+id/action_settings"
+        android:id="@+id/listMakerNewLineDeck"
         android:orderInCategory="100"
         android:showAsAction="never"
-        android:title="@string/action_settings"/>
+        android:title="@string/menuNewLineDeck"/>
+    <item
+        android:id="@+id/listMakerNewPhotoDeck"
+        android:orderInCategory="50"
+        android:showAsAction="never"
+        android:title="@string/menuNewPhotoDeck"/>
+    <item
+        android:id="@+id/listMakerLogout"
+        android:orderInCategory="100"
+        android:showAsAction="never"
+        android:title="@string/button_logout"/>
 
 </menu>

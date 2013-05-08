@@ -9,11 +9,11 @@ import java.util.ArrayList;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Environment;
 import android.support.v4.app.NavUtils;
@@ -23,9 +23,8 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.widget.EditText;
 import android.widget.LinearLayout;
-import android.widget.TextView;
-import android.widget.ToggleButton;
 import flashyapp.com.JSONThread.OnResponseListener;
 import flashyapp.com.SaveResourceThread.OnResponseSaveResourceListener;
 
@@ -38,6 +37,10 @@ public class DrawLines extends Activity {
 	private JSONArray mCards;
 	private boolean mMenuAddRowIsChecked;
 	private boolean mMenuDeleteRowIsChecked;
+	private boolean mMenuAddColIsChecked;
+	private boolean mMenuDeleteColIsChecked;
+	private EditText etDeckName;
+	private EditText etDeckDescrip;
 	
 	
 	protected OnResponseSaveResourceListener onSaveResourceListener = new OnResponseSaveResourceListener() {
@@ -216,7 +219,7 @@ public class DrawLines extends Activity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		
+		//setContentView(R.layout.activity_draw_lines);
 		
 		Intent intent =getIntent();
 		sessionId = intent.getStringExtra(MainActivity_LogIn.INTENT_EXTRA_DATA_SESSION);
@@ -229,12 +232,13 @@ public class DrawLines extends Activity {
 		setMenuDeleteRow(false);
 				
 		 LinearLayout ll=new LinearLayout(this);
+		 ll.setBackgroundColor(Color.BLACK);
 		 ll.setOrientation(LinearLayout.VERTICAL);
 		 ll.setGravity(Gravity.CENTER_HORIZONTAL);
 		
 		 
 		 LineSubmissionButton b=new LineSubmissionButton(this,rows);
-		 b.setText("FOR SUBMISSION");
+		 b.setText("Submit Deck");
 		 b.setHeight(50);
 		 b.setWidth(110);
 		 
@@ -248,7 +252,7 @@ public class DrawLines extends Activity {
 			}
 		});
 		 
-		 ToggleButton deleteLine=new ToggleButton(this);
+		 /*ToggleButton deleteLine=new ToggleButton(this);
 		 deleteLine.setChecked(false);
 		 deleteId = 55;
 		 deleteLine.setId(deleteId);
@@ -256,31 +260,50 @@ public class DrawLines extends Activity {
 		 deleteLine.setText("Delete a Line");
 		 deleteLine.setTextOn("Delete Line On");
 		 deleteLine.setTextOff("Delete Line Off");
-		
+		*/
 		 
-		 ToggleButton addLine=new ToggleButton(this);
+		/* ToggleButton addLine=new ToggleButton(this);
 		 addLine.setChecked(false);
 		 addLineId=56;
 		 addLine.setId(addLineId);
 		 addLine.setText("Add Column");
 		 addLine.setTextOn("Add Column On");
-		 addLine.setTextOff("Add Column Off");
+		 addLine.setTextOff("Add Column Off");*/
 		 
 		 LinearLayout topRow=new LinearLayout(this);
 		 topRow.setOrientation(LinearLayout.HORIZONTAL);
+		 
+		  etDeckName=new EditText(this);
+		 etDeckName.setHint("Name of the Deck");
+		 etDeckName.setHeight(40);
+		 etDeckName.setWidth(200);
+		  etDeckDescrip=new EditText(this);
+		 etDeckDescrip.setHint("Description of Deck");
+		 etDeckDescrip.setHeight(40);
+		 etDeckDescrip.setWidth(200);
+		 
+		 
+		 LinearLayout llforET=new LinearLayout(this);
+		 llforET.setOrientation(LinearLayout.VERTICAL);
+		 llforET.addView(etDeckName);
+		 llforET.addView(etDeckDescrip);
+		 topRow.addView(llforET);
 		 topRow.addView(b);
-		 topRow.addView(deleteLine);
-		 topRow.addView(addLine);
+		/* topRow.addView(deleteLine);
+		 topRow.addView(addLine);*/
 		 
 		 
-		 DrawView drawView = new DrawView(this,coords,rows, deleteLine,addLine);
-		 
+		 DrawView drawView = new DrawView(this,coords,rows);
+		// drawView.getLayoutParams().height=260;
 		 
 		 
 		 ll.addView(topRow);
 		 ll.addView(drawView);
+		// ll.addView(addLine);
 		 
 		 
+		/* LinearLayout newLL=(LinearLayout)findViewById(R.id.drawLines_layout_top);
+		 newLL.addView(drawView);*/
 		 
 	     setContentView(ll);
 		
@@ -305,8 +328,8 @@ public class DrawLines extends Activity {
 			complete.put("divs",divs);
 			complete.put("username", username);
 			complete.put("session_id",sessionId);
-			complete.put("deck_name", "TESTDECK");
-			complete.put("description", "descrip");
+			complete.put("deck_name", etDeckName.getText());
+			complete.put("description", etDeckDescrip.getText());
 			
 		}
 		catch(Exception e) {
@@ -414,6 +437,35 @@ public class DrawLines extends Activity {
 		return mMenuDeleteRowIsChecked;
 	}
 	
+	
+	
+	
+	
+	
+	
+	private void setMenuAddCol(Boolean bool)
+	{
+		mMenuAddColIsChecked=bool;
+	}
+	
+	public boolean getMenuAddCol()
+	{
+		return mMenuAddColIsChecked;
+	}
+	private void setMenuDeleteCol(Boolean bool)
+	{
+		mMenuDeleteColIsChecked=bool;
+	}
+	
+	public boolean getMenuDeleteCol()
+	{
+		return mMenuDeleteColIsChecked;
+	}
+	
+	
+	
+	
+	
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
@@ -432,16 +484,37 @@ public class DrawLines extends Activity {
 			if (item.isChecked())
 			{
 				//item.setIcon(R.drawable.redx);
-				item.setTitle("New Row-false");
+				item.setTitle("Add Row");
+				item.setIcon(R.drawable.redx);
 				item.setChecked(false);
 				setMenuAddRow(false);
 			}
 			else
 			{
 				//item.setIcon(R.drawable.checkmark);
-				item.setTitle("New Row-true");
+				item.setTitle("Add Row");
+				item.setIcon(R.drawable.checkmark);
 				item.setChecked(true);
 				setMenuAddRow(true);
+			}
+			return true;
+		case R.id.menuAddCol:
+			Log.d("Menu Status:", ""+item.isChecked());
+			if (item.isChecked())
+			{
+				//item.setIcon(R.drawable.redx);
+				item.setTitle("Add Column");
+				item.setIcon(R.drawable.redx);
+				item.setChecked(false);
+				setMenuAddCol(false);
+			}
+			else
+			{
+				//item.setIcon(R.drawable.checkmark);
+				item.setTitle("Add Column");
+				item.setIcon(R.drawable.checkmark);
+				item.setChecked(true);
+				setMenuAddCol(true);
 			}
 			return true;
 		case R.id.menuDeleteRow:
@@ -449,16 +522,37 @@ public class DrawLines extends Activity {
 			if (item.isChecked())
 			{
 				//item.setIcon(R.drawable.redx);
-				item.setTitle("Delete Row-false");
+				item.setTitle("Delete Row");
+				item.setIcon(R.drawable.redx);
 				item.setChecked(false);
 				setMenuDeleteRow(false);
 			}
 			else
 			{
 				//item.setIcon(R.drawable.checkmark);
-				item.setTitle("Delete Row-true");
+				item.setTitle("Delete Row");
+				item.setIcon(R.drawable.checkmark);
 				item.setChecked(true);
 				setMenuDeleteRow(true);
+			}
+			return true;
+		case R.id.menuDeleteCol:
+			Log.d("Menu Status:", ""+item.isChecked());
+			if (item.isChecked())
+			{
+				//item.setIcon(R.drawable.redx);
+				item.setTitle("Delete Column");
+				item.setIcon(R.drawable.redx);
+				item.setChecked(false);
+				setMenuDeleteCol(false);
+			}
+			else
+			{
+				//item.setIcon(R.drawable.checkmark);
+				item.setTitle("Delete Column");
+				item.setIcon(R.drawable.checkmark);
+				item.setChecked(true);
+				setMenuDeleteCol(true);
 			}
 			return true;
 			

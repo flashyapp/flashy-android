@@ -25,11 +25,14 @@ public class MyLogout extends Activity {
 		 public void onReturnLogin(String error, JSONObject jresponse, String name){}
 		 public void onReturnDeckFromImage(Context context, String mError, JSONObject jresponse){}
 		 public void onReturnDecksPage(String error, JSONObject jresponse, Context context){}
+		 
+		 //User is logged out of server but needs to be logged out on the phone
 		 public void onReturnLogout(String error){
 			 
 			 if (error == null){
 				 String file=MainActivity_LogIn.SESSION_FILE;
 					try{
+						//Writes a blank file (overwriting the existing file)
 						DataOutputStream out = 
 			                new DataOutputStream(openFileOutput(file, Context.MODE_PRIVATE));
 						/*
@@ -65,7 +68,7 @@ public class MyLogout extends Activity {
 	
 	
 	
-	
+	//Creates an Activity and then immediately starts a JSONThread to logout the user from the server
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);

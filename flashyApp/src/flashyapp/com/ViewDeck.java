@@ -9,16 +9,20 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Environment;
 import android.util.Log;
+import android.view.GestureDetector;
 import android.view.Menu;
+import android.view.MotionEvent;
 import android.view.View;
 import android.webkit.WebView;
+import android.widget.Button;
 import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
+import android.widget.Toast;
 
 public class ViewDeck extends Activity {
 
@@ -30,7 +34,7 @@ public class ViewDeck extends Activity {
 	private ArrayList<String> sideA;
 	private ArrayList<String> sideB;
 	private WebView webView;
-	private String nickResource;
+	//private String nickResource;
  
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -53,7 +57,9 @@ public class ViewDeck extends Activity {
 		//RelativeLayout rl=(RelativeLayout)findViewById(R.id.)
 		
 		WebView webview=(WebView)findViewById(R.id.cardViewer);
+		webview.setPadding(0, 0, 0, 0);
 		
+		//webview.getSettings().setUseWideViewPort(true);
 		/*RelativeLayout.LayoutParams layoutParams = 
 		    (RelativeLayout.LayoutParams)webview.getLayoutParams();
 		layoutParams.addRule(RelativeLayout.CENTER_IN_PARENT, 0);
@@ -169,12 +175,18 @@ public class ViewDeck extends Activity {
 				String Aside=tempDeck.getString("sideA");
 				
 				String regex="(<img src=\")(\\[FLASHYRESOURCE:)(\\w{8,})(\\])(\" />)";
+				
+				//file:///sdcard/"+resource+".jpg\" alt=\"Pic\" HEIGHT=\"250\" WIDTH=\"250\" BORDER=\"0\" >";
+				
+				
+				
 		    	//String regex2="\\[\\]";
-		    	String resourceA=Aside.replaceAll(regex, "$3");
-		    	nickResource=resourceA;
+		    	String resourceA=Aside.replaceAll(regex, "$1file:///sdcard/$3.jpg\" alt=\"Pic\" HEIGHT=\"250\" WIDTH=\"250\" BORDER=\"0\" >");
+		    	
 				
 				String Bside=tempDeck.getString("sideB");
-				String resourceB=Bside.replaceAll(regex, "$3");
+		    	String resourceB=Bside.replaceAll(regex, "$1file:///sdcard/$3.jpg\" alt=\"Pic\" HEIGHT=\"250\" WIDTH=\"250\" BORDER=\"0\" >");
+
 				
 				String cardIndex=tempDeck.getString("index");
 				//int pos=Integer.parseInt(cardIndex);
@@ -253,7 +265,7 @@ public class ViewDeck extends Activity {
 		if (index >0)
 			index--;
 		else
-			index=deckArray.length();
+			index=deckArray.length()-1;
 		presentCardAction();
 	}
 	
@@ -273,18 +285,18 @@ public class ViewDeck extends Activity {
 			resource=sideB.get(index);
 		
 		
-		String imgTag="<img src=\"file:///sdcard/"+resource+".jpg\" alt=\"Ninja Pic\" >";
+		//String imgTag="<img src=\"file:///sdcard/"+resource+".jpg\" alt=\"Pic\" HEIGHT=\"250\" WIDTH=\"250\" BORDER=\"0\" >";
 		
-		Log.d("RESOURCEEEEEEEEE", imgTag + " baseeeeee "+ f.getAbsolutePath());
-		String html="<html><head></head><body>"+imgTag+"</body></html>";
+		Log.d("RESOURCEEEEEEEEE", resource + " baseeeeee "+ f.getAbsolutePath());
+		//String html="<html><head></head><body>"+resource+"</body></html>";
 		
 		if (tag.equals("A")){
 			//webView.loadUrl("file://"+f.getAbsolutePath() +"/"+ deckId+index+"A"+".html");
-			webView.loadDataWithBaseURL("file://"+f.getAbsolutePath(), html, "text/html", "utf-8", null);
+			webView.loadDataWithBaseURL("file://"+f.getAbsolutePath(), resource, "text/html", "utf-8", null);
 			webView.invalidate();
 		}
 		else {
-			webView.loadDataWithBaseURL("file://"+f.getAbsolutePath(), html, "text/html", "utf-8", null);
+			webView.loadDataWithBaseURL("file://"+f.getAbsolutePath(), resource, "text/html", "utf-8", null);
 			webView.invalidate();
 		}	
 		
@@ -309,7 +321,43 @@ public class ViewDeck extends Activity {
 	}
 
 	
-	
+	class MyWebView extends WebView {
+	    Context context;
+	    GestureDetector gd;
+	    ViewDeck activ;
+	    Button b;
+	    
+	    public MyWebView(Context context) {
+	        super(context);
+
+	        this.context = context;
+	        activ=(ViewDeck)context;
+	        gd = new GestureDetector(context, sogl);
+	        b=new Button(context);
+	    }
+
+	    @Override
+	    public boolean onTouchEvent(MotionEvent event) {
+	        return gd.onTouchEvent(event);
+	    }
+
+	    GestureDetector.SimpleOnGestureListener sogl = new GestureDetector.SimpleOnGestureListener() {
+	        public boolean onSingleTapUp(MotionEvent event) {
+	        	activ.flipOver(b);
+	            return true;
+	        }
+
+	        public boolean onFling(MotionEvent event1, MotionEvent event2, float velocityX, float velocityY) {
+	            if (event1.getRawX() > event2.getRawX()) {
+	                activ.prevCard(b);
+	            } else {
+	                activ.prevCard(b);
+	            }
+	            return true;
+	        }
+	    };
+
+	}
 	
 
 }

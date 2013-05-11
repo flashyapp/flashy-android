@@ -119,7 +119,7 @@ public class MainActivity_LogIn extends Activity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main_activity__log_in);
 		
-		Log.d("DEGUG","Got into create method....");
+		Log.d("DEGUG","In onCreate() for MainActivity");
 		
 		Intent intent=getIntent();
 		String message = intent.getStringExtra(MainActivity_LogIn.INTENT_EXTRA_DATA_REGISTER);
@@ -237,6 +237,7 @@ public class MainActivity_LogIn extends Activity {
 	    }
 	    
 	    if (sessionId != null){
+	    	Log.d("DEBUG","Before entering DecksPage");
 		    Intent intent = new Intent(this, DecksPage.class);
 			//can pass in a sessionid or something on the intent
 		    intent.putExtra(INTENT_EXTRA_DATA_SESSION, sessionId);
@@ -396,7 +397,7 @@ public class MainActivity_LogIn extends Activity {
 	}
 	
 	//NOW INVALID!! NEW LINE CODE IN OTHER PROJECT!!!
-	private void drawingLines()
+	/*private void drawingLines()
 	{
 		Log.d("Drawing", "Got into drawing method");
 		View view=this.findViewById(R.id.outer_login_layout);
@@ -427,17 +428,17 @@ public class MainActivity_LogIn extends Activity {
 		});
 		//setContentView(view);
 		
-	}
+	}*/
 
 	
-	private void htmlWrite(){
+	/*private void htmlWrite(){
 		Log.d("WRITING HTML FILE","Before Writing html");
 		
-		/*File path = Environment.getExternalStorageDirectory();
+		File path = Environment.getExternalStorageDirectory();
 		    //String StrPath=path.getPath();
 		String photoName="cameraFile.jpg";
 		
-		File f = new File(path,photoName);*/
+		File f = new File(path,photoName);
 	    //was takePictureIntent
 	    // String mCurrentPhotoPath = "\""+f.getAbsolutePath()+"\"";
 	     String photoPath="file:///android_asset/FlashCardsPhoto.jpg";
@@ -497,7 +498,7 @@ public class MainActivity_LogIn extends Activity {
 			
 		}
 	}
-	
+	*/
 
 }
 

@@ -194,14 +194,14 @@ public class DrawLines extends Activity {
 				    	 Log.d("Error", "Cannot take resources from return json object");
 			 				e.printStackTrace();
 				    }
-				 
+				
 				 
 				 
 				 
 				 Log.d("THREAD Response", "Need to correct later but finished json submission");
 				 
 				//dl.updateDeckList();
-				 
+				
 				 
 			 }
 			 
@@ -385,7 +385,7 @@ public class DrawLines extends Activity {
 		   }
 		}
 		else{
-			Log.d("Exceeded array length", "initializing updateDeckList");
+			Log.d("Finished saving all resources", "initializing updateDeckList");
 			updateDeckList();
 		}
 		

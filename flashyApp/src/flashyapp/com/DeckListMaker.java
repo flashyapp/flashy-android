@@ -118,11 +118,7 @@ public class DeckListMaker extends Activity {
 		
 		setContentView(R.layout.activity_deck_list_maker);
 		// Show the Up button in the action bar.
-		LinearLayout ll=(LinearLayout)findViewById(R.id.DeckList_layout);
-		//ll.setBackgroundColor(Color.WHITE);
 		
-		LinearLayout ll2=(LinearLayout)findViewById(R.id.DeckList_layout_top);
-		//ll2.setBackgroundColor(Color.BLACK);
 		
 	
 		
@@ -186,35 +182,20 @@ public class DeckListMaker extends Activity {
 	private void handleDecks(JSONArray deckArray)
 	{
 		
-		/*
-		 * Get the size and then do a modified for loop
-		 * doing as many full loops as possible, then doing a modified remainder loop
-		 * 
-		 * 
-		 * 
-		 * 
-		 */
+		
 		ArrayList<String> deckIds=new ArrayList<String>();
 		ArrayList<String> deckNames=new ArrayList<String>();
 		
-		LinearLayout layout=(LinearLayout)findViewById(R.id.DeckList_layout_bottom);
 		
-		layout.setBackgroundColor(Color.rgb(192, 192, 192));
-		//layout.setBackgroundColor(Color.BLACK);
-		//layout.setBackgroundResource(R.drawable.blue_background);
 		ScrollView scroll=new ScrollView(this);
 		
 		LinearLayout layoutOfLayouts=new LinearLayout(this);
 		layoutOfLayouts.setOrientation(LinearLayout.VERTICAL);
 		
-		//innerLayout.setHorizontalGravity(Gravity.CENTER_HORIZONTAL);
 		int index=0;
 		Log.d("DEBUG NUMBERS", "ArrayLength: " + deckArray.length() + " 1/3: " + (deckArray.length()/3));
 		for (index=0; index<(deckArray.length()/3); index++)
 		{
-			/*int index0=0;
-			int index1=1;
-			int index2=2;*/
 			int indexBase=3*index;
 			
 			LinearLayout innerLayout=new LinearLayout(this);
@@ -259,6 +240,8 @@ public class DeckListMaker extends Activity {
 		
 		
 		scroll.addView(layoutOfLayouts);
+		
+		LinearLayout layout=(LinearLayout)findViewById(R.id.DeckList_layout);
 		layout.addView(scroll);
 		layout.invalidate();
 	}
@@ -292,34 +275,14 @@ public class DeckListMaker extends Activity {
 			Log.d("DEBUG name",name);
 			Log.d("DEBUG id",deckid);
 			
-		
-			/*Button b=new Button(this);
-			//b.setBackgroundResource(R.drawable.gray_button_back);
-			b.setText(name);
-			b.setTag(deckid);
-			b.setWidth(100);
-			b.setHeight(50);
-			b.setOnClickListener(new View.OnClickListener() {
-	             public void onClick(View view) {
-	                 // Perform action on click
-	            	 Log.d("DEBUG clicked and got tag:", view.getTag().toString());
-	            	 Intent intent =new Intent(view.getContext() , ViewDeck.class);
-	            	 intent.putExtra(MainActivity_LogIn.INTENT_EXTRA_DATA_DECKID,view.getTag().toString());
-	            	 intent.putExtra(MainActivity_LogIn.INTENT_EXTRA_DATA_SESSION, sessionId);
-	         	    intent.putExtra(MainActivity_LogIn.INTENT_EXTRA_DATA_USER,username);
-	         		startActivity(intent);
-	             }
-	         });
-			Log.d("DEBUG", "Before adding button to scrollview");*/
-			
 			TextView tv=new TextView(this);
 			tv.setText(name);
 			tv.setTag(deckid);
 			tv.setTextColor(Color.WHITE);
 			tv.setTextSize(15);
-			tv.setCompoundDrawablesWithIntrinsicBounds(0, R.drawable.deck_logo, 0, 0);
+			tv.setCompoundDrawablesWithIntrinsicBounds(0, R.drawable.deck_logo_new, 0, 0);
 			tv.setWidth(100);
-			tv.setHeight(50);
+			tv.setHeight(70);
 			tv.setGravity(Gravity.CENTER_HORIZONTAL);
 			tv.setOnClickListener(new View.OnClickListener() {
 	             public void onClick(View view) {
@@ -335,11 +298,7 @@ public class DeckListMaker extends Activity {
 			Log.d("DEBUG", "Before adding textview to scrollview");
 			
 			return tv;
-
 			}
-		
-			
-		
 		catch(Exception e) {
 			 Log.d("Error", "Cannot turn parse JSONArray of decks_list in deckListButtonHelper maker");
 			e.printStackTrace();
@@ -355,68 +314,42 @@ public class DeckListMaker extends Activity {
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent intent) {
 		super.onActivityResult(requestCode, resultCode, intent);
-		
-		/*if (requestCode == 0) // the pictureIntent returned it
-		{*/
 			cameraHelper(intent);
-	
-		/*}*/
 	}
 
 	
 	private void cameraHelper(Intent intent)
 	{
 		Bundle extras = intent.getExtras();
-	    Bitmap bm = (Bitmap) extras.get("data");
-	    LinearLayout ll=(LinearLayout)findViewById(R.id.DeckList_layout_bottom);
-		//ImageView im = new ImageView(this);
-		//im.setImageBitmap(bm);
-		//ll.addView(im);
-		//ll.invalidate();
-	    
+	    if (extras == null){
+	    	Log.d("PhotoIntent", "Photo was cancelled");
+	    	return;
+	    }
+		Bitmap bm = (Bitmap) extras.get("data");
+	   
 	    File path = Environment.getExternalStorageDirectory();
-	    //String StrPath=path.getPath();
 	    String fileName="cameraFile.jpg";
 	    File f = new File(path,fileName);
-	    //was takePictureIntent
 	    mCurrentPhotoPath = f.getAbsolutePath();
-	    //takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(f));
+	   
 	    try {
-	    	Log.d("WRITING","GOT INTO THE TRY STATEMENT");
+	    	Log.d("WRITING","Saving PhotoIntent photo");
 	    	FileOutputStream out = new FileOutputStream(f);
 	         bm.compress(Bitmap.CompressFormat.JPEG, 90, out);
         } catch (Exception e) {
-        	Log.d("WRITING","FAILED WRITING");
+        	Log.d("WRITING","FAILED saving PhotoIntent photo");
             e.printStackTrace();
         }
         
+	   // galleryAddPic();
 	    
-	    //File f2=new File(mCurrentPhotoPath);
-	   /* Bitmap bm2 = BitmapFactory.decodeFile(mCurrentPhotoPath);
-	    ImageView im2 = new ImageView(this);
-		im2.setImageBitmap(bm);
-		ll.addView(im2);
-        ll.invalidate();*/
-        
-	    galleryAddPic();
-	    
-	    Log.d("BEFORE POST", "RIGHT BEFORE HTTPPOST");
-	    
-	    String postUrl="http://www.flashyapp.com/api/add_image";
-	    
-		//HttpPost(postUrl,bm);
-		
-		//handleSmallCameraPhoto(bm);
-		//handleSmallPhoto();
-		
+	    Log.d("BEFORE POST", "RIGHT BEFORE MIMEPOST");
 	    MIMEThread thread=new MIMEThread((Context)this, onResponseMIMEListener);
 		thread.BeforeMakePic(username,sessionId, mCurrentPhotoPath);
 		thread.execute(new String[]{null});
-	    
-	    Log.d("AFTER GALLERY CALL", "FINISHED GALLERY CALL");
 	}
 	
-	
+
 	private void galleryAddPic() {
         Intent mediaScanIntent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
         File f = new File(mCurrentPhotoPath);

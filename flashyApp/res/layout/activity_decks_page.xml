@@ -4,35 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
+    android:background="@drawable/flashy_background_two"
     android:orientation="vertical" >
 
-    <TextView
-        android:id="@+id/login_text"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/deckpage" />
-
-    
-     <Button
-         android:id="@+id/new_deck_button"
-         android:layout_width="wrap_content"
-         android:layout_height="wrap_content"
-         android:text="@string/button_new_deck"
-         android:onClick="newDeck" />
-     
-     
-      <Button
-         android:id="@+id/makePic_button"
-         android:layout_width="wrap_content"
-         android:layout_height="wrap_content"
-         android:text="@string/makePic_string"
-         android:onClick="makePicture" />
-    
-     
-     <Button
-         
-         android:layout_width="wrap_content"
-         android:layout_height="wrap_content"
-         android:text="@string/button_logout"
-         android:onClick="LogoutFunc" />
+  
 </LinearLayout>

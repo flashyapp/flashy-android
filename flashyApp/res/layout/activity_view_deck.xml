@@ -16,7 +16,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:onClick="prevCard"
-            android:src="@drawable/redx"
+            android:src="@drawable/left_arrow"
             android:layout_alignParentLeft="true"
             />
         <Button
@@ -34,7 +34,7 @@
             android:layout_height="wrap_content"
             android:layout_alignParentRight="true"
             android:onClick="nextCard"
-            android:src="@drawable/checkmark" />
+            android:src="@drawable/right_arrow" />
         
         
     </RelativeLayout>
@@ -43,13 +43,13 @@
         android:id="@+id/outerWebLayout"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
+        
         >
          <WebView
                 android:id="@+id/cardViewer"
-                android:layout_width="wrap_content"
+                android:layout_width="265dp"
                 android:layout_height="wrap_content"
                 android:layout_centerInParent="true"
-                android:height="250dp"
-                android:width="250dp" />
+                />
       </RelativeLayout>
 </LinearLayout>

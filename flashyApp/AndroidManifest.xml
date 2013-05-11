@@ -75,9 +75,7 @@
             android:name="flashyapp.com.DeckListMaker"
             android:label="@string/FlashyWord"
             android:parentActivityName="flashyapp.com.DecksPage" >
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value="flashyapp.com.DecksPage" />
+            
         </activity>
         <activity
             android:name="flashyapp.com.DrawLines"

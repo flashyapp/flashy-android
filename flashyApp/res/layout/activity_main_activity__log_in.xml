@@ -4,7 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
-    android:orientation="vertical" >
+    android:orientation="vertical"
+    android:background="@drawable/flashy_background_two" >
 
     <TextView
         android:id="@+id/login_text"
@@ -44,13 +45,6 @@
          android:layout_height="wrap_content"
          android:text="@string/button_login" />
      </LinearLayout>
-
-     
-     <Button
-         android:id="@+id/draw_button"
-         android:layout_width="wrap_content"
-         android:layout_height="wrap_content"
-         android:text="@string/button_draw" />
 
      
      

@@ -11,6 +11,7 @@ import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
+import org.apache.http.conn.HttpHostConnectException;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.entity.mime.HttpMultipartMode;
 import org.apache.http.entity.mime.MultipartEntity;
@@ -25,6 +26,7 @@ import org.json.JSONObject;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.net.wifi.WifiManager;
 import android.util.Log;
 
 public class MyJSON {
@@ -172,10 +174,17 @@ public class MyJSON {
 	         Log.d("Debug","Before executing post");
 	         httpResponse = httpClient.execute(httpPost);
 	         return httpResponse;
-	         
-		} catch(Exception e) {
+	    
+		}catch (HttpHostConnectException e2)
+		{
+			 Log.e("Error", "Cannot Estabilish Connection");
+			 e2.printStackTrace();
+			 return null;
+		}
+		catch(Exception e) {
+	       
+	        Log.e("Error", "Other http error");
 	        e.printStackTrace();
-	        Log.e("Error", "Cannot Estabilish Connection");
 	        return null;
 	    }
 		
@@ -282,7 +291,33 @@ public class MyJSON {
 	}
 	
 	
+	public static void WifiAlert(Context context)
+	{
+		try{
+		Log.d("Wifi debugging","Got into No Wifi part");
+		AlertDialog.Builder ald=new AlertDialog.Builder(context);
+		String title="WIFI";
+		String string="Turn on the Wifi";
+		ald.setTitle(title);
+		ald.setMessage(string);
+		ald.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+			@Override
+			public void onClick(DialogInterface dialog, int which) {
+				Log.d("Debug", "Alert Got Clicked");
+			}
+		});
+		
+		
 	
+		AlertDialog other=ald.create();
+		other.show();
+		}
+		catch (Exception e)
+		{
+			Log.d("WIFI ISSUE", "What is going on?");
+			e.printStackTrace();
+		}
+	}
 	
 	
 }

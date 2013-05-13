@@ -13,7 +13,7 @@ import android.widget.EditText;
 import android.widget.PopupWindow;
 import android.widget.TextView;
 
-public class NewDeck extends Activity {
+public class NewTextDeck extends Activity {
 
 	private String sessionId;
 	private String username;

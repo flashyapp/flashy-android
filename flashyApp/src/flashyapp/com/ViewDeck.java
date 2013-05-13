@@ -11,18 +11,23 @@ import org.json.JSONObject;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.graphics.Color;
+import android.net.wifi.WifiManager;
 import android.os.Bundle;
 import android.os.Environment;
+import android.support.v4.app.NavUtils;
 import android.util.Log;
-import android.view.GestureDetector;
+import android.view.Display;
 import android.view.Menu;
-import android.view.MotionEvent;
+import android.view.MenuItem;
 import android.view.View;
+import android.view.WindowManager;
 import android.webkit.WebView;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.LinearLayout;
-import android.widget.Toast;
+import android.widget.RelativeLayout;
 
 public class ViewDeck extends Activity {
 
@@ -41,6 +46,51 @@ public class ViewDeck extends Activity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_view_deck);
 		// Show the Up button in the action bar.
+		
+		
+		RelativeLayout rloutter=(RelativeLayout)findViewById(R.id.outerWebLayout);
+		
+		RelativeLayout rl=new RelativeLayout(this);
+		MyWebView myweb=new MyWebView(this);
+		
+		
+		
+		
+		rl.addView(myweb);
+		
+		rloutter.addView(rl);
+		
+		rl.getLayoutParams().height=265;
+		rl.getLayoutParams().width=265;
+		
+		
+		
+		
+		
+		Log.d("DEBUG", "right before layoutparams");
+		
+		
+		 /*<WebView
+         android:id="@+id/cardViewer"
+         android:layout_width="265dp"
+         android:visibility="gone"
+         android:layout_height="wrap_content"
+         android:layout_centerInParent="true"
+         />*/
+	
+		
+		
+		RelativeLayout.LayoutParams layoutParams = 
+			    (RelativeLayout.LayoutParams)rl.getLayoutParams();
+		layoutParams.addRule(RelativeLayout.CENTER_IN_PARENT);
+		rl.setLayoutParams(layoutParams);
+		
+		
+		
+		Log.d("DEBUG", "right after layoutparams before invalidate");
+		myweb.loadDataWithBaseURL("fake", "HIIIII", "text/html", "utf-8", null);
+		myweb.invalidate();
+		
 		Intent intent =getIntent();
 		deckId = intent.getStringExtra(MainActivity_LogIn.INTENT_EXTRA_DATA_DECKID);
 		sessionId = intent.getStringExtra(MainActivity_LogIn.INTENT_EXTRA_DATA_SESSION);
@@ -56,20 +106,55 @@ public class ViewDeck extends Activity {
 		ll.setBackgroundColor(Color.BLACK);
 		//RelativeLayout rl=(RelativeLayout)findViewById(R.id.)
 		
-		WebView webview=(WebView)findViewById(R.id.cardViewer);
-		webview.setPadding(0, 0, 0, 0);
+		/*WebView webview=new WebView(this);//(WebView)findViewById(R.id.cardViewer);
+		webview.setPadding(0, 0, 0, 0);*/
 		
 		//webview.getSettings().setUseWideViewPort(true);
-		/*RelativeLayout.LayoutParams layoutParams = 
-		    (RelativeLayout.LayoutParams)webview.getLayoutParams();
-		layoutParams.addRule(RelativeLayout.CENTER_IN_PARENT, 0);
-		webview.setLayoutParams(layoutParams);*/
+		/**/
 		
 		
 		
-		webView=webview;
+		webView=myweb;
 		webView.setTag("A");
 		//ll.addView(webview);
+		
+		RelativeLayout rltop=(RelativeLayout)findViewById(R.id.ViewDeck_top_buttons);
+        ImageButton ib1=(ImageButton)findViewById(R.id.flip_next_button_landscape);
+        ImageButton ib2=(ImageButton)findViewById(R.id.flip_previous_button_landscape);
+        
+		
+		Display display = ((WindowManager) getSystemService(WINDOW_SERVICE)).getDefaultDisplay();
+        @SuppressWarnings("deprecation")
+		int orientation = display.getOrientation();
+         switch(orientation) {
+         
+         	//displays this on landscape!! (sideways)
+            case Configuration.ORIENTATION_PORTRAIT:
+                
+            	Log.d("ORIENTATION:", " Screen is portrait!");
+               
+                rltop.setVisibility(View.GONE);
+                ib1.setVisibility(View.VISIBLE);
+                ib2.setVisibility(View.VISIBLE);
+                
+                
+                break;
+            //never has displayed this yet
+            case Configuration.ORIENTATION_LANDSCAPE:
+            	Log.d("ORIENTATION:", " Screen is landscape!");
+            	break;
+            //displays this on PORTRAIT
+            case Configuration.ORIENTATION_UNDEFINED:
+            	Log.d("ORIENTATION:", " Screen is undefined!");
+            	rltop.setVisibility(View.VISIBLE);
+                ib1.setVisibility(View.GONE);
+                ib2.setVisibility(View.GONE);
+        		break;
+        }
+		
+		
+		
+		
 		
 		
 		
@@ -82,56 +167,19 @@ public class ViewDeck extends Activity {
 	
 	private void loadDeck(){
 		
-		/*JSONObject deckJSON=new JSONObject();
-		deckJSON=MyJSON.addString(deckJSON,"username",username);
-		if (deckJSON==null){
-			//do what?
-		}
-	
-		deckJSON=MyJSON.addString(deckJSON,"session_id",sessionId);
-		if (deckJSON==null){
-			//do what?
-		}
 		
-		
-		
-		
-	 
-		String url="http://www.flashyapp.com/api/deck/"+deckId+"/get";
-		HttpResponse httpResponse=MyJSON.sendJSONObject(deckJSON,url);
-		String response=MyJSON.responseChecker(httpResponse);
-		Log.d("GET_DECKHttpResponse",response); 
-		*/
 		
 		String deckString=null;
 		try{
-			
-			/*JSONObject jresponse=new JSONObject(response);
-			deckArray=jresponse.getJSONArray("cards");*/
-			
-			
-			
-		        //reading SessionId
-		       
-		    
-		    	DataInputStream in = new DataInputStream(openFileInput(deckId+".txt"));
-		       //InputStream is=new InputStream(openFileInput(SESSION_FILE));
-		        
-		    	try {
-		    //		username=in.readUTF();
-		    		
-		    		
-		    			String commonName=in.readUTF();
-		    			String descrip=in.readUTF();
-		    			String deckArrayString=in.readUTF();
-		    			//username=in.readUTF();
-		    		
-		            	Log.i("Deck info!", "name: "+commonName + " \ndescrip: "+ descrip + " \n "+ deckArray);
+			DataInputStream in = new DataInputStream(openFileInput(deckId+".txt"));
+		    try {
+		    		String commonName=in.readUTF();
+		    		String descrip=in.readUTF();
+		    		String deckArrayString=in.readUTF();
+		    		Log.i("Deck info!", "name: "+commonName + " \ndescrip: "+ descrip + " \n "+ deckArray);
 		              	
-		    			deckArray=new JSONArray(deckArrayString);
-		            	
-		          
-		        } catch (EOFException e) {
+		    		deckArray=new JSONArray(deckArrayString);
+		         } catch (EOFException e) {
 		            Log.i("Data Input Sample from MAIN", "End of file reached");
 		        }
 		        in.close();
@@ -140,7 +188,7 @@ public class ViewDeck extends Activity {
 		        return;
 		    }
 		    */
-		
+	
 		}
 		catch(Exception e) {
 			 Log.d("Error", "Cannot read in deck data");
@@ -149,16 +197,8 @@ public class ViewDeck extends Activity {
 	    }
 		
 		makeIndividualCards();
-		/*cardView.setWidth(200);
-		cardView.setHeight(100);
-		cardView.setTextColor(Color.RED);
-		cardView.setTextSize(50);
 		
-		*/
 		presentCardAction();
-		
-		
-		
 	}
 	
 	
@@ -175,60 +215,24 @@ public class ViewDeck extends Activity {
 				String Aside=tempDeck.getString("sideA");
 				
 				String regex="(<img src=\")(\\[FLASHYRESOURCE:)(\\w{8,})(\\])(\" />)";
-				
-				//file:///sdcard/"+resource+".jpg\" alt=\"Pic\" HEIGHT=\"250\" WIDTH=\"250\" BORDER=\"0\" >";
-				
-				
-				
-		    	//String regex2="\\[\\]";
-		    	String resourceA=Aside.replaceAll(regex, "$1file:///sdcard/$3.jpg\" alt=\"Pic\" HEIGHT=\"250\" WIDTH=\"250\" BORDER=\"0\" >");
-		    	
-				
+				String regex2="\\[FLASHYRESOURCE:0{8}\\]";
+				String replacement="$1file:///sdcard/$3.jpg\" alt=\"Pic\" HEIGHT=\"250\" WIDTH=\"250\" BORDER=\"0\" >";
+		    	String resourceA=Aside.replaceAll(regex, replacement );
+		    	String resource2A=resourceA.replaceAll(regex2, "No Back to this card");
 				String Bside=tempDeck.getString("sideB");
-		    	String resourceB=Bside.replaceAll(regex, "$1file:///sdcard/$3.jpg\" alt=\"Pic\" HEIGHT=\"250\" WIDTH=\"250\" BORDER=\"0\" >");
+				
+		    	String resourceB=Bside.replaceAll(regex, replacement);
+		    	String resource2B=resourceB.replaceAll(regex2, "No Back to this card");
 
-				
+			
 				String cardIndex=tempDeck.getString("index");
-				//int pos=Integer.parseInt(cardIndex);
 				
+				Log.d("DEBUG resource2A",resource2A);
+				Log.d("DEBUG resource2B",resource2B);
 				
-				//sideA.add(i, Aside);
-				//sideB.add(i,Bside);
-				Log.d("DEBUG resourceA",resourceA);
-				Log.d("DEBUG resourceB",resourceB);
+				sideA.add(i,resource2A);
+				sideB.add(i,resource2B);
 				
-				sideA.add(i,resourceA);
-				sideB.add(i,resourceB);
-				
-				
-				/*String fileNameA=deckId+i+"A"+".html";
-				String fileNameB=deckId+i+"B"+".html";
-				
-				
-				String external=Environment.getExternalStorageDirectory().getAbsolutePath(); 
-				File A=new File(external,fileNameA);
-				File B=new File(external,fileNameB);
-				
-				
-				String html="<html><head></head><body><i>AUGHHH</i></body></html>";
-				
-				
-				Log.d("DEBUG fileA",A.getAbsolutePath());
-				Log.d("DEBUG fileB",B.getAbsolutePath());
-				
-				DataOutputStream outA = new DataOutputStream(new FileOutputStream(A));
-		               // new DataOutputStream(openFileOutput(A, Context.MODE_PRIVATE));
-		        outA.writeChars(html);
-		        outA.flush();
-		        DataOutputStream outB = new DataOutputStream(new FileOutputStream(B));
-		                //new DataOutputStream(openFileOutput(B, Context.MODE_PRIVATE));
-		        outB.writeChars(html);
-		        Log.d("DEBUG", "done writing html mini files");
-		        
-		        outB.flush();
-		        
-		        outA.close();
-		        outB.close();*/
 			}
 			catch(Exception e) {
 				 Log.d("Error", "Cannot turn parse JSONArray of decks_list");
@@ -319,45 +323,46 @@ public class ViewDeck extends Activity {
 		getMenuInflater().inflate(R.menu.view_deck, menu);
 		return true;
 	}
-
 	
-	class MyWebView extends WebView {
-	    Context context;
-	    GestureDetector gd;
-	    ViewDeck activ;
-	    Button b;
-	    
-	    public MyWebView(Context context) {
-	        super(context);
-
-	        this.context = context;
-	        activ=(ViewDeck)context;
-	        gd = new GestureDetector(context, sogl);
-	        b=new Button(context);
-	    }
-
-	    @Override
-	    public boolean onTouchEvent(MotionEvent event) {
-	        return gd.onTouchEvent(event);
-	    }
-
-	    GestureDetector.SimpleOnGestureListener sogl = new GestureDetector.SimpleOnGestureListener() {
-	        public boolean onSingleTapUp(MotionEvent event) {
-	        	activ.flipOver(b);
-	            return true;
-	        }
-
-	        public boolean onFling(MotionEvent event1, MotionEvent event2, float velocityX, float velocityY) {
-	            if (event1.getRawX() > event2.getRawX()) {
-	                activ.prevCard(b);
-	            } else {
-	                activ.prevCard(b);
-	            }
-	            return true;
-	        }
-	    };
-
+	
+	
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		switch (item.getItemId()) {
+		case android.R.id.home:
+			// This ID represents the Home or Up button. In the case of this
+			// activity, the Up button is shown. Use NavUtils to allow users
+			// to navigate up one level in the application structure. For
+			// more details, see the Navigation pattern on Android Design:
+			//
+			// http://developer.android.com/design/patterns/navigation.html#up-vs-back
+			//
+			NavUtils.navigateUpFromSameTask(this);
+			return true;
+		
+		case R.id.ViewDeckLogout:
+			WifiManager wifi = (WifiManager)getSystemService(Context.WIFI_SERVICE);
+	    	
+			if (wifi.isWifiEnabled()){
+				Intent intent =new Intent(this,MyLogout.class);
+				intent.putExtra(MainActivity_LogIn.INTENT_EXTRA_DATA_SESSION, sessionId);
+				intent.putExtra(MainActivity_LogIn.INTENT_EXTRA_DATA_USER, username);
+				startActivity(intent);
+				return true;
+			}
+			else
+				callWifiAlert();
+			
+			return true;
+		
+		}
+		return super.onOptionsItemSelected(item);
+	
 	}
-	
+
+	public void callWifiAlert()
+	{
+		MyJSON.WifiAlert(this);
+	}
 
 }

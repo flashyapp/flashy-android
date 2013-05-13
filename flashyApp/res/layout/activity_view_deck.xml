@@ -7,12 +7,13 @@
     android:orientation="vertical" >
 
     <RelativeLayout
+        android:id="@+id/ViewDeck_top_buttons"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        
+    
         >
 	<ImageButton
-            android:id="@+id/flip_previous_button"
+            android:id="@+id/flip_previous_button_portrait"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:onClick="prevCard"
@@ -23,13 +24,13 @@
             android:id="@+id/flip_over_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignParentTop="true"
+            android:layout_centerVertical="true"
             android:layout_centerHorizontal="true"
             android:onClick="flipOver"
             android:text="@string/flip_over_card" />
         
         <ImageButton
-            android:id="@+id/flip_next_button"
+            android:id="@+id/flip_next_button_portrait"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentRight="true"
@@ -43,13 +44,28 @@
         android:id="@+id/outerWebLayout"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
-        
+   		
         >
-         <WebView
-                android:id="@+id/cardViewer"
-                android:layout_width="265dp"
-                android:layout_height="wrap_content"
-                android:layout_centerInParent="true"
-                />
+        
+        <ImageButton
+            android:id="@+id/flip_previous_button_landscape"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:onClick="prevCard"
+            android:layout_centerVertical="true"
+            android:src="@drawable/left_arrow"
+            android:layout_alignParentLeft="true"
+            />
+        
+        <ImageButton
+            android:id="@+id/flip_next_button_landscape"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:onClick="nextCard"
+            android:src="@drawable/right_arrow" />
+        
+         
       </RelativeLayout>
 </LinearLayout>

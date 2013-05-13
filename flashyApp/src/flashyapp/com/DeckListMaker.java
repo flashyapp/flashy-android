@@ -1,6 +1,7 @@
 package flashyapp.com;
 
 import java.io.DataInputStream;
+import java.io.DataOutputStream;
 import java.io.EOFException;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -13,22 +14,30 @@ import org.json.JSONObject;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.ActivityInfo;
+import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.Color;
-import android.net.Uri;
+import android.net.wifi.WifiManager;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.v4.app.NavUtils;
 import android.util.Log;
+import android.view.ContextMenu;
+import android.view.ContextMenu.ContextMenuInfo;
+import android.view.Display;
 import android.view.Gravity;
+import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
+import flashyapp.com.JSONThread.OnResponseListener;
 import flashyapp.com.MIMEThread.OnResponseMIMEListener;
 
 public class DeckListMaker extends Activity {
@@ -37,8 +46,142 @@ public class DeckListMaker extends Activity {
 	private JSONArray jarray;
 	private String mCurrentPhotoPath;
 	
-
+	public static boolean DeckLongClickOn;
 	
+	
+	
+	
+	
+	
+	protected OnResponseListener onResponseListener = new OnResponseListener() {
+		 public void onReturnRegister(String error, JSONObject jresponse){}
+		 public void onReturnLogout(String error){}
+		 public void onReturnDeleteDeck(String error, Context context){
+			 Log.d("RETURNED", "From Delete Operation");
+			 
+			 JSONThread thread=new JSONThread(context, onResponseListener, JSONThread.GETDECKLIST);
+			 if (thread.wifiOn()){
+				 thread.BeforeDecksPage(username,sessionId);
+				 thread.execute(new String[]{null});
+			 }
+			 else
+				 MyJSON.WifiAlert(context);
+		 }
+		 public void onReturnDeckFromImage(Context context, String mError, JSONObject jresponse)
+		 {
+			 /*DrawLines dl=(DrawLines)context;
+			 
+			 Log.d("Debug", "In reponse");
+			 if (mError==null){
+				 Log.d("Debug", "In null error");
+				 try {
+					 
+					 Log.d("DEBUG", "Before writing deck info file");
+					 	JSONObject jdeck=jresponse.getJSONObject("deck");
+					 	 JSONArray cards=jdeck.getJSONArray("cards");
+					        mCards=cards;
+					       
+					 	String deckName=jdeck.getString("deck_id");
+					 	String commonName=jdeck.getString("name");
+					 	String deckDescrip=jdeck.getString("description");
+					 	
+					 	//Build deck info card
+					 	DataOutputStream out = 
+				                new DataOutputStream(openFileOutput(deckName+".txt", Context.MODE_PRIVATE));
+				        out.writeUTF(commonName);
+				        out.writeUTF(deckDescrip);
+				        out.writeUTF(mCards.toString());
+				        out.close();
+					 	
+				        Log.d("DEBUG", "After writing deck info file");
+					 	dl.getResourceLooper(0, "sideA");
+				     
+					 //	DataOutputStream out = 
+				     //           new DataOutputStream(openFileOutput(MainActivity_LogIn.GETDECKS_FILE, Context.MODE_PRIVATE));
+				     //   out.writeUTF(deckArray.toString());
+				      //   out.close();
+				       
+				    	
+				    }catch (IOException e) {
+				        Log.i("Data Input Sample", "I/O Error");
+				    }catch (Exception e){
+				    	 Log.d("Error", "Cannot take resources from return json object");
+			 				e.printStackTrace();
+				    }
+				
+				 
+				 
+				 
+				 Log.d("THREAD Response", "Need to correct later but finished json submission");
+				 
+				//dl.updateDeckList();
+				
+				 */
+			 }
+	
+		 public void onReturnDecksPage(String error, JSONObject jresponse, Context context){
+			 JSONArray deckArray=null;
+				try{
+					
+					if (error==null)
+						deckArray=jresponse.getJSONArray("decks");
+					
+				
+				
+				}
+				catch(Exception e) {
+					 Log.d("Error", "Cannot turn response to JSON");
+					e.printStackTrace();
+			       
+			    }
+				
+				//Log.d("DEBUG DeckList", "Before if statement");
+				if (deckArray != null)
+				{
+			
+					
+					
+					
+					try {
+				        //writing list of decks 
+						Log.d("Trying to write list of decks", "Should work?");
+				        DataOutputStream out = 
+				                new DataOutputStream(openFileOutput(MainActivity_LogIn.GETDECKS_FILE, Context.MODE_PRIVATE));
+				        out.writeUTF(deckArray.toString());
+				        
+				      
+				   
+				        out.close();
+				        
+				    	
+				    }catch (IOException e) {
+				        Log.i("Data Input Sample", "I/O Error");
+				    }catch (Exception e)
+				    {
+				    	Log.d("FAILING WRITING DECK LIST!!", "failed to write to the list of decks");
+				    	e.printStackTrace();
+				    }
+					
+					Intent intent =new Intent(context,DeckListMaker.class);
+					intent.putExtra(MainActivity_LogIn.INTENT_EXTRA_DATA_SESSION, sessionId);
+					intent.putExtra(MainActivity_LogIn.INTENT_EXTRA_DATA_USER, username);
+					//intent.putExtra(MainActivity_LogIn.INTENT_EXTRA_DATA_DECKLIST, deckArray.toString());
+					startActivity(intent);
+				}
+			 
+		 }
+		 public void onReturnLogin(String error, JSONObject jresponse,String name) {}
+	};
+	
+	@Override
+	//prevents the up/back key from working
+	public boolean onKeyDown(int keyCode, KeyEvent event) {
+	     if (keyCode == KeyEvent.KEYCODE_BACK) {
+	     //preventing default implementation previous to android.os.Build.VERSION_CODES.ECLAIR
+	     return true;
+	     }
+	     return super.onKeyDown(keyCode, event);    
+	}
 	
 	protected OnResponseMIMEListener onResponseMIMEListener = new OnResponseMIMEListener() {
 		public void onReturnMIMEIn(String error, JSONObject jresponse, String name, Context context)
@@ -66,26 +209,6 @@ public class DeckListMaker extends Activity {
 				intent.putExtra(MainActivity_LogIn.INTENT_EXTRA_DATA_USER, username);
 				startActivity(intent);
 				
-				/*for (int index =0; index < divArray.length(); index++  )
-				{
-					try{
-						JSONArray rowArray=divArray.getJSONArray(index);
-						JSONArray colNums=rowArray.getJSONArray(1);
-						int rownum=rowArray.getInt(0);
-						Log.d("DEBUG Lines", "Has a row at height: "+rownum);
-						for (int j=0; j<colNums.length(); j++)
-							Log.d("DEBUG Lines", "Row " + rownum+ " Has a col at : "+colNums.getInt(j));
-						
-					}
-					catch(Exception e) {
-						 Log.d("Error", "Cannot make the mini arrays");
-						e.printStackTrace();
-				       
-				    }
-				}
-				*/
-				
-				
 				
 			}
 			
@@ -93,18 +216,6 @@ public class DeckListMaker extends Activity {
 					
 		}
 	};
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
 	
 	
 	
@@ -183,9 +294,11 @@ public class DeckListMaker extends Activity {
 	{
 		
 		
+		
+		
 		ArrayList<String> deckIds=new ArrayList<String>();
 		ArrayList<String> deckNames=new ArrayList<String>();
-		
+		DeckLongClickOn=false;
 		
 		ScrollView scroll=new ScrollView(this);
 		
@@ -238,14 +351,35 @@ public class DeckListMaker extends Activity {
 		}
 		
 		
-		
+	
 		scroll.addView(layoutOfLayouts);
 		
 		LinearLayout layout=(LinearLayout)findViewById(R.id.DeckList_layout);
 		layout.addView(scroll);
 		layout.invalidate();
-	}
+		
+		Display display = ((WindowManager) getSystemService(WINDOW_SERVICE)).getDefaultDisplay();
+        @SuppressWarnings("deprecation")
+		int orientation = display.getOrientation();
+         switch(orientation) {
+         
+         	//displays this on landscape!! (sideways)
+            case Configuration.ORIENTATION_PORTRAIT:
+                Log.d("ORIENTATION:", " Screen is portrait!");
+                break;
+            //never has displayed this yet
+            case Configuration.ORIENTATION_LANDSCAPE:
+            	Log.d("ORIENTATION:", " Screen is landscape!");
+            	break;
+            //displays this on PORTRAIT
+            case Configuration.ORIENTATION_UNDEFINED:
+            	Log.d("ORIENTATION:", " Screen is undefined!");
+        		break;
+        }
+		
 	
+	}
+
 	
 	
 	
@@ -278,24 +412,47 @@ public class DeckListMaker extends Activity {
 			TextView tv=new TextView(this);
 			tv.setText(name);
 			tv.setTag(deckid);
+			tv.setId(index);
 			tv.setTextColor(Color.WHITE);
 			tv.setTextSize(15);
 			tv.setCompoundDrawablesWithIntrinsicBounds(0, R.drawable.deck_logo_new, 0, 0);
 			tv.setWidth(100);
 			tv.setHeight(70);
+			
 			tv.setGravity(Gravity.CENTER_HORIZONTAL);
+			
+			
+			/*tv.setOnLongClickListener(new View.OnLongClickListener() {
+				
+				@Override
+				public boolean onLongClick(View v) {
+					Log.d("LONG CLICK", "Should pop up menu!");
+					DeckListMaker.DeckLongClickOn=true;
+					
+					
+					
+					
+					return false;
+				}
+			});*/
+			
 			tv.setOnClickListener(new View.OnClickListener() {
 	             public void onClick(View view) {
 	                 // Perform action on click
-	            	 Log.d("DEBUG clicked and got tag:", view.getTag().toString());
-	            	 Intent intent =new Intent(view.getContext() , ViewDeck.class);
-	            	 intent.putExtra(MainActivity_LogIn.INTENT_EXTRA_DATA_DECKID,view.getTag().toString());
-	            	 intent.putExtra(MainActivity_LogIn.INTENT_EXTRA_DATA_SESSION, sessionId);
-	         	    intent.putExtra(MainActivity_LogIn.INTENT_EXTRA_DATA_USER,username);
-	         		startActivity(intent);
+	            	 
+	            	 if (!DeckListMaker.DeckLongClickOn){
+		            	 Log.d("DEBUG clicked and got tag:", view.getTag().toString());
+		            	 Intent intent =new Intent(view.getContext() , ViewDeck.class);
+		            	 intent.putExtra(MainActivity_LogIn.INTENT_EXTRA_DATA_DECKID,view.getTag().toString());
+		            	 intent.putExtra(MainActivity_LogIn.INTENT_EXTRA_DATA_SESSION, sessionId);
+		         	    intent.putExtra(MainActivity_LogIn.INTENT_EXTRA_DATA_USER,username);
+		         		startActivity(intent);
+	            	 }
 	             }
 	         });
 			Log.d("DEBUG", "Before adding textview to scrollview");
+			
+			registerForContextMenu(tv);
 			
 			return tv;
 			}
@@ -328,8 +485,10 @@ public class DeckListMaker extends Activity {
 		Bitmap bm = (Bitmap) extras.get("data");
 	   
 	    File path = Environment.getExternalStorageDirectory();
-	    String fileName="cameraFile.jpg";
-	    File f = new File(path,fileName);
+	    File dir=new File(path,MainActivity_LogIn.FILE_DIR);
+	    dir.mkdir();
+	    
+	    File f = new File(dir,MainActivity_LogIn.CAMERA_FILE);
 	    mCurrentPhotoPath = f.getAbsolutePath();
 	   
 	    try {
@@ -345,19 +504,23 @@ public class DeckListMaker extends Activity {
 	    
 	    Log.d("BEFORE POST", "RIGHT BEFORE MIMEPOST");
 	    MIMEThread thread=new MIMEThread((Context)this, onResponseMIMEListener);
-		thread.BeforeMakePic(username,sessionId, mCurrentPhotoPath);
+		if (thread.wifiOn()){
+	    thread.BeforeMakePic(username,sessionId, mCurrentPhotoPath);
 		thread.execute(new String[]{null});
+		}
+		else
+			MyJSON.WifiAlert(this);
 	}
 	
 
-	private void galleryAddPic() {
+	/*private void galleryAddPic() {
         Intent mediaScanIntent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
         File f = new File(mCurrentPhotoPath);
         Uri contentUri = Uri.fromFile(f);
         mediaScanIntent.setData(contentUri);
         this.sendBroadcast(mediaScanIntent);
     }
-	
+	*/
 	
 	
 	
@@ -392,19 +555,63 @@ public class DeckListMaker extends Activity {
 			 startActivityForResult(takePictureIntent, 4);
 			return true;
 		case R.id.listMakerLogout:
-			Intent intent =new Intent(this,MyLogout.class);
-			intent.putExtra(MainActivity_LogIn.INTENT_EXTRA_DATA_SESSION, sessionId);
-			intent.putExtra(MainActivity_LogIn.INTENT_EXTRA_DATA_USER, username);
-			startActivity(intent);
-			return true;
-		case R.id.listMakerNewLineDeck:
-			Intent lineintent=new Intent(this,NewDeck.class);
-			lineintent.putExtra(MainActivity_LogIn.INTENT_EXTRA_DATA_SESSION, sessionId);
-		    lineintent.putExtra(MainActivity_LogIn.INTENT_EXTRA_DATA_USER,username);
-			startActivity(lineintent);
-			return true;
+			WifiManager wifi = (WifiManager)getSystemService(Context.WIFI_SERVICE);
+	    	
+			if (wifi.isWifiEnabled()){
+				Intent intent =new Intent(this,MyLogout.class);
+				intent.putExtra(MainActivity_LogIn.INTENT_EXTRA_DATA_SESSION, sessionId);
+				intent.putExtra(MainActivity_LogIn.INTENT_EXTRA_DATA_USER, username);
+				startActivity(intent);
+				return true;
+			}
+			else
+				callWifiAlert();
+			
+		
 		}
 		return super.onOptionsItemSelected(item);
 	}
+	
+	public void callWifiAlert()
+	{
+		MyJSON.WifiAlert(this);
+	}
+	
+	
+	 @Override  
+	   public void onCreateContextMenu(ContextMenu menu, View v,ContextMenuInfo menuInfo) {  
+		 super.onCreateContextMenu(menu, v, menuInfo);  
+		 TextView tv=(TextView)v;
+	    menu.setHeaderTitle(tv.getText());  
+	    menu.add(0,v.getId(), 0, "Delete Deck");  
+	    menu.add(0, v.getId(), 0, "Append to Deck");  
+	}  
+	 
+	 @Override  
+	 public boolean onContextItemSelected(MenuItem item) {  
+	         if(item.getTitle().equals("Delete Deck")){deleteDeck(item.getItemId());}  
+	     else if(item.getTitle().equals("Append to Deck")){appendDeck(item.getItemId());}  
+	     else {return false;}  
+	 return true;  
+	 }  
 
+	 private void deleteDeck(int id)
+	 {
+		TextView tv=(TextView)findViewById(id);
+		Log.d("DELETEDECK", tv.getText()+"  "+id); 
+		JSONThread thread=new JSONThread((Context)this, onResponseListener, JSONThread.DELETEDECK);
+		if (thread.wifiOn()){
+			thread.BeforeDeleteDeck(username,sessionId,(String)tv.getTag());
+			thread.execute(new String[]{null});
+		}
+		else
+			MyJSON.WifiAlert(this);
+		
+	 }
+	 private void appendDeck(int id)
+	 {
+		 TextView tv=(TextView)findViewById(id);
+			Log.d("APPENDDECK", tv.getText()+"  "+id);
+			//makePic(tv)
+	 }
 }

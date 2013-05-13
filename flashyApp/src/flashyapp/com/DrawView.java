@@ -16,14 +16,14 @@ import android.graphics.Rect;
 import android.os.Environment;
 import android.util.Log;
 import android.view.GestureDetector;
-import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
-import android.widget.ToggleButton;
+
 
 public class DrawView extends View /*implements OnLongClickListener*/{
     Paint dotpaint;
     Paint linepaint;
+    Paint whitelinepaint;
     //private Canvas mcanvas;
     private Path linepath;
     private Path dotpath;
@@ -57,12 +57,8 @@ public class DrawView extends View /*implements OnLongClickListener*/{
         
         movVrow=null;
 	       
-		//Log.d("Drawing", "Got into drawing method 2");
-		 
-		//Log.d("Touch Coords:", ""+x+" , "+y);
-		int index;
-		//Log.d("LENGTHS: array, arrayList", arrayy.length+","+rows.size());
 		
+		int index;
 		for (index =1; index < arrayy.size(); index++)
     	{
 			if (y>arrayy.get(index-1) && y<=arrayy.get(index)){
@@ -77,27 +73,11 @@ public class DrawView extends View /*implements OnLongClickListener*/{
 		
    	 	touchedx=x;
    	 	touchedy=y;
-		//Canvas canvas = new Canvas();
-         
-        //onDraw(canvas);
-      
-   	 	/*if (dChecked)
-   	 	{
-   	 	Log.d("BEFORE I DELETE!!", "This is right before the row delete call");
-   	 		movVrow.deleteLine(x);
-   	 		invalidate();
-   	 		return false;
-   	 		
-   	 	}*/
+		
    	 	
    	 	invalidate();
    	 	
    	 	return true;
-   
-   
-       
-        
-    	
     }
 
     
@@ -108,12 +88,6 @@ public class DrawView extends View /*implements OnLongClickListener*/{
         DrawLines dl=(DrawLines)mcontext;
         boolean addRowbool=dl.getMenuAddRow();
         boolean addColbool=dl.getMenuAddCol();
-        
-       /* Boolean dChecked=mdeleteLine.isChecked();
-		//Log.d("Delete Button status", ""+dChecked);
-		Boolean addChecked=maddLine.isChecked();*/
-		
-		
 		
         if(addColbool)
         {
@@ -122,6 +96,7 @@ public class DrawView extends View /*implements OnLongClickListener*/{
         		r.newCol(x);
         	}
         	invalidate();
+        	dl.setMenuAddCol(false);
         }
         else if (addRowbool)
         {
@@ -148,6 +123,8 @@ public class DrawView extends View /*implements OnLongClickListener*/{
         	arrayy.add(movVrowIndex+1, y);
         	//arrayy.add(movVrowIndex+2,oldTop);
         	
+        	dl.setMenuAddRow(false);
+        	
         	invalidate();
         	
         	Log.d("DEBUG", "AFTER ADDED ROW");
@@ -167,13 +144,6 @@ public class DrawView extends View /*implements OnLongClickListener*/{
         
         Log.d("GESTURE DETECTOR: ", "onSingleTap registered");
         Log.d("Coordinates:", "X: "+x+"   Y:"+y);
-        
-        
-        
-       // Boolean menuChecked=findMenuById(R.menu.draw_lines);
-        
-        
-       // Log.d("Global var for options menu: ", ""+addRowbool);
        
     	return true;
     }
@@ -214,11 +184,6 @@ public class DrawView extends View /*implements OnLongClickListener*/{
         boolean deleteRowbool=dl.getMenuDeleteRow();
         boolean deleteColbool=dl.getMenuDeleteCol();
         
-        
-        
-        /*Boolean dChecked=mdeleteLine.isChecked();
-		//Log.d("Delete Button status", ""+dChecked);
-		Boolean addChecked=maddLine.isChecked();*/
 		
 		
 		if (deleteColbool)
@@ -226,7 +191,7 @@ public class DrawView extends View /*implements OnLongClickListener*/{
    	 		Log.d("BEFORE I DELETE!!", "This is right before the row delete call");
    	 		movVrow.deleteLine(x);
    	 		invalidate();
-   	 		
+   	 		dl.setMenuDeleteCol(false);
    	 
    	 	}
    	 	
@@ -247,6 +212,7 @@ public class DrawView extends View /*implements OnLongClickListener*/{
 	      			   bottomRow.setTop(topRow.getTop());
 	      			   rows.remove(index);
 	      			   arrayy.remove(index);
+	      			   dl.setMenuDeleteRow(false);
 	      			   break;
 	      			   
   				}
@@ -287,109 +253,7 @@ public class DrawView extends View /*implements OnLongClickListener*/{
     	 
     	 
     }
-  /*  public boolean onFling (MotionEvent e1, MotionEvent e2, float velocityX, float velocityY)
-    {
-    	int x1 =(int) e1.getX();
-        int y1 = (int)e1.getY();
-       
-        int x2 =(int) e2.getX();
-        int y2 = (int)e2.getY();
-        
-        Log.d("GESTURE DETECTOR: ", "onFling registered");
-        Log.d("Coordinates:", "X1: "+x1+"   Y1:"+y1+"   X2: "+x2+"   Y2:"+y2);
-        
-        
-        int index;
-        for (index =1; index < arrayy.length; index++)
-    	{
-			if (y1>arrayy[index-1] && y1<=arrayy[index]){
-				
-				movVrow=rows.get(index-1);
-				movVrow.print();
-				break;
-			}
-
-    	}
-        
-        int deltax=Math.abs(x1-x2);
- 	   int deltay=Math.abs(y1-y2);
- 			
- 	   Log.d("Diff of Coords", ""+deltax+"   ,   "+deltay );
- 	   
- 	   if (deltax >= deltay){
- 		   Log.d("DRAG Direction","HORIZONTALLLLLL");
- 		   if (x2<192)
- 			   movVrow.moveVerticalLineHorizontally(x1,x2);
- 		   else
- 			   movVrow.moveVerticalLineHorizontally(x1,191);
- 	   }
- 	   else{
- 		   Log.d("DRAG Direction", "VERTICALLLLLLL");
- 		   //need to handle that TWO rows would have a horizontal line coordinate change....
- 	   }
- 	   
- 	 
- 	  
- 	   invalidate();
-        
-        
-        return true;
-    	
-    }
-    
-    public boolean onScroll (MotionEvent e1, MotionEvent e2, float distanceX, float distanceY)
-    {
-    	int x1 =(int) e1.getX();
-        int y1 = (int)e1.getY();
-       
-        int x2 =(int) e2.getX();
-        int y2 = (int)e2.getY();
-        
-        Log.d("GESTURE DETECTOR: ", "onScroll registered");
-        Log.d("Coordinates:", "X1: "+x1+"   Y1:"+y1+"   X2: "+x2+"   Y2:"+y2);
-        
-        
-        int index;
-        for (index =1; index < arrayy.length; index++)
-    	{
-			if (y1>arrayy[index-1] && y1<=arrayy[index]){
-				
-				movVrow=rows.get(index-1);
-				movVrow.print();
-				break;
-			}
-
-    	}
-        
-        int deltax=Math.abs(x1-x2);
- 	   int deltay=Math.abs(y1-y2);
- 			
- 	   Log.d("Diff of Coords", ""+deltax+"   ,   "+deltay );
- 	   
- 	   if (deltax >= deltay){
- 		   Log.d("DRAG Direction","HORIZONTALLLLLL");
- 		   if (x2<192)
- 			   movVrow.moveVerticalLineHorizontally(x1,x2);
- 		   else
- 			   movVrow.moveVerticalLineHorizontally(x1,191);
- 	   }
- 	   else{
- 		   Log.d("DRAG Direction", "VERTICALLLLLLL");
- 		   //need to handle that TWO rows would have a horizontal line coordinate change....
- 	   }
- 	   
- 	 
- 	  
- 	   invalidate();
-        
-        
-        
-        
-    	return true;
-    	
-    	
-    }
-*/
+ 
    
     
  };
@@ -420,6 +284,11 @@ public class DrawView extends View /*implements OnLongClickListener*/{
         linepaint.setStyle(Paint.Style.STROKE);
         linepaint.setColor(Color.BLACK);
         
+       whitelinepaint=new Paint();
+        whitelinepaint.setStyle(Paint.Style.STROKE);
+        whitelinepaint.setStrokeWidth(4);
+        whitelinepaint.setColor(Color.WHITE);
+        
         
         linepath=new Path();
         dotpath=new Path();
@@ -438,14 +307,15 @@ public class DrawView extends View /*implements OnLongClickListener*/{
         
         
         File path = Environment.getExternalStorageDirectory();
-	    //String StrPath=path.getPath();
-	    String fileName="cameraFile.jpg";
-	    File f = new File(path,fileName);
-	    //was takePictureIntent
+	    File dir=new File(path,MainActivity_LogIn.FILE_DIR);
+	    //dir.mkdir();
+	    
+	    File f = new File(dir,MainActivity_LogIn.CAMERA_FILE);
+	    
 	    String mCurrentPhotoPath = f.getAbsolutePath();
     	
     	
-    	File f2=new File(mCurrentPhotoPath);
+    	//File f2=new File(mCurrentPhotoPath);
  	    backBitmap = BitmapFactory.decodeFile(mCurrentPhotoPath);
  	    photoWidth=backBitmap.getWidth();
  	    photoHeight=backBitmap.getHeight();
@@ -595,7 +465,8 @@ public class DrawView extends View /*implements OnLongClickListener*/{
     	addRowsToPath();
     
     	canvas.drawPath(dotpath,dotpaint);
-    	canvas.drawPath(linepath,linepaint);
+    	canvas.drawPath(linepath,whitelinepaint);
+    	canvas.drawPath(linepath, linepaint);
     	
     	
         //mcanvas.drawLine(0, 0, 20, 20, paint);
@@ -611,9 +482,8 @@ public class DrawView extends View /*implements OnLongClickListener*/{
         return true;
     }
     */
-    
-    
-    
+  
+   
     @Override
     public boolean onTouchEvent(MotionEvent event) {
     	
@@ -622,11 +492,11 @@ public class DrawView extends View /*implements OnLongClickListener*/{
     	boolean deleteColbool=dl.getMenuDeleteCol();
     	boolean addRowbool=dl.getMenuAddRow();
     	boolean addColbool=dl.getMenuAddCol();
-    	 /*Boolean dChecked=mdeleteLine.isChecked();
+    	/* Boolean dChecked=mdeleteLine.isChecked();
     		//Log.d("Delete Button status", ""+dChecked);
-    		Boolean addChecked=maddLine.isChecked();*/
+    		Boolean addChecked=maddLine.isChecked();
     		//Log.d("Add Button status", ""+addChecked);
-    	
+*/    	
     	
     	
     	if (event.getAction()==MotionEvent.ACTION_MOVE && !deleteRowbool && !deleteColbool && !addRowbool && !addColbool){
@@ -696,6 +566,7 @@ public class DrawView extends View /*implements OnLongClickListener*/{
     	}
     	else
     		return gd.onTouchEvent(event);
+    		  
     }
     
     /*

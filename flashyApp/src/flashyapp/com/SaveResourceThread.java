@@ -11,6 +11,7 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.net.wifi.WifiManager;
 import android.os.AsyncTask;
 import android.util.Log;
 
@@ -32,6 +33,7 @@ public class SaveResourceThread extends AsyncTask<String, String, String> {
     private int mCounter;
     private Bitmap bitmap;
     private String mResourceName;
+    private Boolean wifiOn;
     
     /*
      * constructor
@@ -43,9 +45,20 @@ public class SaveResourceThread extends AsyncTask<String, String, String> {
     	orsrl=orl;
     	mSide=side;
     	mCounter=counter;
+    	WifiManager wifi = (WifiManager)context.getSystemService(Context.WIFI_SERVICE);
+    	wifiOn=false;
+		if (wifi.isWifiEnabled()){
+			wifiOn=true;
+			Log.d("WIFI is actually on", "Wifiiiiiiiii");
+		}
+		else
+			wifiOn=false;
     }
     
-   
+    public boolean wifiOn()
+    {
+    	return wifiOn;
+    }
 
     
    

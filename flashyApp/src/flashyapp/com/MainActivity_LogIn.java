@@ -4,6 +4,8 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.EOFException;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 
 import org.json.JSONObject;
@@ -12,20 +14,14 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Canvas;
-import android.graphics.Color;
-import android.graphics.Paint;
 import android.os.Bundle;
-import android.os.Environment;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.Menu;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.view.View.OnTouchListener;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ProgressBar;
 import android.widget.TextView;
 import flashyapp.com.JSONThread.OnResponseListener;
 
@@ -33,19 +29,21 @@ public class MainActivity_LogIn extends Activity {
 	
 	private EditText etName;
 	private EditText etPswd;
-	public final static String SESSION_FILE= "sessionId.txt";
+	public final static String SESSION_FILE="sessionId.txt";
 	public final static String GETDECKS_FILE="getDecks.txt";
 	public final static String INTENT_EXTRA_DATA_SESSION = "sessionId";
 	public final static String INTENT_EXTRA_DATA_REGISTER = "sessionId";
 	public final static String INTENT_EXTRA_DATA_USER = "username";
 	public final static String INTENT_EXTRA_DATA_DECKID="deckId";
 	public final static String INTENT_EXTRA_DATA_DECKLIST="deckList";
-	
+	public final static String FILE_DIR="/flashyapp/";
+	public final static String CAMERA_FILE="cameraFile.jpg";
 	
 	
 	 protected OnResponseListener onResponseListener = new OnResponseListener() {
 		 public void onReturnRegister(String error, JSONObject jresponse){}
 		 public void onReturnLogout(String error){}
+		 public void onReturnDeleteDeck(String error, Context context){}
 		 public void onReturnDeckFromImage(Context context, String mError, JSONObject jresponse){}
 		 public void onReturnDecksPage(String error, JSONObject jresponse, Context context){}
 		 public void onReturnLogin(String error, JSONObject jresponse,String name) {
@@ -66,19 +64,24 @@ public class MainActivity_LogIn extends Activity {
 			       
 			    }
 				
-				
-				
-				
-				
-			
-				if (sessionId != null){
+			 if (sessionId != null){
 					Log.d("SessionID",sessionId);
 					
 				    //String fileName=SESSION_FILE;
 				    try {
 				        //writing SessionId
+				    	
+				    	
+				    	Log.d("WRITING SESSIONFILE", "SHOULD WORK");
+				    	
 				        DataOutputStream out = 
-				                new DataOutputStream(openFileOutput(SESSION_FILE, Context.MODE_PRIVATE));
+				                new DataOutputStream(openFileOutput(SESSION_FILE,Context.MODE_PRIVATE));
+				        
+				        
+				        /*DataOutputStream out = 
+		                new DataOutputStream(openFileOutput(file, Context.MODE_PRIVATE));*/
+				        
+				        
 				        out.writeUTF(sessionId);
 				        out.writeUTF(name);
 				      
@@ -86,6 +89,7 @@ public class MainActivity_LogIn extends Activity {
 				    out.close();
 				    }catch (IOException e) {
 				        Log.i("Data Input Sample", "I/O Error");
+				        e.printStackTrace();
 				    }
 					
 					Intent intent = new Intent(MainActivity_LogIn.this, DecksPage.class);
@@ -94,7 +98,7 @@ public class MainActivity_LogIn extends Activity {
 					intent.putExtra(INTENT_EXTRA_DATA_USER, name);
 					startActivity(intent);
 				}
-					
+				
 				else{
 					//if sessionId isn't null....?
 					//check for error codes etc
@@ -107,12 +111,20 @@ public class MainActivity_LogIn extends Activity {
 		 
 	 };
 	
+	 @Override
+		//prevents the up/back key from working
+		public boolean onKeyDown(int keyCode, KeyEvent event) {
+		     if (keyCode == KeyEvent.KEYCODE_BACK) {
+		     //preventing default implementation previous to android.os.Build.VERSION_CODES.ECLAIR
+		     return true;
+		     }
+		     return super.onKeyDown(keyCode, event);    
+		}
 	
 	
 	
 	
-	
-	
+
 	@SuppressLint("NewApi")
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -161,13 +173,14 @@ public class MainActivity_LogIn extends Activity {
 		 etName.setOnFocusChangeListener(new View.OnFocusChangeListener() {          
 			 	@Override
 		        public void onFocusChange(View v, boolean hasFocus) {
-		        	if(!hasFocus){
-		              validateText(etName,"Username Required");
+		        	if(hasFocus){
+		              EditText et=(EditText)v;
+		              et.setError(null);
 		        	}
 		        	   
 		        }
 		    });
-		 etPswd.setOnFocusChangeListener(new View.OnFocusChangeListener() {          
+		/* etPswd.setOnFocusChangeListener(new View.OnFocusChangeListener() {          
 			 	@Override
 		        public void onFocusChange(View v, boolean hasFocus) {
 			 		
@@ -177,11 +190,12 @@ public class MainActivity_LogIn extends Activity {
 		        	}
 		        
 		        }
-		    });
+		    });*/
 		 Button btnLogin=(Button)findViewById(R.id.login_button);
 		 Button btnReg=(Button)findViewById(R.id.register_button);
 		 btnLogin.setOnClickListener(new OnClickListener() {
 		        public void onClick(View v) {
+		        	
 		        	if(validateText(etName,"Username Required") && 	validateText(etPswd,"Password Required"))
 					{
 		        	Log.d("INTENTS","Login INTENT BEING CALLED by login BUTTON");
@@ -191,11 +205,11 @@ public class MainActivity_LogIn extends Activity {
 		    });
 		 btnReg.setOnClickListener(new OnClickListener() {
 		        public void onClick(View v) {
-		        	if(validateText(etName,"Username Required") && 	validateText(etPswd,"Password Required"))
-					{
+		        	/*if(validateText(etName,"Username Required") && 	validateText(etPswd,"Password Required"))
+					{*/
 		        	Log.d("INTENTS","REGISTER INTENT BEING CALLED by REGISTER BUTTON");
 					registerIntent();
-					}
+					/*}*/
 		        }
 		    });
 		 
@@ -210,7 +224,9 @@ public class MainActivity_LogIn extends Activity {
 	    try {
 	        //reading SessionId
 	       
-	    
+	    	/*File f= new File("/sdcard/flashyapp");
+	    	f.mkdir();
+	    	File f2= new File(f,SESSION_FILE);*/
 	    	DataInputStream in = new DataInputStream(openFileInput(SESSION_FILE));
 	       //InputStream is=new InputStream(openFileInput(SESSION_FILE));
 	        
@@ -225,7 +241,7 @@ public class MainActivity_LogIn extends Activity {
 	            	Log.i("Data Input Username", username);
 	              	Log.i("Data Input Session", sessionId);
 	    			
-	    		
+	    	
 	          
 	        } catch (EOFException e) {
 	            Log.i("Data Input Sample from MAIN", "End of file reached");
@@ -273,8 +289,12 @@ public class MainActivity_LogIn extends Activity {
 	private void loginIntent(){
 		
 		JSONThread thread=new JSONThread((Context)this, onResponseListener, JSONThread.LOGIN);
-		thread.BeforeLogin(etName, etPswd);
-		thread.execute(new String[]{null});
+		 if (thread.wifiOn()){
+			 thread.BeforeLogin(etName, etPswd);
+			 thread.execute(new String[]{null});
+		 }
+		 else
+			 MyJSON.WifiAlert(this);
 		/*String sessionId=thread.AfterLogin();
 		
 		Log.d("SessionID After thread stuff","..."+sessionId);*/

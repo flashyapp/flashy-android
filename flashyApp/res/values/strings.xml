@@ -41,4 +41,5 @@
 	<string name="FlashyWord">Flashy</string>
 	<string name="menuNewLineDeck">New Deck from Text</string>
 	<string name="menuNewPhotoDeck">New Deck from Photo</string>
+	<string name="logoutText">Logging out...</string>
 </resources>

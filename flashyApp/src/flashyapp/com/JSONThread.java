@@ -3,10 +3,14 @@ package flashyapp.com;
 import java.io.File;
 
 import org.apache.http.HttpResponse;
+import org.apache.http.conn.HttpHostConnectException;
 import org.json.JSONObject;
 
+import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.DialogInterface;
+import android.net.wifi.WifiManager;
 import android.os.AsyncTask;
 import android.util.Log;
 import android.widget.EditText;
@@ -22,6 +26,7 @@ import android.widget.EditText;
 		public static final int VIEWDECK=6;
 		public static final int DECKFROMIMAGE=7;
 		public static final int SAVERESOURCE=8;
+		public static final int DELETEDECK=9;
 		
 		
 		
@@ -37,6 +42,7 @@ import android.widget.EditText;
 	    private String username;
 	    private int type;
 	    private ProgressDialog progressDialog;
+	    private boolean wifiOn;
 	    
 	    /*
 	     * constructor
@@ -47,9 +53,22 @@ import android.widget.EditText;
 	    	mcontext=context;
 	    	morl=orl;
 	    	type=Type;
+	    	WifiManager wifi = (WifiManager)context.getSystemService(Context.WIFI_SERVICE);
+	    	wifiOn=false;
+			if (wifi.isWifiEnabled()){
+				wifiOn=true;
+				Log.d("WIFI is actually on", "Wifiiiiiiiii");
+			}
+			else
+				wifiOn=false;
 	    }
 	    
 	   
+	    public boolean wifiOn()
+	    {
+	    	return wifiOn;
+	    }
+	    
 	    public void BeforeLogin(EditText etName, EditText etPswd)
 	    {
 	    	
@@ -197,6 +216,26 @@ import android.widget.EditText;
 			url="http://www.flashyapp.com/api/user/logout";
 	    }
 	    
+	    public void BeforeDeleteDeck(String user, String session, String deckId)
+	    {
+	    	JSONObject deleteDeckJSON=new JSONObject();
+			deleteDeckJSON=MyJSON.addString(deleteDeckJSON,"username",user);
+			if (deleteDeckJSON==null){
+				//do what?
+			}
+		
+			deleteDeckJSON=MyJSON.addString(deleteDeckJSON,"session_id",session);
+			if (deleteDeckJSON==null){
+				//do what?
+			}
+			
+			username=user;
+			
+			jsend=deleteDeckJSON;
+			mError=null;
+			url="http://www.flashyapp.com/api/deck/"+deckId+"/delete";
+	    }
+	    
 	    public void BeforeLineSubmission(JSONObject param)
 	    {
 	    	url="http://www.flashyapp.com/api/deck/new/from_image";
@@ -207,27 +246,33 @@ import android.widget.EditText;
 	    @Override
 	    protected String doInBackground(String... urls) {
 	    	
-			HttpResponse httpResponse=MyJSON.sendJSONObject(jsend,url);
-			String response=MyJSON.responseChecker(httpResponse);
-			Log.d("LoginHttpResponse",response); 
-			
-			
-			jresponse=null;
-			
-			try{
+	    	if(wifiOn){
+				HttpResponse httpResponse=MyJSON.sendJSONObject(jsend,url);
+				if (httpResponse == null)
+					return null;
 				
-				jresponse=new JSONObject(response);
+				String response=MyJSON.responseChecker(httpResponse);
+				Log.d("LoginHttpResponse",response); 
 				
 				
+				jresponse=null;
+				
+				try{
 					
-			
-			}
-			catch(Exception e) {
-				 Log.d("Error", "Cannot turn response to JSON");
-				e.printStackTrace();
-		       
-		    }
-			
+					jresponse=new JSONObject(response);
+					
+					
+						
+				
+				}
+				
+				catch(Exception e) {
+					 Log.d("Error", "Cannot turn response to JSON");
+					e.printStackTrace();
+			       
+			    }
+	    	}
+	    	
 	        return null;
 	    }
 
@@ -250,6 +295,13 @@ import android.widget.EditText;
 	        /*pbar.setVisibility(View.INVISIBLE);*/
 	        /*String sessionId=null;*/
 			//String error=null;
+	    	
+	    	
+	     if (!wifiOn){
+	    	 
+		   MyJSON.WifiAlert(mcontext);
+		    return;
+	     }
 	      try{  
 	        mError=MyJSON.errorChecker(jresponse,mcontext);
 			
@@ -277,6 +329,9 @@ import android.widget.EditText;
 	        	break;
 	        case DECKFROMIMAGE:
 	        	morl.onReturnDeckFromImage(mcontext,mError,jresponse);
+	        	break;
+	        case DELETEDECK:
+	        	morl.onReturnDeleteDeck(mError,mcontext);
 	        	break;
 	       // case SAVERESOURCE:
 	        	
@@ -310,6 +365,7 @@ import android.widget.EditText;
 			public void onReturnRegister(String error, JSONObject jresponse);
 			public void onReturnDecksPage(String error, JSONObject jresponse, Context context);
 			public void onReturnLogout(String error);
+			public void onReturnDeleteDeck(String error, Context context);
 			public void onReturnDeckFromImage(Context context, String mError, JSONObject jresponse);
 			
 			}

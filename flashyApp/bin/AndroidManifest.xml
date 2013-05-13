@@ -8,7 +8,8 @@
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
-
+	<uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+	
     <uses-sdk
         android:minSdkVersion="4"
         android:targetSdkVersion="4" />
@@ -74,12 +75,14 @@
         <activity
             android:name="flashyapp.com.DeckListMaker"
             android:label="@string/FlashyWord"
+            android:screenOrientation="portrait"
             android:parentActivityName="flashyapp.com.DecksPage" >
-            
+           
         </activity>
         <activity
             android:name="flashyapp.com.DrawLines"
             android:label="@string/FlashyWord"
+            android:screenOrientation="portrait"
             android:parentActivityName="flashyapp.com.DeckListMaker" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"

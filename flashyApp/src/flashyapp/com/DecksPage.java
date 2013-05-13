@@ -4,8 +4,10 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.EOFException;
 import java.io.IOException;
+
 import org.json.JSONArray;
 import org.json.JSONObject;
+
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
@@ -13,6 +15,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.NavUtils;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.MenuItem;
 import android.view.View;
 import flashyapp.com.JSONThread.OnResponseListener;
@@ -25,6 +28,7 @@ public class DecksPage extends Activity {
 	protected OnResponseListener onResponseListener = new OnResponseListener() {
 		 public void onReturnRegister(String error, JSONObject jresponse){}
 		 public void onReturnLogout(String error){}
+		 public void onReturnDeleteDeck(String error, Context context){}
 		 public void onReturnLogin(String error, JSONObject jresponse, String name){}
 		 public void onReturnDeckFromImage(Context context, String mError, JSONObject jresponse){}
 		 public void onReturnDecksPage(String error, JSONObject jresponse, Context context){
@@ -71,7 +75,8 @@ public class DecksPage extends Activity {
 	
 	
 	
-
+	
+	
 	@SuppressLint("NewApi")
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -127,9 +132,13 @@ public class DecksPage extends Activity {
 		    } catch (IOException e) {
 		        Log.i("Data Input Sample", "I/O Error--getDecks_file isn't there!");
 		        JSONThread thread=new JSONThread((Context)this, onResponseListener, JSONThread.GETDECKLIST);
-				thread.BeforeDecksPage(username,sessionId);
-				thread.execute(new String[]{null});
-		        return;
+		        if (thread.wifiOn()){
+		        	thread.BeforeDecksPage(username,sessionId);
+					thread.execute(new String[]{null});
+		        }
+		        else
+		        	MyJSON.WifiAlert(this);
+				return;
 		    } catch (Exception e){
 		    	Log.i("Data Input Sample", "Could not parse list into a JSONArray");
 		    	return;

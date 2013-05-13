@@ -49,6 +49,7 @@ public class Registration extends Activity {
 	 protected OnResponseListener onResponseListener = new OnResponseListener() {
 		 public void onReturnLogin(String error, JSONObject jresponse,String name) {}
 		 public void onReturnLogout(String error){}
+		 public void onReturnDeleteDeck(String error, Context context){}
 		 public void onReturnDeckFromImage(Context context, String mError, JSONObject jresponse){}
 		 public void onReturnDecksPage(String error, JSONObject jresponse, Context context){}
 		 public void onReturnRegister(String error,JSONObject jresponse){
@@ -109,20 +110,20 @@ public class Registration extends Activity {
 		 etName.setOnFocusChangeListener(new View.OnFocusChangeListener() {          
 			 	@Override
 		        public void onFocusChange(View v, boolean hasFocus) {
-		        	if(!hasFocus){
-		              validateText(etName,"Username Required");
-		        	}
-		        	   
+			 		if(hasFocus){
+			              EditText et=(EditText)v;
+			              et.setError(null);
+			        	}  
 		        }
 		    });
 		 etPswd.setOnFocusChangeListener(new View.OnFocusChangeListener() {          
 			 	@Override
 		        public void onFocusChange(View v, boolean hasFocus) {
 			 		
-		        	if(!hasFocus){
-		               validateText(etPswd,"Password Required");
-		        		
-		        	}
+			 		if(hasFocus){
+			              EditText et=(EditText)v;
+			              et.setError(null);
+			        	}
 		        
 		        }
 		    });
@@ -130,10 +131,10 @@ public class Registration extends Activity {
 			 	@Override
 		        public void onFocusChange(View v, boolean hasFocus) {
 			 		
-		        	if(!hasFocus){
-		               validateText(etPswd,"Email Required");
-		        		
-		        	}
+			 		if(hasFocus){
+			              EditText et=(EditText)v;
+			              et.setError(null);
+			        	}
 		        
 		        }
 		    });
@@ -175,9 +176,12 @@ public class Registration extends Activity {
 		
 		
 		JSONThread thread=new JSONThread((Context)this, onResponseListener, JSONThread.REGISTER);
+		 if (thread.wifiOn()){
 		thread.BeforeRegister(etName, etPswd,etEmail);
 		thread.execute(new String[]{null});
-		
+		 }
+		 else
+			 MyJSON.WifiAlert(this);
 /*
 		String name=etName.getText().toString();
 		String pswd=etPswd.getText().toString();

@@ -41,9 +41,11 @@ public class DrawLines extends Activity {
 	private boolean mMenuDeleteColIsChecked;
 	private EditText etDeckName;
 	private EditText etDeckDescrip;
+	private Menu mmenu;
 	
 	
 	protected OnResponseSaveResourceListener onSaveResourceListener = new OnResponseSaveResourceListener() {
+		
 		public void onReturnSaveResource(Context context, Bitmap bitmap, String mSide, int counter, String name){
 			Log.d("RESOURCE WAS OBTAINED", "Resource gotten after httpget command");
 			/*DrawLines dl=(DrawLines)context;*/
@@ -79,6 +81,7 @@ public class DrawLines extends Activity {
 	
 	
 	protected OnResponseListener onResponseListener = new OnResponseListener() {
+		public void onReturnDeleteDeck(String error, Context context){}
 		 public void onReturnRegister(String error, JSONObject jresponse){}
 		 public void onReturnLogout(String error){}
 		 public void onReturnDecksPage(String error, JSONObject jresponse, Context context){
@@ -221,22 +224,29 @@ public class DrawLines extends Activity {
 		super.onCreate(savedInstanceState);
 		//setContentView(R.layout.activity_draw_lines);
 		
+		
+		Log.d("DEBUG", "DrawLines onCreate 1");
 		Intent intent =getIntent();
 		sessionId = intent.getStringExtra(MainActivity_LogIn.INTENT_EXTRA_DATA_SESSION);
 		username=intent.getStringExtra(MainActivity_LogIn.INTENT_EXTRA_DATA_USER);
 		String coords=intent.getStringExtra("imageCoords");
 		imgName=intent.getStringExtra("imageName");
-		
+		Log.d("DEBUG", "DrawLines onCreate 1.5");
 		ArrayList<Row> rows=new ArrayList<Row>();
-		setMenuAddRow(false);
-		setMenuDeleteRow(false);
-				
+		/*setMenuAddRow(false);
+		setMenuDeleteRow(false);*/
+		mMenuAddRowIsChecked=false;
+		 mMenuDeleteRowIsChecked=false;
+		mMenuAddColIsChecked=false;
+		 mMenuDeleteColIsChecked=false;
+		
+		Log.d("DEBUG", "DrawLines onCreate 1.75");
 		 LinearLayout ll=new LinearLayout(this);
 		 ll.setBackgroundColor(Color.BLACK);
 		 ll.setOrientation(LinearLayout.VERTICAL);
 		 ll.setGravity(Gravity.CENTER_HORIZONTAL);
 		
-		 
+		 Log.d("DEBUG", "DrawLines onCreate 2");
 		 LineSubmissionButton b=new LineSubmissionButton(this,rows);
 		 b.setText("Submit Deck");
 		 b.setHeight(50);
@@ -251,6 +261,8 @@ public class DrawLines extends Activity {
 				dl.makeLineIntent(lsb.returnArray());
 			}
 		});
+		 
+		 
 		 
 		 /*ToggleButton deleteLine=new ToggleButton(this);
 		 deleteLine.setChecked(false);
@@ -270,6 +282,8 @@ public class DrawLines extends Activity {
 		 addLine.setTextOn("Add Column On");
 		 addLine.setTextOff("Add Column Off");*/
 		 
+		 
+		 Log.d("DEBUG", "DrawLines onCreate 3");
 		 LinearLayout topRow=new LinearLayout(this);
 		 topRow.setOrientation(LinearLayout.HORIZONTAL);
 		 
@@ -292,8 +306,9 @@ public class DrawLines extends Activity {
 		/* topRow.addView(deleteLine);
 		 topRow.addView(addLine);*/
 		 
-		 
+		 Log.d("DEBUG", "DrawLines onCreate 4");
 		 DrawView drawView = new DrawView(this,coords,rows);
+		
 		// drawView.getLayoutParams().height=260;
 		 
 		 
@@ -304,7 +319,7 @@ public class DrawLines extends Activity {
 		 
 		/* LinearLayout newLL=(LinearLayout)findViewById(R.id.drawLines_layout_top);
 		 newLL.addView(drawView);*/
-		 
+		 Log.d("DEBUG", "DrawLines onCreate 5");
 	     setContentView(ll);
 		
 		//setContentView(R.layout.activity_draws);
@@ -347,9 +362,12 @@ public class DrawLines extends Activity {
 		 * need to make its own method to get back resources etc
 		 */
 		JSONThread thread=new JSONThread((Context)this, onResponseListener, JSONThread.DECKFROMIMAGE);
-		thread.BeforeLineSubmission(complete);
-		thread.execute(new String[]{null});
-		
+		 if (thread.wifiOn()){
+			 thread.BeforeLineSubmission(complete);
+			 thread.execute(new String[]{null});
+		 }
+		 else
+			 MyJSON.WifiAlert(this);
 		
 		
 		
@@ -386,7 +404,7 @@ public class DrawLines extends Activity {
 		}
 		else{
 			Log.d("Finished saving all resources", "initializing updateDeckList");
-			updateDeckList();
+			updateDeckList(onResponseListener);
 		}
 		
 	}
@@ -395,17 +413,26 @@ public class DrawLines extends Activity {
 	public void getAndSaveResource(String resourceName, String side, int counter)
 	{
 		SaveResourceThread thread2=new SaveResourceThread(this, onSaveResourceListener,side, counter );
-		 thread2.BeforeSaveResource(resourceName);
+		if (thread2.wifiOn()) {
+		thread2.BeforeSaveResource(resourceName);
 		 thread2.execute(new String[]{null});
+		}
+		else
+			MyJSON.WifiAlert(this);
 	}
 	
 	
 	
-	public void updateDeckList()
+	public void updateDeckList(OnResponseListener orl)
 	{
-		JSONThread thread2=new JSONThread(this, onResponseListener, JSONThread.GETDECKLIST);
-		 thread2.BeforeDecksPage(username,sessionId);
-		 thread2.execute(new String[]{null});
+		JSONThread thread2=new JSONThread(this, orl, JSONThread.GETDECKLIST);
+		 if (thread2.wifiOn()){ 
+			 thread2.BeforeDecksPage(username,sessionId);
+			 thread2.execute(new String[]{null});
+		 }
+		 else
+			 MyJSON.WifiAlert(this);
+		 
 	}
 	
 	
@@ -415,21 +442,38 @@ public class DrawLines extends Activity {
 	public boolean onCreateOptionsMenu(Menu menu) {
 		// Inflate the menu; this adds items to the action bar if it is present.
 		getMenuInflater().inflate(R.menu.draw_lines, menu);
+		mmenu=menu;
 		return true;
 	}
 	
-	private void setMenuAddRow(Boolean bool)
+	public void setMenuAddRow(Boolean bool)
 	{
 		mMenuAddRowIsChecked=bool;
+		
+		
+		MenuItem item=mmenu.findItem(R.id.menuAddRow);
+		item.setChecked(bool);
+		if (bool)
+			item.setIcon(R.drawable.checkmark);
+		else
+			item.setIcon(null);
 	}
 	
 	public boolean getMenuAddRow()
 	{
 		return mMenuAddRowIsChecked;
 	}
-	private void setMenuDeleteRow(Boolean bool)
+	public void setMenuDeleteRow(Boolean bool)
 	{
 		mMenuDeleteRowIsChecked=bool;
+		
+		
+		MenuItem item=mmenu.findItem(R.id.menuDeleteRow);
+		item.setChecked(bool);
+		if (bool)
+			item.setIcon(R.drawable.checkmark);
+		else
+			item.setIcon(null);
 	}
 	
 	public boolean getMenuDeleteRow()
@@ -443,18 +487,34 @@ public class DrawLines extends Activity {
 	
 	
 	
-	private void setMenuAddCol(Boolean bool)
+	public void setMenuAddCol(Boolean bool)
 	{
+		Log.d("Entered add col ", "entered and confused");
 		mMenuAddColIsChecked=bool;
+		
+		MenuItem item=mmenu.findItem(R.id.menuAddCol);
+		
+		item.setChecked(bool);
+		if (bool)
+			item.setIcon(R.drawable.checkmark);
+		else
+			item.setIcon(null);
 	}
 	
 	public boolean getMenuAddCol()
 	{
 		return mMenuAddColIsChecked;
 	}
-	private void setMenuDeleteCol(Boolean bool)
+	public void setMenuDeleteCol(Boolean bool)
 	{
 		mMenuDeleteColIsChecked=bool;
+		
+		MenuItem item=mmenu.findItem(R.id.menuDeleteCol);
+		item.setChecked(bool);
+		if (bool)
+			item.setIcon(R.drawable.checkmark);
+		else
+			item.setIcon(null);
 	}
 	
 	public boolean getMenuDeleteCol()
@@ -468,6 +528,8 @@ public class DrawLines extends Activity {
 	
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
+		
+		
 		switch (item.getItemId()) {
 		case android.R.id.home:
 			// This ID represents the Home or Up button. In the case of this
@@ -484,17 +546,17 @@ public class DrawLines extends Activity {
 			if (item.isChecked())
 			{
 				//item.setIcon(R.drawable.redx);
-				item.setTitle("Add Row");
+				/*item.setTitle("Add Row");
 				item.setIcon(R.drawable.redx);
-				item.setChecked(false);
+				item.setChecked(false);*/
 				setMenuAddRow(false);
 			}
 			else
 			{
 				//item.setIcon(R.drawable.checkmark);
-				item.setTitle("Add Row");
+				/*item.setTitle("Add Row");
 				item.setIcon(R.drawable.checkmark);
-				item.setChecked(true);
+				item.setChecked(true);*/
 				setMenuAddRow(true);
 			}
 			return true;
@@ -503,17 +565,17 @@ public class DrawLines extends Activity {
 			if (item.isChecked())
 			{
 				//item.setIcon(R.drawable.redx);
-				item.setTitle("Add Column");
+				/*item.setTitle("Add Column");
 				item.setIcon(R.drawable.redx);
-				item.setChecked(false);
+				item.setChecked(false);*/
 				setMenuAddCol(false);
 			}
 			else
 			{
 				//item.setIcon(R.drawable.checkmark);
-				item.setTitle("Add Column");
+				/*item.setTitle("Add Column");
 				item.setIcon(R.drawable.checkmark);
-				item.setChecked(true);
+				item.setChecked(true);*/
 				setMenuAddCol(true);
 			}
 			return true;
@@ -522,9 +584,9 @@ public class DrawLines extends Activity {
 			if (item.isChecked())
 			{
 				//item.setIcon(R.drawable.redx);
-				item.setTitle("Delete Row");
+				/*item.setTitle("Delete Row");
 				item.setIcon(R.drawable.redx);
-				item.setChecked(false);
+				item.setChecked(false);*/
 				setMenuDeleteRow(false);
 			}
 			else
@@ -567,5 +629,11 @@ public class DrawLines extends Activity {
 		}
 		return super.onOptionsItemSelected(item);
 	}
+	
+	
+	
+	
+	
+	
 
 }

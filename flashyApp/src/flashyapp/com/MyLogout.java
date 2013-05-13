@@ -1,11 +1,9 @@
 package flashyapp.com;
 
-import java.io.DataOutputStream;
+import java.io.File;
 import java.io.IOException;
 
 import org.json.JSONObject;
-
-import flashyapp.com.JSONThread.OnResponseListener;
 
 import android.app.Activity;
 import android.content.Context;
@@ -13,6 +11,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
+import flashyapp.com.JSONThread.OnResponseListener;
 
 public class MyLogout extends Activity {
 
@@ -22,6 +21,7 @@ public class MyLogout extends Activity {
 	
 	protected OnResponseListener onResponseListener = new OnResponseListener() {
 		 public void onReturnRegister(String error, JSONObject jresponse){}
+		 public void onReturnDeleteDeck(String error, Context context){}
 		 public void onReturnLogin(String error, JSONObject jresponse, String name){}
 		 public void onReturnDeckFromImage(Context context, String mError, JSONObject jresponse){}
 		 public void onReturnDecksPage(String error, JSONObject jresponse, Context context){}
@@ -30,11 +30,13 @@ public class MyLogout extends Activity {
 		 public void onReturnLogout(String error){
 			 
 			 if (error == null){
-				 String file=MainActivity_LogIn.SESSION_FILE;
+				
 					try{
 						//Writes a blank file (overwriting the existing file)
-						DataOutputStream out = 
-			                new DataOutputStream(openFileOutput(file, Context.MODE_PRIVATE));
+						deleteFile(MainActivity_LogIn.SESSION_FILE);
+						deleteFile(MainActivity_LogIn.GETDECKS_FILE);
+						/*DataOutputStream out = 
+			                new DataOutputStream(openFileOutput(file, Context.MODE_PRIVATE));*/
 						/*
 						 * 
 						 * 
@@ -43,21 +45,22 @@ public class MyLogout extends Activity {
 						 * 
 						 * 
 						 * 
-						 */
+						 * 						 */
 						// out.writeUTF(sessionId);
 						Log.d("LOGOUT","WRITING EMPTY FILE");
-					}catch (IOException e) {
-					        Log.i("Data Input Sample", "I/O Error");
+					}catch (Exception e) {
+					        Log.i("Logging out", "failed to delete the file");
 					}
 				
 				 
-				 
+			
 				 
 				Intent intent = new Intent(MyLogout.this, MainActivity_LogIn.class);
 				startActivity(intent);
 			 }
 			 
 		 }
+		 
 	};
 	
 	
@@ -79,9 +82,12 @@ public class MyLogout extends Activity {
 		String session=intent.getStringExtra(MainActivity_LogIn.INTENT_EXTRA_DATA_SESSION);
 		
 		JSONThread thread=new JSONThread((Context)this, onResponseListener, JSONThread.LOGOUT);
-		thread.BeforeLogout(user,session);
-		thread.execute(new String[]{null});
-		
+		 if (thread.wifiOn()){
+			 thread.BeforeLogout(user,session);
+			 thread.execute(new String[]{null});
+		 }
+		 else
+			 MyJSON.WifiAlert(this);
 		
 		
 	}

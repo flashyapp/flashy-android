@@ -7,6 +7,7 @@ import org.json.JSONObject;
 
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.net.wifi.WifiManager;
 import android.os.AsyncTask;
 import android.util.Log;
 import android.widget.EditText;
@@ -27,8 +28,8 @@ public class MIMEThread extends AsyncTask<String, String, String> {
     private OnResponseMIMEListener morl;
     private String sessionId;
     private String username;
-    File mfile;
-    
+    private  File mfile;
+    private boolean wifiOn;
     private ProgressDialog progressDialog;
     
     /*
@@ -39,10 +40,21 @@ public class MIMEThread extends AsyncTask<String, String, String> {
     	
     	mcontext=context;
     	morl=orl;
+    	WifiManager wifi = (WifiManager)context.getSystemService(Context.WIFI_SERVICE);
+    	wifiOn=false;
+		if (wifi.isWifiEnabled()){
+			wifiOn=true;
+			Log.d("WIFI is actually on", "Wifiiiiiiiii");
+		}
+		else
+			wifiOn=false;
     	
     }
     
-   
+    public boolean wifiOn()
+    {
+    	return wifiOn;
+    }
 
     
    

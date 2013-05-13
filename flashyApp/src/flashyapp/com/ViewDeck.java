@@ -61,11 +61,11 @@ protected OnResponseSaveResourceListener onSaveResourceListener = new OnResponse
 		    File f = new File(path,fileName);
 		    //was takePictureIntent
 */		    
-		    
+		   
 		    
 		    File path = Environment.getExternalStorageDirectory();
 		    File dir=new File(path,MainActivity_LogIn.FILE_DIR);
-		   // dir.mkdir();
+		    dir.mkdir();
 		    String fileName=name+".jpg";
 		    File f = new File(dir,fileName);
 		    
@@ -74,7 +74,7 @@ protected OnResponseSaveResourceListener onSaveResourceListener = new OnResponse
 		 
 		    //takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(f));
 		    try {
-		    	Log.d("WRITING","writing to : "+f.getAbsolutePath());
+		    	Log.d("WRITING","writing to from ViewDeck : "+f.getAbsolutePath());
 		    	FileOutputStream out = new FileOutputStream(f);
 		    	if (bitmap != null)
 		         bitmap.compress(Bitmap.CompressFormat.JPEG, 90, out);
@@ -589,6 +589,7 @@ protected OnResponseSaveResourceListener onSaveResourceListener = new OnResponse
 		    	//String regex2="\\[\\]";
 		    	String contain="<img";
 		    	if (side.contains(contain)){
+		    		Log.d("CONTAINS", "Contains the regexed stuff");
 			    	String resource=side.replaceAll(regex, "$2");
 			    	//String resourceB=sideB.replaceAll(regex, "$2");
 			    	Log.d("RESOURCES: ", resource );

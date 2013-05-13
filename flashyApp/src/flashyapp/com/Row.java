@@ -140,7 +140,7 @@ public class Row {
 	{
 		for (int i=0; i<xcoords.size()-1; i++)
 		{
-			if (xcoords.get(i) < xcoords.get(i+1)){
+			if (xcoords.get(i) >= xcoords.get(i+1)){
 				int temp1=xcoords.get(i);
 				int temp2=xcoords.get(i+1);
 				xcoords.set(i, temp2 );

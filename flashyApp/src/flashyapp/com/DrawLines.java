@@ -49,15 +49,33 @@ public class DrawLines extends Activity {
 		public void onReturnSaveResource(Context context, Bitmap bitmap, String mSide, int counter, String name){
 			Log.d("RESOURCE WAS OBTAINED", "Resource gotten after httpget command");
 			/*DrawLines dl=(DrawLines)context;*/
-			File path = Environment.getExternalStorageDirectory();
+			
+			
+			/*File path = Environment.getExternalStorageDirectory();
+		    File dir=new File(path,MainActivity_LogIn.FILE_DIR);*/
+		    //dir.mkdir();
+		    
+		   
+			
+			
+			
+			
 		    //String StrPath=path.getPath();
+		    
+		    File path = Environment.getExternalStorageDirectory();
+		    File dir=new File(path,MainActivity_LogIn.FILE_DIR);
+		    dir.mkdir();
 		    String fileName=name+".jpg";
-		    File f = new File(path,fileName);
+		    File f = new File(dir,fileName);
+		    
+		    
+		   /* String fileName=name+".jpg";
+		    File f = new File(dir,fileName);*/
 		    //was takePictureIntent
 		   
 		    //takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(f));
 		    try {
-		    	Log.d("WRITING","writing to : "+fileName);
+		    	Log.d("WRITING","writing to from DRAWLINES : "+f.getCanonicalPath());
 		    	FileOutputStream out = new FileOutputStream(f);
 		    	if (bitmap != null)
 		         bitmap.compress(Bitmap.CompressFormat.JPEG, 90, out);
@@ -258,8 +276,15 @@ public class DrawLines extends Activity {
 			public void onClick(View v) {
 				// TODO Auto-generated method stub
 				DrawLines dl=(DrawLines)v.getContext();
+				
 				LineSubmissionButton lsb=(LineSubmissionButton)v;
-				dl.makeLineIntent(lsb.returnArray());
+				if (dl.etDeckName.getText() != null)
+				{
+					Log.d("ETDECKNAME:", ""+dl.etDeckName.getText());
+					dl.makeLineIntent(lsb.returnArray());
+				}
+				else
+					dl.etDeckName.setError("Deck Name Required");
 			}
 		});
 		 
@@ -329,6 +354,20 @@ public class DrawLines extends Activity {
 	
 	public void makeLineIntent(ArrayList<Row> rows)
 	{
+		
+		Log.d("ENTERED makeLineIntent  ETDECKNAME:", "..........................."+etDeckName.getText());
+		
+		
+		String str=etDeckName.getText().toString();
+		if (str.equalsIgnoreCase("")){
+			
+			etDeckName.setError("Deck Name Required");
+			return;
+		}
+		else
+			Log.d("ETDECKNAME:", "..........................."+etDeckName.getText());
+		
+		
 		JSONObject complete=new JSONObject();
 		JSONArray divs=new JSONArray();
 		JSONArray row=null;
@@ -355,7 +394,7 @@ public class DrawLines extends Activity {
 	    }
 		
 		
-		Log.d("COMPLETE JSON OBJECT", complete.toString());
+		Log.d("COMPLETE JSON OBJECT --------------------------", complete.toString());
 		
 		/*
 		 * 
@@ -398,8 +437,14 @@ public class DrawLines extends Activity {
 		    	Log.d("RESOURCES: ", resource );
 		    	getAndSaveResource(context, resource, paramSide,i);*/
 		    	
-		    	if (side.contains(regex)){
-			    	String resource=side.replaceAll(regex, "$2");
+		    	Log.d("REGEX", regex + "       " + side);
+		    	
+		    	String contains="<img";
+		    	if (side.contains(contains)){
+		    		
+		    		Log.d("CONTAINED REGEX!!!", "REGEX WORKED!");
+		    	
+		    		String resource=side.replaceAll(regex, "$2");
 			    	//String resourceB=sideB.replaceAll(regex, "$2");
 			    	Log.d("RESOURCES: ", resource );
 			    	getAndSaveResource(context, resource, paramSide,i);
@@ -415,7 +460,7 @@ public class DrawLines extends Activity {
 		    	
 		    	
 		    	
-		    	
+		    
 		    
 		    	
 			}catch (Exception e){

@@ -594,13 +594,13 @@ public class DeckListMaker extends Activity {
 		 TextView tv=(TextView)v;
 	    menu.setHeaderTitle(tv.getText());  
 	    menu.add(0,v.getId(), 0, "Delete Deck");  
-	    menu.add(0, v.getId(), 0, "Append to Deck");  
+	      
 	}  
 	 
 	 @Override  
 	 public boolean onContextItemSelected(MenuItem item) {  
 	         if(item.getTitle().equals("Delete Deck")){deleteDeck(item.getItemId());}  
-	     else if(item.getTitle().equals("Append to Deck")){appendDeck(item.getItemId());}  
+	     //else if(item.getTitle().equals("Append to Deck")){appendDeck(item.getItemId());}  
 	     else {return false;}  
 	 return true;  
 	 }  

@@ -55,15 +55,26 @@ protected OnResponseSaveResourceListener onSaveResourceListener = new OnResponse
 		public void onReturnSaveResource(Context context, Bitmap bitmap, String mSide, int counter, String name){
 			Log.d("RESOURCE WAS OBTAINED", "Resource gotten after httpget command");
 			/*DrawLines dl=(DrawLines)context;*/
-			File path = Environment.getExternalStorageDirectory();
+			/*File path = Environment.getExternalStorageDirectory();
 		    //String StrPath=path.getPath();
-		    String fileName=name+".jpg";
+		    
 		    File f = new File(path,fileName);
 		    //was takePictureIntent
+*/		    
+		    
+		    
+		    File path = Environment.getExternalStorageDirectory();
+		    File dir=new File(path,MainActivity_LogIn.FILE_DIR);
+		   // dir.mkdir();
+		    String fileName=name+".jpg";
+		    File f = new File(dir,fileName);
+		    
+		    
 		   
+		 
 		    //takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(f));
 		    try {
-		    	Log.d("WRITING","writing to : "+fileName);
+		    	Log.d("WRITING","writing to : "+f.getAbsolutePath());
 		    	FileOutputStream out = new FileOutputStream(f);
 		    	if (bitmap != null)
 		         bitmap.compress(Bitmap.CompressFormat.JPEG, 90, out);
@@ -384,7 +395,7 @@ protected OnResponseSaveResourceListener onSaveResourceListener = new OnResponse
 				
 				String regex="(<img src=\")(\\[FLASHYRESOURCE:)(\\w{8,})(\\])(\" />)";
 				String regex2="\\[FLASHYRESOURCE:0{8}\\]";
-				String replacement="$1file:///sdcard/$3.jpg\" alt=\"Pic\" HEIGHT=\"250\" WIDTH=\"250\" BORDER=\"0\" >";
+				String replacement="$1file:///sdcard/flashyapp/$3.jpg\" alt=\"Pic\" HEIGHT=\"250\" WIDTH=\"250\" BORDER=\"0\" >";
 		    	String resourceA=Aside.replaceAll(regex, replacement );
 		    	String resource2A=resourceA.replaceAll(regex2, "No Back to this card");
 				String Bside=tempDeck.getString("sideB");
@@ -576,8 +587,8 @@ protected OnResponseSaveResourceListener onSaveResourceListener = new OnResponse
 		    	
 		    	String regex="(<img src=\"\\[FLASHYRESOURCE:)(\\w{8,})(\\]\" />)";
 		    	//String regex2="\\[\\]";
-		    	
-		    	if (side.contains(regex)){
+		    	String contain="<img";
+		    	if (side.contains(contain)){
 			    	String resource=side.replaceAll(regex, "$2");
 			    	//String resourceB=sideB.replaceAll(regex, "$2");
 			    	Log.d("RESOURCES: ", resource );

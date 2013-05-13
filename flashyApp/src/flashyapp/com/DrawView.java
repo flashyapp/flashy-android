@@ -71,6 +71,10 @@ public class DrawView extends View /*implements OnLongClickListener*/{
 
     	}
 		
+		
+		if (movVrow==null)
+			Log.d("COULDNT FIND A ROW", "CAUSE OF ERROR");
+		
    	 	touchedx=x;
    	 	touchedy=y;
 		
@@ -88,9 +92,14 @@ public class DrawView extends View /*implements OnLongClickListener*/{
         DrawLines dl=(DrawLines)mcontext;
         boolean addRowbool=dl.getMenuAddRow();
         boolean addColbool=dl.getMenuAddCol();
+        boolean deleteColbool=dl.getMenuDeleteCol();
+        boolean deleteRowbool=dl.getMenuDeleteRow();
 		
         if(addColbool)
         {
+        	if (x >= photoWidth){
+        		return true;
+        	}
         	for(Row r: rows)
         	{
         		r.newCol(x);
@@ -100,6 +109,9 @@ public class DrawView extends View /*implements OnLongClickListener*/{
         }
         else if (addRowbool)
         {
+        	if (movVrow == null)
+        		return true;
+        	
         	//Add row
         	Log.d("Added a row", "in theory");
         
@@ -142,8 +154,79 @@ public class DrawView extends View /*implements OnLongClickListener*/{
        
         
         
+        
+        if (deleteColbool)
+   	 	{
+   	 		Log.d("BEFORE I DELETE!!", "This is right before the row delete call");
+   	 		movVrow.deleteLine(x);
+   	 		invalidate();
+   	 		dl.setMenuDeleteCol(false);
+   	 
+   	 	}
+   	 	
+		
+		
+        if (deleteRowbool)
+        {
+        	
+        	 int index;
+  			 for (index =1; index < arrayy.size(); index++)
+  	    	{
+  				
+  				if (Math.abs(y-arrayy.get(index))<20 && arrayy.get(index)!= photoHeight){
+  					
+  					   Row bottomRow=rows.get(index-1);
+	      			   Row topRow=rows.get(index);
+	      			   
+	      			   bottomRow.setTop(topRow.getTop());
+	      			   rows.remove(index);
+	      			   arrayy.remove(index);
+	      			   dl.setMenuDeleteRow(false);
+	      			   break;
+	      			   
+  				}
+
+  	    	}
+  			   
+  			 
+  			 
+  			 
+  			 
+  			 Log.d("DEBUG", "AFTER DELETE ROW");
+          	
+          	for(Row r: rows)
+          	{
+          		r.print();
+          	}
+          	for (int w: arrayy)
+          	{
+          		Log.d("ArrayY: ", ""+w+"  ");
+          	}
+   			   
+   			   
+   			   
+   			   
+   		   
+        }
+		
+		
+		
+   	 	invalidate();
+		
+        
+        
+        
+        
+        
+        
+        
+        
+        
         Log.d("GESTURE DETECTOR: ", "onSingleTap registered");
         Log.d("Coordinates:", "X: "+x+"   Y:"+y);
+        
+        
+        
        
     	return true;
     }
@@ -180,7 +263,7 @@ public class DrawView extends View /*implements OnLongClickListener*/{
         
         
         
-        DrawLines dl=(DrawLines)mcontext;
+       /* DrawLines dl=(DrawLines)mcontext;
         boolean deleteRowbool=dl.getMenuDeleteRow();
         boolean deleteColbool=dl.getMenuDeleteCol();
         
@@ -242,7 +325,7 @@ public class DrawView extends View /*implements OnLongClickListener*/{
 		
 		
 		
-   	 	invalidate();
+   	 	invalidate();*/
 		
 		
        // theListener.onLongClick(MyWebView.this);
@@ -511,8 +594,10 @@ public class DrawView extends View /*implements OnLongClickListener*/{
       	   if (deltax > 3 && deltay > 3){
 	      	   if (deltax >= deltay){
 	      		   Log.d("DRAG Direction","HORIZONTALLLLLL");
-	      		   if (x<192)
-	      			   movVrow.moveVerticalLineHorizontally(x);
+	      		   if (x<photoWidth){
+	      			   if (movVrow != null)
+	      					   movVrow.moveVerticalLineHorizontally(x);
+	      		   }
 	      	   }
 	      	   else{
 	      		 
@@ -524,6 +609,9 @@ public class DrawView extends View /*implements OnLongClickListener*/{
 	      				
 	      				if (Math.abs(y-arrayy.get(index))<20 && arrayy.get(index)!= photoHeight){
 	      					
+	      					
+	      					Log.d("ARRAY Y DRAG VERTICAL coords:", " "+ arrayy.get(index));
+	      					
 	      					Row bottomRow=rows.get(index-1);
 	 	      			   Row topRow=rows.get(index);
 	 	      			   bottomRow.setTop(y);
@@ -532,7 +620,6 @@ public class DrawView extends View /*implements OnLongClickListener*/{
 	 	      			   break;
 	 	      			   
 	      				}
-
 	      	    	}
 	      			   
 	      			   

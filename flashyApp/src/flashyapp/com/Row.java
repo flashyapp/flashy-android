@@ -114,12 +114,19 @@ public class Row {
 		boolean moved=false;
 		float tolerance =25;
 		for (int x: xcoords){
+			
+			if (x==0 || x==maxWidth)
+				continue;
+			
 			if (Math.abs(x-newX) <= tolerance){
 				Log.d("Moved a Vertical", x + "to " + newX);
 				int index=xcoords.indexOf(x);
 				xcoords.set(index, newX);
 				Log.d("New Value of Vertical:", ""+xcoords.get(index));
 				moved=true;
+				
+				sortArray();
+
 				break;
 			}
 				
@@ -128,6 +135,20 @@ public class Row {
 		//return moved;
 	}
 	
+	
+	public void sortArray()
+	{
+		for (int i=0; i<xcoords.size()-1; i++)
+		{
+			if (xcoords.get(i) < xcoords.get(i+1)){
+				int temp1=xcoords.get(i);
+				int temp2=xcoords.get(i+1);
+				xcoords.set(i, temp2 );
+				xcoords.set(i+1, temp1);
+			}
+				
+		}
+	}
 	
 	
 	public void deleteLine(int newX)
@@ -181,7 +202,8 @@ public class Row {
 	
 	public void setTop(int newTop)
 	{
-		top=newTop;
+		if (newTop > bottom)
+			top=newTop;
 	}
 	public int getTop()
 	{

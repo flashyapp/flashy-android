@@ -25,6 +25,7 @@ public class MyLogout extends Activity {
 		 public void onReturnLogin(String error, JSONObject jresponse, String name){}
 		 public void onReturnDeckFromImage(Context context, String mError, JSONObject jresponse){}
 		 public void onReturnDecksPage(String error, JSONObject jresponse, Context context){}
+		 public void onReturnSaveDeck(Context context, String mError, JSONObject jresponse){}
 		 
 		 //User is logged out of server but needs to be logged out on the phone
 		 public void onReturnLogout(String error){

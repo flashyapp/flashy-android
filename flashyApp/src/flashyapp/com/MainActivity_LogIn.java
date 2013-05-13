@@ -44,6 +44,7 @@ public class MainActivity_LogIn extends Activity {
 		 public void onReturnRegister(String error, JSONObject jresponse){}
 		 public void onReturnLogout(String error){}
 		 public void onReturnDeleteDeck(String error, Context context){}
+		 public void onReturnSaveDeck(Context context, String mError, JSONObject jresponse){}
 		 public void onReturnDeckFromImage(Context context, String mError, JSONObject jresponse){}
 		 public void onReturnDecksPage(String error, JSONObject jresponse, Context context){}
 		 public void onReturnLogin(String error, JSONObject jresponse,String name) {

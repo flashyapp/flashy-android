@@ -1,8 +1,11 @@
 package flashyapp.com;
 
 import java.io.DataInputStream;
+import java.io.DataOutputStream;
 import java.io.EOFException;
 import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 
 import org.json.JSONArray;
@@ -12,6 +15,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
+import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.net.wifi.WifiManager;
 import android.os.Bundle;
@@ -24,10 +28,12 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.WindowManager;
 import android.webkit.WebView;
-import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
+import flashyapp.com.JSONThread.OnResponseListener;
+import flashyapp.com.SaveResourceThread.OnResponseSaveResourceListener;
+
 
 public class ViewDeck extends Activity {
 
@@ -39,8 +45,153 @@ public class ViewDeck extends Activity {
 	private ArrayList<String> sideA;
 	private ArrayList<String> sideB;
 	private WebView webView;
+	private JSONArray mCards;
 	//private String nickResource;
  
+	
+	
+protected OnResponseSaveResourceListener onSaveResourceListener = new OnResponseSaveResourceListener() {
+		
+		public void onReturnSaveResource(Context context, Bitmap bitmap, String mSide, int counter, String name){
+			Log.d("RESOURCE WAS OBTAINED", "Resource gotten after httpget command");
+			/*DrawLines dl=(DrawLines)context;*/
+			File path = Environment.getExternalStorageDirectory();
+		    //String StrPath=path.getPath();
+		    String fileName=name+".jpg";
+		    File f = new File(path,fileName);
+		    //was takePictureIntent
+		   
+		    //takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(f));
+		    try {
+		    	Log.d("WRITING","writing to : "+fileName);
+		    	FileOutputStream out = new FileOutputStream(f);
+		    	if (bitmap != null)
+		         bitmap.compress(Bitmap.CompressFormat.JPEG, 90, out);
+		    	else
+		    		Log.d("BITMAP IS", "NULLLLLL");
+	        } catch (Exception e) {
+	        	Log.d("WRITING","FAILED WRITING Resource to storage");
+	            e.printStackTrace();
+	        }
+		    
+		    
+		    
+		    if (mSide.equals("sideA"))
+		    	getResourceLooper(context,counter,"sideB");
+		    else{
+		    	counter=counter+1;
+		    	getResourceLooper(context,counter,"sideA");
+		    }
+		}
+	};
+	
+	
+	
+	
+	
+	protected OnResponseListener onResponseListener = new OnResponseListener() {
+		 public void onReturnRegister(String error, JSONObject jresponse){}
+		 public void onReturnDeleteDeck(String error, Context context){}
+		 public void onReturnLogin(String error, JSONObject jresponse, String name){}
+		 public void onReturnDeckFromImage(Context context, String mError, JSONObject jresponse){}
+		 public void onReturnDecksPage(String error, JSONObject jresponse, Context context){}
+		 public void onReturnLogout(String error){}
+		 public void onReturnSaveDeck(Context context, String mError, JSONObject jresponse){
+			 Log.d("RETURNED FROM GETTING DECK", "In response listener, Please work");
+			 //copy drawLines onrl.returndeckfromimage
+			 
+			 
+			 ViewDeck vd=(ViewDeck)context;
+
+			 
+			 
+			 Log.d("Debug", "In reponse");
+			 if (mError==null){
+				 Log.d("Debug", "In null error");
+				 try {
+					 
+					 Log.d("DEBUG", "Before writing deck info file");
+					 	
+					 	 JSONArray cards=jresponse.getJSONArray("cards");
+					        mCards=cards;
+					        
+					        
+					 	String deckName=jresponse.getString("deck_id");
+					 	String commonName=jresponse.getString("name");
+					 	String deckDescrip=jresponse.getString("description");
+					 	
+					 	//Build deck info card
+					 	DataOutputStream out = 
+				                new DataOutputStream(openFileOutput(deckName+".txt", Context.MODE_PRIVATE));
+				        out.writeUTF(commonName);
+				        out.writeUTF(deckDescrip);
+				        out.writeUTF(mCards.toString());
+				        
+				      
+				   
+				        out.close();
+					 	
+				        Log.d("DEBUG", "After writing deck info file" + mCards.toString());
+					 	
+					 	
+					 	
+				       
+				       /* for (int i=0; i< cards.length(); i++)
+				        {*/
+				        	//Log.d("Debug", "In card loop");
+				        	
+				        
+				       vd.getResourceLooper(context, 0, "sideA");
+				       // }
+				       
+					 
+					 
+					 
+					 /*	DataOutputStream out = 
+				                new DataOutputStream(openFileOutput(MainActivity_LogIn.GETDECKS_FILE, Context.MODE_PRIVATE));
+				        out.writeUTF(deckArray.toString());
+				        
+				     
+				  
+				        out.close();
+				        */
+				    	
+				   /* }catch (IOException e) {
+				        Log.i("Data Input Sample", "I/O Error");*/
+				    }catch (Exception e){
+				    	 Log.d("Error", "Cannot take resources from return json object");
+			 				e.printStackTrace();
+				    }
+				
+				 
+				 
+				 
+				 Log.d("THREAD Response", "Need to correct later but finished json submission");
+				 
+				//dl.updateDeckList();
+				
+				 
+			 }
+			 
+			 
+			
+			 
+			 
+			 
+		 }
+	};
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -53,7 +204,7 @@ public class ViewDeck extends Activity {
 		RelativeLayout rl=new RelativeLayout(this);
 		MyWebView myweb=new MyWebView(this);
 		
-		
+	
 		
 		
 		rl.addView(myweb);
@@ -183,11 +334,28 @@ public class ViewDeck extends Activity {
 		            Log.i("Data Input Sample from MAIN", "End of file reached");
 		        }
 		        in.close();
-		   /* } catch (IOException e) {
+		} catch (IOException e) {
 		        Log.i("Data Input Sample", "I/O Error--file isn't there!");
+		        
+		        
+		        webView.loadDataWithBaseURL("file://","SORRY!!", "text/html", "utf-8", null);
+		        
+		        WifiManager wifi2 = (WifiManager)getSystemService(Context.WIFI_SERVICE);
+		    	
+		        
+		        
+		        Log.d("DECKID", deckId);
+		        
+				if (wifi2.isWifiEnabled()){
+					JSONThread thread=new JSONThread(this, onResponseListener, JSONThread.SAVEDECK);
+					thread.BeforeSaveDeck(username,sessionId,deckId);
+					thread.execute(new String[]{null});
+				}
+				else
+					callWifiAlert();
+		     
+		       
 		        return;
-		    }
-		    */
 	
 		}
 		catch(Exception e) {
@@ -257,6 +425,8 @@ public class ViewDeck extends Activity {
 	
 	public void nextCard(View view)
 	{
+		webView.setTag("A");
+		
 		if (index < deckArray.length()-1)
 			index++;
 		else
@@ -266,6 +436,8 @@ public class ViewDeck extends Activity {
 	
 	public void prevCard(View view)
 	{
+		webView.setTag("A");
+		
 		if (index >0)
 			index--;
 		else
@@ -354,6 +526,20 @@ public class ViewDeck extends Activity {
 				callWifiAlert();
 			
 			return true;
+			
+		case R.id.SyncDeckId:
+			WifiManager wifi2 = (WifiManager)getSystemService(Context.WIFI_SERVICE);
+	    	
+			if (wifi2.isWifiEnabled()){
+				JSONThread thread=new JSONThread(this, onResponseListener, JSONThread.SAVEDECK);
+				thread.BeforeSaveDeck(username,sessionId,deckId);
+				thread.execute(new String[]{null});
+				return true;
+			}
+			else
+				callWifiAlert();
+			
+			return true;
 		
 		}
 		return super.onOptionsItemSelected(item);
@@ -365,4 +551,96 @@ public class ViewDeck extends Activity {
 		MyJSON.WifiAlert(this);
 	}
 
+	
+	
+	
+	
+	
+	
+	
+	
+	public void getResourceLooper(Context context, int i, String paramSide)
+	{
+		int Length=mCards.length();
+		if (i<Length){
+			Log.d("DEBUG Looper", "int: " + i+ "   side: "+paramSide);
+			
+			try{
+				JSONObject temp=mCards.getJSONObject(i);
+				Log.d("DEBUG Looper 2: ", temp.toString());
+		    	int index=temp.getInt("index");
+		    	String side=temp.getString(paramSide);
+		    	/*String sideB=temp.getString("sideB");*/
+		    
+		    	Log.d("WRITING RESOURCES: ", side);
+		    	
+		    	String regex="(<img src=\"\\[FLASHYRESOURCE:)(\\w{8,})(\\]\" />)";
+		    	//String regex2="\\[\\]";
+		    	
+		    	if (side.contains(regex)){
+			    	String resource=side.replaceAll(regex, "$2");
+			    	//String resourceB=sideB.replaceAll(regex, "$2");
+			    	Log.d("RESOURCES: ", resource );
+			    	getAndSaveResource(context, resource, paramSide,i);
+		    	}else{
+		    		
+		    		 if (paramSide.equals("sideA"))
+		 		    	getResourceLooper(context,i,"sideB");
+		 		    else{
+		 		    	i=i+1;
+		 		    	getResourceLooper(context,i,"sideA");
+		 		    }
+		    	}
+		    		
+		    	
+		    	
+			}catch (Exception e){
+		   	 Log.d("Error", "Cannot take resources from return json object");
+					e.printStackTrace();
+		   }
+		}
+		else{
+			Log.d("Finished saving all resources", "Normally would call updateDeckList but yeah");
+			//updateDeckList(onResponseListener);
+			loadDeck();
+		}
+		
+	}
+	
+	
+	public void getAndSaveResource(Context context, String resourceName, String side, int counter)
+	{
+		SaveResourceThread thread2=new SaveResourceThread(context, onSaveResourceListener,side, counter );
+		if (thread2.wifiOn()) {
+		thread2.BeforeSaveResource(resourceName);
+		 thread2.execute(new String[]{null});
+		}
+		else
+			MyJSON.WifiAlert(this);
+	}
+
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 }

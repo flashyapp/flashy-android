@@ -55,6 +55,7 @@ public class DeckListMaker extends Activity {
 	
 	protected OnResponseListener onResponseListener = new OnResponseListener() {
 		 public void onReturnRegister(String error, JSONObject jresponse){}
+		 public void onReturnSaveDeck(Context context, String mError, JSONObject jresponse){}
 		 public void onReturnLogout(String error){}
 		 public void onReturnDeleteDeck(String error, Context context){
 			 Log.d("RETURNED", "From Delete Operation");
@@ -566,8 +567,17 @@ public class DeckListMaker extends Activity {
 			}
 			else
 				callWifiAlert();
-			
-		
+			break;
+		case R.id.listMakerSyncList:
+			WifiManager wifi2 = (WifiManager)getSystemService(Context.WIFI_SERVICE);
+	    	
+			if (wifi2.isWifiEnabled()){
+				JSONThread thread=new JSONThread(this, onResponseListener, JSONThread.GETDECKLIST);
+				thread.BeforeDecksPage(username,sessionId);
+				thread.execute(new String[]{null});
+			}
+			else
+				callWifiAlert();	
 		}
 		return super.onOptionsItemSelected(item);
 	}

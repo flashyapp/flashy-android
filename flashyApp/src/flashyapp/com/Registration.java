@@ -49,6 +49,7 @@ public class Registration extends Activity {
 	 protected OnResponseListener onResponseListener = new OnResponseListener() {
 		 public void onReturnLogin(String error, JSONObject jresponse,String name) {}
 		 public void onReturnLogout(String error){}
+		 public void onReturnSaveDeck(Context context, String mError, JSONObject jresponse){}
 		 public void onReturnDeleteDeck(String error, Context context){}
 		 public void onReturnDeckFromImage(Context context, String mError, JSONObject jresponse){}
 		 public void onReturnDecksPage(String error, JSONObject jresponse, Context context){}

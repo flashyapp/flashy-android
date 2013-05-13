@@ -42,4 +42,6 @@
 	<string name="menuNewLineDeck">New Deck from Text</string>
 	<string name="menuNewPhotoDeck">New Deck from Photo</string>
 	<string name="logoutText">Logging out...</string>
+	<string name="menuSyncList">Sync List of Decks</string>
+	<string name="Sync_deck">Sync This Deck to Match The Website</string>
 </resources>

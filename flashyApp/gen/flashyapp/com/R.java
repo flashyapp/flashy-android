@@ -41,10 +41,11 @@ public final class R {
     public static final class id {
         public static final int DeckList_layout=0x7f080000;
         public static final int DrawLines_layout=0x7f080002;
-        public static final int ViewDeckLogout=0x7f080028;
+        public static final int SyncDeckId=0x7f08002a;
+        public static final int ViewDeckLogout=0x7f080029;
         public static final int ViewDeck_layout=0x7f080019;
         public static final int ViewDeck_top_buttons=0x7f08001a;
-        public static final int action_settings=0x7f080023;
+        public static final int action_settings=0x7f080024;
         public static final int button_login_layout=0x7f08000c;
         public static final int deck_layout=0x7f080001;
         public static final int drawLines_layout_bottom=0x7f080004;
@@ -55,16 +56,17 @@ public final class R {
         public static final int flip_over_button=0x7f08001c;
         public static final int flip_previous_button_landscape=0x7f08001f;
         public static final int flip_previous_button_portrait=0x7f08001b;
-        public static final int listMakerLogout=0x7f080022;
+        public static final int listMakerLogout=0x7f080023;
         public static final int listMakerNewPhotoDeck=0x7f080021;
+        public static final int listMakerSyncList=0x7f080022;
         public static final int login_button=0x7f08000e;
         public static final int login_name=0x7f08000a;
         public static final int login_name_register=0x7f080015;
         public static final int login_text=0x7f080009;
-        public static final int menuAddCol=0x7f080024;
-        public static final int menuAddRow=0x7f080026;
-        public static final int menuDeleteCol=0x7f080025;
-        public static final int menuDeleteRow=0x7f080027;
+        public static final int menuAddCol=0x7f080025;
+        public static final int menuAddRow=0x7f080027;
+        public static final int menuDeleteCol=0x7f080026;
+        public static final int menuDeleteRow=0x7f080028;
         public static final int new_Photodeck_description=0x7f080006;
         public static final int new_Photodeck_name=0x7f080005;
         public static final int new_deck_description=0x7f080012;
@@ -105,6 +107,7 @@ public final class R {
     }
     public static final class string {
         public static final int FlashyWord=0x7f050025;
+        public static final int Sync_deck=0x7f05002a;
         public static final int action_settings=0x7f050001;
         public static final int app_name=0x7f050000;
         public static final int button_draw=0x7f05000d;
@@ -133,6 +136,7 @@ public final class R {
         public static final int menuDeleteRow=0x7f050022;
         public static final int menuNewLineDeck=0x7f050026;
         public static final int menuNewPhotoDeck=0x7f050027;
+        public static final int menuSyncList=0x7f050029;
         public static final int new_deck_text=0x7f050011;
         public static final int password_hint=0x7f050006;
         public static final int registerpage=0x7f050007;

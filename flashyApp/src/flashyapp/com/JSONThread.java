@@ -25,7 +25,7 @@ import android.widget.EditText;
 		public static final int LOGOUT=5;
 		public static final int VIEWDECK=6;
 		public static final int DECKFROMIMAGE=7;
-		public static final int SAVERESOURCE=8;
+		public static final int SAVEDECK=8;
 		public static final int DELETEDECK=9;
 		
 		
@@ -136,9 +136,9 @@ import android.widget.EditText;
 			mError=null;
 			url="http://www.flashyapp.com/api/deck/get_decks";
 	    }
-	    public void BeforeSaveResource(String user, String session,String resourceName)
+	    public void BeforeSaveDeck(String user, String session,String deckId)
 	    {
-	    	/*JSONObject resourceJSON=new JSONObject();
+	    	JSONObject resourceJSON=new JSONObject();
 			resourceJSON=MyJSON.addString(resourceJSON,"username",user);
 			if (resourceJSON==null){
 				//do what?
@@ -147,13 +147,7 @@ import android.widget.EditText;
 			resourceJSON=MyJSON.addString(resourceJSON,"session_id",session);
 			if (resourceJSON==null){
 				//do what?
-			}*/
-			/*
-			 * 
-			 * post resource name and w.e. else is needed!
-			 * 
-			 * 
-			 */
+			}
 			
 			/*
 			 * 
@@ -162,10 +156,13 @@ import android.widget.EditText;
 			 */
 			username=user;
 			
-			//jsend=resourceJSON;
-			jsend=null;
+			jsend=resourceJSON;
+			
 			mError=null;
-			url="www.flashyapp.com/resources/"+resourceName;
+			url="http://www.flashyapp.com/api/deck/"+deckId+"/get";
+			
+			
+			Log.d("GOT TO END OF BEFORE STATEMENT: ", url);
 	    }
 	    
 	    /*public void BeforeMakePic(String user, String session, String pathName)
@@ -333,6 +330,8 @@ import android.widget.EditText;
 	        case DELETEDECK:
 	        	morl.onReturnDeleteDeck(mError,mcontext);
 	        	break;
+	        case SAVEDECK:
+	        	morl.onReturnSaveDeck(mcontext,mError, jresponse);
 	       // case SAVERESOURCE:
 	        	
 			default:
@@ -367,7 +366,7 @@ import android.widget.EditText;
 			public void onReturnLogout(String error);
 			public void onReturnDeleteDeck(String error, Context context);
 			public void onReturnDeckFromImage(Context context, String mError, JSONObject jresponse);
-			
+			public void onReturnSaveDeck(Context context, String mError, JSONObject jresponse);
 			}
 
 	    

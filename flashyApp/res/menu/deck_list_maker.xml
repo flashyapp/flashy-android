@@ -7,6 +7,11 @@
         android:showAsAction="never"
         android:title="@string/menuNewPhotoDeck"/>
     <item
+        android:id="@+id/listMakerSyncList"
+        android:orderInCategory="60"
+        android:showAsAction="never"
+        android:title="@string/menuSyncList"/>
+    <item
         android:id="@+id/listMakerLogout"
         android:orderInCategory="100"
         android:showAsAction="never"

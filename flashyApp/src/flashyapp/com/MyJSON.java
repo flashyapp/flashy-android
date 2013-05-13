@@ -183,7 +183,7 @@ public class MyJSON {
 		}
 		catch(Exception e) {
 	       
-	        Log.e("Error", "Other http error");
+	        Log.d("Error sending in JSONPost", "Other http error");
 	        e.printStackTrace();
 	        return null;
 	    }

@@ -71,10 +71,10 @@ public class DrawLines extends Activity {
 		    
 		    
 		    if (mSide.equals("sideA"))
-		    	getResourceLooper(counter,"sideB");
+		    	getResourceLooper(context,counter,"sideB");
 		    else{
 		    	counter=counter+1;
-		    	getResourceLooper(counter,"sideA");
+		    	getResourceLooper(context,counter,"sideA");
 		    }
 		}
 	};
@@ -82,6 +82,7 @@ public class DrawLines extends Activity {
 	
 	protected OnResponseListener onResponseListener = new OnResponseListener() {
 		public void onReturnDeleteDeck(String error, Context context){}
+		public void onReturnSaveDeck(Context context, String mError, JSONObject jresponse){}
 		 public void onReturnRegister(String error, JSONObject jresponse){}
 		 public void onReturnLogout(String error){}
 		 public void onReturnDecksPage(String error, JSONObject jresponse, Context context){
@@ -176,7 +177,7 @@ public class DrawLines extends Activity {
 				        	//Log.d("Debug", "In card loop");
 				        	
 				        	
-				        dl.getResourceLooper(0, "sideA");
+				        dl.getResourceLooper(context, 0, "sideA");
 				       // }
 				       
 					 
@@ -374,7 +375,7 @@ public class DrawLines extends Activity {
 		
 	}
 	
-	public void getResourceLooper(int i, String paramSide)
+	public void getResourceLooper(Context context, int i, String paramSide)
 	{
 		int Length=mCards.length();
 		if (i<Length){
@@ -390,11 +391,31 @@ public class DrawLines extends Activity {
 		    	Log.d("WRITING RESOURCES: ", side);
 		    	
 		    	String regex="(<img src=\"\\[FLASHYRESOURCE:)(\\w{8,})(\\]\" />)";
-		    	//String regex2="\\[\\]";
+		    	
+		    /*	//String regex2="\\[\\]";
 		    	String resource=side.replaceAll(regex, "$2");
 		    	//String resourceB=sideB.replaceAll(regex, "$2");
 		    	Log.d("RESOURCES: ", resource );
-		    	getAndSaveResource(resource, paramSide,i);
+		    	getAndSaveResource(context, resource, paramSide,i);*/
+		    	
+		    	if (side.contains(regex)){
+			    	String resource=side.replaceAll(regex, "$2");
+			    	//String resourceB=sideB.replaceAll(regex, "$2");
+			    	Log.d("RESOURCES: ", resource );
+			    	getAndSaveResource(context, resource, paramSide,i);
+		    	}else{
+		    		
+		    		 if (paramSide.equals("sideA"))
+		 		    	getResourceLooper(context,i,"sideB");
+		 		    else{
+		 		    	i=i+1;
+		 		    	getResourceLooper(context,i,"sideA");
+		 		    }
+		    	}
+		    	
+		    	
+		    	
+		    	
 		    
 		    	
 			}catch (Exception e){
@@ -410,9 +431,9 @@ public class DrawLines extends Activity {
 	}
 	
 	
-	public void getAndSaveResource(String resourceName, String side, int counter)
+	public void getAndSaveResource(Context context, String resourceName, String side, int counter)
 	{
-		SaveResourceThread thread2=new SaveResourceThread(this, onSaveResourceListener,side, counter );
+		SaveResourceThread thread2=new SaveResourceThread(context, onSaveResourceListener,side, counter );
 		if (thread2.wifiOn()) {
 		thread2.BeforeSaveResource(resourceName);
 		 thread2.execute(new String[]{null});

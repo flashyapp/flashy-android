@@ -36,7 +36,7 @@ public class Registration extends Activity {
 		 public void onReturnDecksPage(String error, JSONObject jresponse, Context context){}
 		 public void onReturnRegister(String error,JSONObject jresponse){
 			 // after you have registered, return to login
-			 if (error != null){
+			 if (error == null){
 					Intent intent = new Intent(Registration.this, MainActivity_LogIn.class);
 					//put extra data and then on homescreen I can check for this extra data and display it saying
 					//to check their email and then login

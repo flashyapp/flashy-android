@@ -96,8 +96,16 @@ public class MyJSON {
 				string=null;
 				break;
 			case 1:
-				string="error from server";
-				title="Server Error";
+				string="Username is Invalid";
+				title="Registration Error";
+				break;
+			case 2:
+				string="Password is Invalid";
+				title="Registration Error";
+				break;
+			case 3:
+				string="Email is invalid or already in use";
+				title="Registration Error";
 				break;
 			case 101:
 				string="username or password is incorrect";
@@ -107,7 +115,7 @@ public class MyJSON {
 				string="Error: Please check input";
 				title="General Error";
 			}
-			
+		
 			
 			// create the popup for the user
 			if (string != null)

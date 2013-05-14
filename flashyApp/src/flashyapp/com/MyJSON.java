@@ -26,14 +26,13 @@ import org.json.JSONObject;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.net.wifi.WifiManager;
 import android.util.Log;
 
+
+// a class that has static methods to modularize Http Requests
 public class MyJSON {
 
-
-
-	
+	// adds the key value pair to the JSON Object
 	public static  JSONObject addString(JSONObject json, String key, String value){
 		try{
 			json.put(key, value);
@@ -44,11 +43,12 @@ public class MyJSON {
 			Log.e("JSON FAILURE!","JSON couldn't add the data");
 			e.printStackTrace();
 			return null;
-			
+		
 		}
 		
 	}
 
+	//takes the response from the server and makes that into a string which it returns
 	public static String convertStreamToString(InputStream is) {
 
 	    BufferedReader reader = new BufferedReader(new InputStreamReader(is));
@@ -72,7 +72,7 @@ public class MyJSON {
 	}
 
 	
-	
+	//check the error of the json object and create a popup stating the error to the user
 	public static String errorChecker(JSONObject json, Context context)
 	{
 		String string = null;
@@ -104,12 +104,12 @@ public class MyJSON {
 				title="Login Error";
 				break;
 			default:
-				string="other error from server";
+				string="Error: Please check input";
 				title="General Error";
 			}
 			
 			
-			
+			// create the popup for the user
 			if (string != null)
 			{	
 				Log.d("DEBUG", "inside alertDialogue box if statement:   " + string);
@@ -124,13 +124,10 @@ public class MyJSON {
 					}
 				});
 				
-				
-			
 				AlertDialog other=ald.create();
 				other.show();
 				
 			}
-			Log.d("POPUPPP", "Popup should've appeared"+error+string);
 			
 		}
 		
@@ -138,7 +135,7 @@ public class MyJSON {
 	}
 	
 	
-	
+	//convert the response to a a string with helper function
 	public static String responseChecker(HttpResponse httpResponse){
 		try{
 			if(httpResponse!=null){
@@ -158,10 +155,10 @@ public class MyJSON {
 	    }
 		return null;
 	}
+	
+	//Actually execute the HttpPost
 	public static HttpResponse sendJSONObject(JSONObject json, String url){
 		Log.d("DEBUGGING JSON", json.toString());
-		
-		
 		
 		try{
 			HttpClient httpClient = new DefaultHttpClient();
@@ -191,10 +188,12 @@ public class MyJSON {
 		
 		
 	}
+	
+	
+	
+	//method specific to getting resources
+	//performs a get request rather than a post
 	public static HttpResponse getResource( String url){
-		//Log.d("DEBUGGING JSON", json.toString());
-		
-		
 		
 		try{
 			HttpClient httpClient = new DefaultHttpClient();
@@ -215,17 +214,17 @@ public class MyJSON {
 		
 		
 	}
+	
+	
+	// method specific to sending in an image to the server
+	// handles HttpPost with image
 	public static HttpResponse sendMIMEPost(String url, File f, String session, String name)
 	{
 		 	HttpClient httpClient = new DefaultHttpClient();
-
-		    
-		    HttpPost httpPost = new HttpPost(url); 
+		 	HttpPost httpPost = new HttpPost(url); 
 
 		    MultipartEntity entity = new MultipartEntity(HttpMultipartMode.BROWSER_COMPATIBLE);
 
-			 Log.d("BEFORE READING", "RIGHT BEFORE I READ");
-		    
 		    try{
 		    	entity.addPart("file", new FileBody(f));
 		    	entity.addPart("username", new StringBody(name));
@@ -246,13 +245,10 @@ public class MyJSON {
 		     
 		    } catch (ClientProtocolException e) {
 		    	 Log.d("DEBUGGING","FAILEDDD on exception");
-		    	
-		    	// writing exception to log
 		        e.printStackTrace();
 		     
 		    } catch (IOException e) {
 		    	Log.d("DEBUGGING","FAILEDDD on exception");
-		        // writing exception to log
 		        e.printStackTrace();
 		    }
 		    return null;
@@ -260,6 +256,7 @@ public class MyJSON {
 	
 	
 	
+	//Adds an Array of objects to a JSONObject
 	public static JSONObject addArray(JSONObject json, String key, JSONObject[] value){
 		JSONArray array=new JSONArray();
 		try{
@@ -290,7 +287,7 @@ public class MyJSON {
 		
 	}
 	
-	
+	//create a pop up for user that notifies that the wifi is off
 	public static void WifiAlert(Context context)
 	{
 		try{
@@ -306,9 +303,6 @@ public class MyJSON {
 				Log.d("Debug", "Alert Got Clicked");
 			}
 		});
-		
-		
-	
 		AlertDialog other=ald.create();
 		other.show();
 		}

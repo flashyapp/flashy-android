@@ -5,6 +5,8 @@ import java.util.ArrayList;
 import android.content.Context;
 import android.widget.Button;
 
+
+//A button that stores the array of lines
 public class LineSubmissionButton extends Button{
 	private ArrayList<Row> rows;
 	

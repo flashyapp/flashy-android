@@ -14,8 +14,6 @@ import org.json.JSONObject;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.ActivityInfo;
-import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.net.wifi.WifiManager;
@@ -26,13 +24,11 @@ import android.support.v4.app.NavUtils;
 import android.util.Log;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
-import android.view.Display;
 import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
@@ -40,6 +36,10 @@ import android.widget.TextView;
 import flashyapp.com.JSONThread.OnResponseListener;
 import flashyapp.com.MIMEThread.OnResponseMIMEListener;
 
+
+
+//This class is the main screen when a user has logged in before.
+//It shows the list of decks and allows for the creation and deletion of decks
 public class DeckListMaker extends Activity {
 	private String username;
 	private String sessionId;
@@ -60,6 +60,7 @@ public class DeckListMaker extends Activity {
 		 public void onReturnDeleteDeck(String error, Context context){
 			 Log.d("RETURNED", "From Delete Operation");
 			 
+			 //After the deck has been deleted, send a JSON request to get the new revised list of decks
 			 JSONThread thread=new JSONThread(context, onResponseListener, JSONThread.GETDECKLIST);
 			 if (thread.wifiOn()){
 				 thread.BeforeDecksPage(username,sessionId);
@@ -68,67 +69,14 @@ public class DeckListMaker extends Activity {
 			 else
 				 MyJSON.WifiAlert(context);
 		 }
-		 public void onReturnDeckFromImage(Context context, String mError, JSONObject jresponse)
-		 {
-			 /*DrawLines dl=(DrawLines)context;
-			 
-			 Log.d("Debug", "In reponse");
-			 if (mError==null){
-				 Log.d("Debug", "In null error");
-				 try {
-					 
-					 Log.d("DEBUG", "Before writing deck info file");
-					 	JSONObject jdeck=jresponse.getJSONObject("deck");
-					 	 JSONArray cards=jdeck.getJSONArray("cards");
-					        mCards=cards;
-					       
-					 	String deckName=jdeck.getString("deck_id");
-					 	String commonName=jdeck.getString("name");
-					 	String deckDescrip=jdeck.getString("description");
-					 	
-					 	//Build deck info card
-					 	DataOutputStream out = 
-				                new DataOutputStream(openFileOutput(deckName+".txt", Context.MODE_PRIVATE));
-				        out.writeUTF(commonName);
-				        out.writeUTF(deckDescrip);
-				        out.writeUTF(mCards.toString());
-				        out.close();
-					 	
-				        Log.d("DEBUG", "After writing deck info file");
-					 	dl.getResourceLooper(0, "sideA");
-				     
-					 //	DataOutputStream out = 
-				     //           new DataOutputStream(openFileOutput(MainActivity_LogIn.GETDECKS_FILE, Context.MODE_PRIVATE));
-				     //   out.writeUTF(deckArray.toString());
-				      //   out.close();
-				       
-				    	
-				    }catch (IOException e) {
-				        Log.i("Data Input Sample", "I/O Error");
-				    }catch (Exception e){
-				    	 Log.d("Error", "Cannot take resources from return json object");
-			 				e.printStackTrace();
-				    }
-				
-				 
-				 
-				 
-				 Log.d("THREAD Response", "Need to correct later but finished json submission");
-				 
-				//dl.updateDeckList();
-				
-				 */
-			 }
-	
+		 public void onReturnDeckFromImage(Context context, String mError, JSONObject jresponse){ }
 		 public void onReturnDecksPage(String error, JSONObject jresponse, Context context){
+			 //Turn JSONResponse of the deck list into a file on the phone and then start up the 
+			 //deck list page
 			 JSONArray deckArray=null;
 				try{
-					
 					if (error==null)
 						deckArray=jresponse.getJSONArray("decks");
-					
-				
-				
 				}
 				catch(Exception e) {
 					 Log.d("Error", "Cannot turn response to JSON");
@@ -136,25 +84,15 @@ public class DeckListMaker extends Activity {
 			       
 			    }
 				
-				//Log.d("DEBUG DeckList", "Before if statement");
 				if (deckArray != null)
 				{
-			
-					
-					
-					
 					try {
 				        //writing list of decks 
 						Log.d("Trying to write list of decks", "Should work?");
 				        DataOutputStream out = 
 				                new DataOutputStream(openFileOutput(MainActivity_LogIn.GETDECKS_FILE, Context.MODE_PRIVATE));
 				        out.writeUTF(deckArray.toString());
-				        
-				      
-				   
 				        out.close();
-				        
-				    	
 				    }catch (IOException e) {
 				        Log.i("Data Input Sample", "I/O Error");
 				    }catch (Exception e)
@@ -178,15 +116,16 @@ public class DeckListMaker extends Activity {
 	//prevents the up/back key from working
 	public boolean onKeyDown(int keyCode, KeyEvent event) {
 	     if (keyCode == KeyEvent.KEYCODE_BACK) {
-	     //preventing default implementation previous to android.os.Build.VERSION_CODES.ECLAIR
-	     return true;
+	    	 return true;
 	     }
 	     return super.onKeyDown(keyCode, event);    
 	}
 	
+	
 	protected OnResponseMIMEListener onResponseMIMEListener = new OnResponseMIMEListener() {
 		public void onReturnMIMEIn(String error, JSONObject jresponse, String name, Context context)
 		{
+			//handles the result of sending in a photo to be parsed
 			JSONArray divArray=null;
 			String imgName=null;
 			try{
@@ -201,6 +140,7 @@ public class DeckListMaker extends Activity {
 				e.printStackTrace();
 		    }
 			
+			//Start the activity to show the photo with the lines on it
 			if (divArray != null){
 				
 				Intent intent=new Intent(context,DrawLines.class);
@@ -225,42 +165,23 @@ public class DeckListMaker extends Activity {
 		super.onCreate(savedInstanceState);
 		
 		Log.d("DEBUGGG", "DeckListMaker was started");
-		
-		
-		
 		setContentView(R.layout.activity_deck_list_maker);
-		// Show the Up button in the action bar.
 		
-		
-	
-		
+		//load information from previous caller
 		Intent intent =getIntent();
 		sessionId = intent.getStringExtra(MainActivity_LogIn.INTENT_EXTRA_DATA_SESSION);
 		username=intent.getStringExtra(MainActivity_LogIn.INTENT_EXTRA_DATA_USER);
-		/*//String deckString=intent.getStringExtra(MainActivity_LogIn.INTENT_EXTRA_DATA_DECKLIST);*/
+		
 		
 		String deckString=null;
 		try {
-	        //reading SessionId
+	        //read in the string of decks in deckList
+			DataInputStream in = new DataInputStream(openFileInput(MainActivity_LogIn.GETDECKS_FILE));
 	       
-	    
-	    	DataInputStream in = new DataInputStream(openFileInput(MainActivity_LogIn.GETDECKS_FILE));
-	       //InputStream is=new InputStream(openFileInput(SESSION_FILE));
-	        
 	    	try {
-	    //		username=in.readUTF();
-	    		
-	    			
-	    		
-	    			deckString=in.readUTF();
-	    			//username=in.readUTF();
-	    		
-	            	Log.i("Data Input List of decks!", deckString);
-	              	
-	    			
-	    		
-	          
-	        } catch (EOFException e) {
+	    		deckString=in.readUTF();
+	    		Log.i("Data Input List of decks!", deckString);
+	    	} catch (EOFException e) {
 	            Log.i("Data Input Sample from MAIN", "End of file reached");
 	        }
 	        in.close();
@@ -269,14 +190,10 @@ public class DeckListMaker extends Activity {
 	        return;
 	    }
 	    
-		
-		
 		jarray=null;
 		try {
-    	 
-			
-          	
-				jarray=new JSONArray(deckString);
+			//convert String into an actual array (JSONArray)
+			jarray=new JSONArray(deckString);
 				
 			
 		} catch (Exception e){
@@ -284,34 +201,34 @@ public class DeckListMaker extends Activity {
 			return;
 		}
 	
+		//method to display the decks
 		handleDecks(jarray);
 	
-		/*File f=new File(MainActivity_LogIn.GETDECKS_FILE);
-		f.delete();*/
+		
 	}
 
-	
+	//helper method that takes the array of decks and displays them appropriately on the screen
 	private void handleDecks(JSONArray deckArray)
 	{
-		
-		
-		
-		
+		//arrays to store the data
 		ArrayList<String> deckIds=new ArrayList<String>();
 		ArrayList<String> deckNames=new ArrayList<String>();
 		DeckLongClickOn=false;
 		
-		ScrollView scroll=new ScrollView(this);
 		
+		//expandable view to store all the decks
+		ScrollView scroll=new ScrollView(this);
+		//single layout that goes inside the scrollView
 		LinearLayout layoutOfLayouts=new LinearLayout(this);
 		layoutOfLayouts.setOrientation(LinearLayout.VERTICAL);
 		
+		// Show the list of decks in three columns
 		int index=0;
 		Log.d("DEBUG NUMBERS", "ArrayLength: " + deckArray.length() + " 1/3: " + (deckArray.length()/3));
 		for (index=0; index<(deckArray.length()/3); index++)
 		{
 			int indexBase=3*index;
-			
+			// Action necessary to show each row of the list of decks
 			LinearLayout innerLayout=new LinearLayout(this);
 			innerLayout.setOrientation(LinearLayout.HORIZONTAL);
 			TextView b0=makeListButtonHelper(deckIds,deckNames,deckArray,indexBase);
@@ -321,6 +238,7 @@ public class DeckListMaker extends Activity {
 			innerLayout.addView(b1);
 			innerLayout.addView(b2);
 			layoutOfLayouts.addView(innerLayout);
+			//Used for visual spacing on the screen. no real functional purpose
 			LinearLayout filler=new LinearLayout(this);
 			Button fillB=new Button(this);
 			fillB.setHeight(30);
@@ -333,6 +251,8 @@ public class DeckListMaker extends Activity {
 		lastRow.setOrientation(LinearLayout.HORIZONTAL);
 		//lastRow.setGravity(Gravity.CENTER_HORIZONTAL);
 		index=index*3;
+		
+		//Handle the decks the leftover decks that didn't fill up the columns perfectly
 		Log.d("DEBUG NUMBERS: ", "Mod 3: "+ deckArray.length() + "Index Start: "+index);
 		for (;index<(deckArray.length());index++)
 		{
@@ -341,6 +261,7 @@ public class DeckListMaker extends Activity {
 			lastRow.addView(b);
 		
 		}
+		//add filler at the end of the unfilled row
 		if (deckArray.length()%3 != 0){
 			layoutOfLayouts.addView(lastRow);
 			LinearLayout filler=new LinearLayout(this);
@@ -359,31 +280,13 @@ public class DeckListMaker extends Activity {
 		layout.addView(scroll);
 		layout.invalidate();
 		
-		Display display = ((WindowManager) getSystemService(WINDOW_SERVICE)).getDefaultDisplay();
-        @SuppressWarnings("deprecation")
-		int orientation = display.getOrientation();
-         switch(orientation) {
-         
-         	//displays this on landscape!! (sideways)
-            case Configuration.ORIENTATION_PORTRAIT:
-                Log.d("ORIENTATION:", " Screen is portrait!");
-                break;
-            //never has displayed this yet
-            case Configuration.ORIENTATION_LANDSCAPE:
-            	Log.d("ORIENTATION:", " Screen is landscape!");
-            	break;
-            //displays this on PORTRAIT
-            case Configuration.ORIENTATION_UNDEFINED:
-            	Log.d("ORIENTATION:", " Screen is undefined!");
-        		break;
-        }
 		
 	
 	}
 
 	
 	
-	
+	//called by the options menu to lead into making a deck by means of a photo
 	public void makePicture(View view)
 	{
 		
@@ -395,11 +298,12 @@ public class DeckListMaker extends Activity {
 	
 	
 	
-	
+	//helper function to set the styling of each icon of the deckList
 	private TextView makeListButtonHelper(ArrayList<String> deckIds, ArrayList<String> deckNames,JSONArray deckArray, int index)
 	{
 		
 		try{
+			//load the individual information
 			JSONObject tempDeck=deckArray.getJSONObject(index);
 			String deckid=tempDeck.getString("deck_id");
 			String name=tempDeck.getString("name");
@@ -421,22 +325,7 @@ public class DeckListMaker extends Activity {
 			tv.setHeight(70);
 			
 			tv.setGravity(Gravity.CENTER_HORIZONTAL);
-			
-			
-			/*tv.setOnLongClickListener(new View.OnLongClickListener() {
-				
-				@Override
-				public boolean onLongClick(View v) {
-					Log.d("LONG CLICK", "Should pop up menu!");
-					DeckListMaker.DeckLongClickOn=true;
-					
-					
-					
-					
-					return false;
-				}
-			});*/
-			
+			// view the deck when the individual deck is clicked
 			tv.setOnClickListener(new View.OnClickListener() {
 	             public void onClick(View view) {
 	                 // Perform action on click
@@ -453,6 +342,7 @@ public class DeckListMaker extends Activity {
 	         });
 			Log.d("DEBUG", "Before adding textview to scrollview");
 			
+			//allow this deck to be longClicked to bring up a context menu
 			registerForContextMenu(tv);
 			
 			return tv;
@@ -468,16 +358,17 @@ public class DeckListMaker extends Activity {
 	
 	
 	
-	
+	// on the return from the camera intent
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent intent) {
 		super.onActivityResult(requestCode, resultCode, intent);
 			cameraHelper(intent);
 	}
 
-	
+	// handle the picture that the camera just took
 	private void cameraHelper(Intent intent)
 	{
+		// take the photo
 		Bundle extras = intent.getExtras();
 	    if (extras == null){
 	    	Log.d("PhotoIntent", "Photo was cancelled");
@@ -485,6 +376,8 @@ public class DeckListMaker extends Activity {
 	    }
 		Bitmap bm = (Bitmap) extras.get("data");
 	   
+		
+		//store the photo
 	    File path = Environment.getExternalStorageDirectory();
 	    File dir=new File(path,MainActivity_LogIn.FILE_DIR);
 	    dir.mkdir();
@@ -501,34 +394,19 @@ public class DeckListMaker extends Activity {
             e.printStackTrace();
         }
         
-	   // galleryAddPic();
-	    
+	    //Send in the photo to the server to be parsed
 	    Log.d("BEFORE POST", "RIGHT BEFORE MIMEPOST");
 	    MIMEThread thread=new MIMEThread((Context)this, onResponseMIMEListener);
 		if (thread.wifiOn()){
-	    thread.BeforeMakePic(username,sessionId, mCurrentPhotoPath);
-		thread.execute(new String[]{null});
+		    thread.BeforeMakePic(username,sessionId, mCurrentPhotoPath);
+			thread.execute(new String[]{null});
 		}
 		else
 			MyJSON.WifiAlert(this);
 	}
 	
 
-	/*private void galleryAddPic() {
-        Intent mediaScanIntent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
-        File f = new File(mCurrentPhotoPath);
-        Uri contentUri = Uri.fromFile(f);
-        mediaScanIntent.setData(contentUri);
-        this.sendBroadcast(mediaScanIntent);
-    }
-	*/
-	
-	
-	
-	
-	
-	
-	
+	//Handle the menu that appears when the menu button is pressed
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		// Inflate the menu; this adds items to the action bar if it is present.
@@ -537,7 +415,7 @@ public class DeckListMaker extends Activity {
 	}
 	
 	
-	
+	// define operations for the menu button items
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
@@ -552,10 +430,12 @@ public class DeckListMaker extends Activity {
 			NavUtils.navigateUpFromSameTask(this);
 			return true;
 		case R.id.listMakerNewPhotoDeck:
+			//take a picture to be submitted
 			 Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
 			 startActivityForResult(takePictureIntent, 4);
 			return true;
 		case R.id.listMakerLogout:
+			//logout if there is wifi
 			WifiManager wifi = (WifiManager)getSystemService(Context.WIFI_SERVICE);
 	    	
 			if (wifi.isWifiEnabled()){
@@ -569,6 +449,8 @@ public class DeckListMaker extends Activity {
 				callWifiAlert();
 			break;
 		case R.id.listMakerSyncList:
+			
+			//Sync the deck list to the server in case decks were added on the website
 			WifiManager wifi2 = (WifiManager)getSystemService(Context.WIFI_SERVICE);
 	    	
 			if (wifi2.isWifiEnabled()){
@@ -582,12 +464,13 @@ public class DeckListMaker extends Activity {
 		return super.onOptionsItemSelected(item);
 	}
 	
+	//Alerts user that there is no wifi
 	public void callWifiAlert()
 	{
 		MyJSON.WifiAlert(this);
 	}
 	
-	
+	// handle long presses on a deck in the list
 	 @Override  
 	   public void onCreateContextMenu(ContextMenu menu, View v,ContextMenuInfo menuInfo) {  
 		 super.onCreateContextMenu(menu, v, menuInfo);  
@@ -597,6 +480,8 @@ public class DeckListMaker extends Activity {
 	      
 	}  
 	 
+	 
+	 
 	 @Override  
 	 public boolean onContextItemSelected(MenuItem item) {  
 	         if(item.getTitle().equals("Delete Deck")){deleteDeck(item.getItemId());}  
@@ -605,6 +490,8 @@ public class DeckListMaker extends Activity {
 	 return true;  
 	 }  
 
+	 
+	 //actually delete the deck by deleting it on the server and later, updating the deckList
 	 private void deleteDeck(int id)
 	 {
 		TextView tv=(TextView)findViewById(id);
@@ -618,10 +505,6 @@ public class DeckListMaker extends Activity {
 			MyJSON.WifiAlert(this);
 		
 	 }
-	 private void appendDeck(int id)
-	 {
-		 TextView tv=(TextView)findViewById(id);
-			Log.d("APPENDDECK", tv.getText()+"  "+id);
-			//makePic(tv)
-	 }
+	 
+	 
 }

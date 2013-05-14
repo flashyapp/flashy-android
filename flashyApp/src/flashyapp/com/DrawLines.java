@@ -45,35 +45,19 @@ public class DrawLines extends Activity {
 	
 	
 	protected OnResponseSaveResourceListener onSaveResourceListener = new OnResponseSaveResourceListener() {
-		
+		// Obtain a resource from the server and save it to the phone
+		//then call the next resource to be loaded
 		public void onReturnSaveResource(Context context, Bitmap bitmap, String mSide, int counter, String name){
 			Log.d("RESOURCE WAS OBTAINED", "Resource gotten after httpget command");
-			/*DrawLines dl=(DrawLines)context;*/
-			
-			
-			/*File path = Environment.getExternalStorageDirectory();
-		    File dir=new File(path,MainActivity_LogIn.FILE_DIR);*/
-		    //dir.mkdir();
 		    
-		   
 			
-			
-			
-			
-		    //String StrPath=path.getPath();
-		    
+			// write the resource to the SDcard
 		    File path = Environment.getExternalStorageDirectory();
 		    File dir=new File(path,MainActivity_LogIn.FILE_DIR);
 		    dir.mkdir();
 		    String fileName=name+".jpg";
 		    File f = new File(dir,fileName);
 		    
-		    
-		   /* String fileName=name+".jpg";
-		    File f = new File(dir,fileName);*/
-		    //was takePictureIntent
-		   
-		    //takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(f));
 		    try {
 		    	Log.d("WRITING","writing to from DRAWLINES : "+f.getCanonicalPath());
 		    	FileOutputStream out = new FileOutputStream(f);
@@ -87,7 +71,7 @@ public class DrawLines extends Activity {
 	        }
 		    
 		    
-		    
+		    // go on to the next resource in the list of resources to be downloaded
 		    if (mSide.equals("sideA"))
 		    	getResourceLooper(context,counter,"sideB");
 		    else{
@@ -104,15 +88,13 @@ public class DrawLines extends Activity {
 		 public void onReturnRegister(String error, JSONObject jresponse){}
 		 public void onReturnLogout(String error){}
 		 public void onReturnDecksPage(String error, JSONObject jresponse, Context context){
-			 
+			 // turn the JSON into a deck List
+			 // used to update the List of decks after a deck has been created
 			 JSONArray deckArray=null;
 				try{
 					
 					if (error==null)
 						deckArray=jresponse.getJSONArray("decks");
-					
-					
-				
 				}
 				catch(Exception e) {
 					 Log.d("Error", "Cannot turn response to JSON");
@@ -120,22 +102,15 @@ public class DrawLines extends Activity {
 			       
 			    }
 				
-				//Log.d("DEBUG DeckList", "Before if statement");
 				if (deckArray != null)
 				{
 			
 					try {
 				        //writing list of decks 
-						Log.d("Trying to write list of decks", "Should work?");
 				        DataOutputStream out = 
 				                new DataOutputStream(openFileOutput(MainActivity_LogIn.GETDECKS_FILE, Context.MODE_PRIVATE));
 				        out.writeUTF(deckArray.toString());
-				        
-				      
-				   
 				        out.close();
-				        
-				    	
 				    }catch (IOException e) {
 				        Log.i("Data Input Sample", "I/O Error");
 				    }catch (Exception e)
@@ -155,26 +130,30 @@ public class DrawLines extends Activity {
 		 }
 		 
 		 public void onReturnLogin(String error, JSONObject jresponse,String name) { }
+		 
+		 // take the list of resources and cards and handle them by looping through them
+		 // and storing them one by one
 		 public void onReturnDeckFromImage(Context context, String mError, JSONObject jresponse){
 			 DrawLines dl=(DrawLines)context;
 			 
 			 
-			 Log.d("Debug", "In reponse");
+			 // as long as the JSON went through correctly
 			 if (mError==null){
 				 Log.d("Debug", "In null error");
 				 try {
 					 
-					 Log.d("DEBUG", "Before writing deck info file");
+					 
 					 	JSONObject jdeck=jresponse.getJSONObject("deck");
 					 	 JSONArray cards=jdeck.getJSONArray("cards");
-					        mCards=cards;
+					     // store this within the file for the looper function 
+					 	 mCards=cards;
 					        
-					        
+					    // store an individual deck info page 
 					 	String deckName=jdeck.getString("deck_id");
 					 	String commonName=jdeck.getString("name");
 					 	String deckDescrip=jdeck.getString("description");
 					 	
-					 	//Build deck info card
+					 	//Build deck info page
 					 	DataOutputStream out = 
 				                new DataOutputStream(openFileOutput(deckName+".txt", Context.MODE_PRIVATE));
 				        out.writeUTF(commonName);
@@ -185,54 +164,16 @@ public class DrawLines extends Activity {
 				   
 				        out.close();
 					 	
-				        Log.d("DEBUG", "After writing deck info file");
-					 	
-					 	
-					 	
-				       
-				       /* for (int i=0; i< cards.length(); i++)
-				        {*/
-				        	//Log.d("Debug", "In card loop");
-				        	
-				        	
+				        //start the loop of resource downloads
 				        dl.getResourceLooper(context, 0, "sideA");
-				       // }
-				       
-					 
-					 
-					 
-					 /*	DataOutputStream out = 
-				                new DataOutputStream(openFileOutput(MainActivity_LogIn.GETDECKS_FILE, Context.MODE_PRIVATE));
-				        out.writeUTF(deckArray.toString());
-				        
-				     
-				  
-				        out.close();
-				        */
-				    	
-				   /* }catch (IOException e) {
-				        Log.i("Data Input Sample", "I/O Error");*/
+				      
 				    }catch (Exception e){
 				    	 Log.d("Error", "Cannot take resources from return json object");
 			 				e.printStackTrace();
 				    }
 				
-				 
-				 
-				 
-				 Log.d("THREAD Response", "Need to correct later but finished json submission");
-				 
-				//dl.updateDeckList();
-				
-				 
 			 }
-			 
-			 
-			
-			 
-			 
-			 
-		 }
+		}
 	};
 	
 	
@@ -241,31 +182,32 @@ public class DrawLines extends Activity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		//setContentView(R.layout.activity_draw_lines);
 		
 		
-		Log.d("DEBUG", "DrawLines onCreate 1");
+		
+		//get information from caller of this activity
 		Intent intent =getIntent();
 		sessionId = intent.getStringExtra(MainActivity_LogIn.INTENT_EXTRA_DATA_SESSION);
 		username=intent.getStringExtra(MainActivity_LogIn.INTENT_EXTRA_DATA_USER);
 		String coords=intent.getStringExtra("imageCoords");
 		imgName=intent.getStringExtra("imageName");
-		Log.d("DEBUG", "DrawLines onCreate 1.5");
+		
+		
+		
 		ArrayList<Row> rows=new ArrayList<Row>();
-		/*setMenuAddRow(false);
-		setMenuDeleteRow(false);*/
+		//initialize booleans of options menu so they can work like a toggle from drawView
 		mMenuAddRowIsChecked=false;
 		 mMenuDeleteRowIsChecked=false;
 		mMenuAddColIsChecked=false;
 		 mMenuDeleteColIsChecked=false;
 		
-		Log.d("DEBUG", "DrawLines onCreate 1.75");
+		// set the styling of the screen
 		 LinearLayout ll=new LinearLayout(this);
 		 ll.setBackgroundColor(Color.BLACK);
 		 ll.setOrientation(LinearLayout.VERTICAL);
 		 ll.setGravity(Gravity.CENTER_HORIZONTAL);
 		
-		 Log.d("DEBUG", "DrawLines onCreate 2");
+		
 		 LineSubmissionButton b=new LineSubmissionButton(this,rows);
 		 b.setText("Submit Deck");
 		 b.setHeight(50);
@@ -278,35 +220,10 @@ public class DrawLines extends Activity {
 				DrawLines dl=(DrawLines)v.getContext();
 				
 				LineSubmissionButton lsb=(LineSubmissionButton)v;
-				if (dl.etDeckName.getText() != null)
-				{
-					Log.d("ETDECKNAME:", ""+dl.etDeckName.getText());
-					dl.makeLineIntent(lsb.returnArray());
-				}
-				else
-					dl.etDeckName.setError("Deck Name Required");
+				dl.makeLineIntent(lsb.returnArray());
+				
 			}
 		});
-		 
-		 
-		 
-		 /*ToggleButton deleteLine=new ToggleButton(this);
-		 deleteLine.setChecked(false);
-		 deleteId = 55;
-		 deleteLine.setId(deleteId);
-		 deleteLine.setTag("DELETELINE TAG");
-		 deleteLine.setText("Delete a Line");
-		 deleteLine.setTextOn("Delete Line On");
-		 deleteLine.setTextOff("Delete Line Off");
-		*/
-		 
-		/* ToggleButton addLine=new ToggleButton(this);
-		 addLine.setChecked(false);
-		 addLineId=56;
-		 addLine.setId(addLineId);
-		 addLine.setText("Add Column");
-		 addLine.setTextOn("Add Column On");
-		 addLine.setTextOff("Add Column Off");*/
 		 
 		 
 		 Log.d("DEBUG", "DrawLines onCreate 3");
@@ -329,45 +246,32 @@ public class DrawLines extends Activity {
 		 llforET.addView(etDeckDescrip);
 		 topRow.addView(llforET);
 		 topRow.addView(b);
-		/* topRow.addView(deleteLine);
-		 topRow.addView(addLine);*/
+		
 		 
-		 Log.d("DEBUG", "DrawLines onCreate 4");
 		 DrawView drawView = new DrawView(this,coords,rows);
 		
-		// drawView.getLayoutParams().height=260;
-		 
-		 
 		 ll.addView(topRow);
 		 ll.addView(drawView);
-		// ll.addView(addLine);
-		 
-		 
-		/* LinearLayout newLL=(LinearLayout)findViewById(R.id.drawLines_layout_top);
-		 newLL.addView(drawView);*/
-		 Log.d("DEBUG", "DrawLines onCreate 5");
+		
 	     setContentView(ll);
 		
-		//setContentView(R.layout.activity_draws);
 	}
 
 	
 	public void makeLineIntent(ArrayList<Row> rows)
 	{
-		
-		Log.d("ENTERED makeLineIntent  ETDECKNAME:", "..........................."+etDeckName.getText());
-		
-		
+		// as long as the deck has a name it can be submitted
 		String str=etDeckName.getText().toString();
 		if (str.equalsIgnoreCase("")){
-			
 			etDeckName.setError("Deck Name Required");
 			return;
 		}
 		else
-			Log.d("ETDECKNAME:", "..........................."+etDeckName.getText());
+			Log.d("ETDECKNAME:", " "+etDeckName.getText());
 		
 		
+		
+		//create the JSON object to send in the confirmed lines on the photo
 		JSONObject complete=new JSONObject();
 		JSONArray divs=new JSONArray();
 		JSONArray row=null;
@@ -394,13 +298,9 @@ public class DrawLines extends Activity {
 	    }
 		
 		
-		Log.d("COMPLETE JSON OBJECT --------------------------", complete.toString());
+		Log.d("COMPLETE JSON OBJECT", complete.toString());
 		
-		/*
-		 * 
-		 * FIX THIS!!!! Not stable/good
-		 * need to make its own method to get back resources etc
-		 */
+		// Actually submit the lines to the server
 		JSONThread thread=new JSONThread((Context)this, onResponseListener, JSONThread.DECKFROMIMAGE);
 		 if (thread.wifiOn()){
 			 thread.BeforeLineSubmission(complete);
@@ -409,11 +309,11 @@ public class DrawLines extends Activity {
 		 else
 			 MyJSON.WifiAlert(this);
 		
-		
-		
-		
 	}
 	
+	
+	
+	// A function used to loop through all the resources that need to be downloaded and saved
 	public void getResourceLooper(Context context, int i, String paramSide)
 	{
 		int Length=mCards.length();
@@ -423,33 +323,24 @@ public class DrawLines extends Activity {
 			try{
 				JSONObject temp=mCards.getJSONObject(i);
 				Log.d("DEBUG Looper 2: ", temp.toString());
-		    	int index=temp.getInt("index");
+		    	//int index=temp.getInt("index");
 		    	String side=temp.getString(paramSide);
-		    	/*String sideB=temp.getString("sideB");*/
+		    	
 		    
 		    	Log.d("WRITING RESOURCES: ", side);
 		    	
+		    	//String to be used to replace the resource with the hardcoded file on the phone
 		    	String regex="(<img src=\"\\[FLASHYRESOURCE:)(\\w{8,})(\\]\" />)";
 		    	
-		    /*	//String regex2="\\[\\]";
-		    	String resource=side.replaceAll(regex, "$2");
-		    	//String resourceB=sideB.replaceAll(regex, "$2");
-		    	Log.d("RESOURCES: ", resource );
-		    	getAndSaveResource(context, resource, paramSide,i);*/
-		    	
-		    	Log.d("REGEX", regex + "       " + side);
-		    	
+		    	// make sure the string has an img in it before you replace the resources
 		    	String contains="<img";
 		    	if (side.contains(contains)){
 		    		
-		    		Log.d("CONTAINED REGEX!!!", "REGEX WORKED!");
-		    	
 		    		String resource=side.replaceAll(regex, "$2");
-			    	//String resourceB=sideB.replaceAll(regex, "$2");
 			    	Log.d("RESOURCES: ", resource );
 			    	getAndSaveResource(context, resource, paramSide,i);
 		    	}else{
-		    		
+		    		//move on to the next appropriate resource
 		    		 if (paramSide.equals("sideA"))
 		 		    	getResourceLooper(context,i,"sideB");
 		 		    else{
@@ -457,25 +348,20 @@ public class DrawLines extends Activity {
 		 		    	getResourceLooper(context,i,"sideA");
 		 		    }
 		    	}
-		    	
-		    	
-		    	
-		    
-		    
-		    	
-			}catch (Exception e){
+		    }catch (Exception e){
 		   	 Log.d("Error", "Cannot take resources from return json object");
 					e.printStackTrace();
 		   }
 		}
 		else{
+			// The loop of resources is completed, now update the deckList and go back to the deckList page
 			Log.d("Finished saving all resources", "initializing updateDeckList");
 			updateDeckList(onResponseListener);
 		}
 		
 	}
 	
-	
+	// Start the thread to download a particular resource
 	public void getAndSaveResource(Context context, String resourceName, String side, int counter)
 	{
 		SaveResourceThread thread2=new SaveResourceThread(context, onSaveResourceListener,side, counter );
@@ -488,7 +374,7 @@ public class DrawLines extends Activity {
 	}
 	
 	
-	
+	// start the thread to update the deckList
 	public void updateDeckList(OnResponseListener orl)
 	{
 		JSONThread thread2=new JSONThread(this, orl, JSONThread.GETDECKLIST);
@@ -512,6 +398,9 @@ public class DrawLines extends Activity {
 		return true;
 	}
 	
+	
+	
+	// set the toggle options of the options menu buttons
 	public void setMenuAddRow(Boolean bool)
 	{
 		mMenuAddRowIsChecked=bool;
@@ -529,6 +418,7 @@ public class DrawLines extends Activity {
 	{
 		return mMenuAddRowIsChecked;
 	}
+	// set the toggle options of the options menu buttons
 	public void setMenuDeleteRow(Boolean bool)
 	{
 		mMenuDeleteRowIsChecked=bool;
@@ -546,13 +436,7 @@ public class DrawLines extends Activity {
 	{
 		return mMenuDeleteRowIsChecked;
 	}
-	
-	
-	
-	
-	
-	
-	
+	// set the toggle options of the options menu buttons
 	public void setMenuAddCol(Boolean bool)
 	{
 		Log.d("Entered add col ", "entered and confused");
@@ -571,6 +455,7 @@ public class DrawLines extends Activity {
 	{
 		return mMenuAddColIsChecked;
 	}
+	// set the toggle options of the options menu buttons
 	public void setMenuDeleteCol(Boolean bool)
 	{
 		mMenuDeleteColIsChecked=bool;
@@ -611,18 +496,10 @@ public class DrawLines extends Activity {
 			Log.d("Menu Status:", ""+item.isChecked());
 			if (item.isChecked())
 			{
-				//item.setIcon(R.drawable.redx);
-				/*item.setTitle("Add Row");
-				item.setIcon(R.drawable.redx);
-				item.setChecked(false);*/
 				setMenuAddRow(false);
 			}
 			else
 			{
-				//item.setIcon(R.drawable.checkmark);
-				/*item.setTitle("Add Row");
-				item.setIcon(R.drawable.checkmark);
-				item.setChecked(true);*/
 				setMenuAddRow(true);
 			}
 			return true;
@@ -630,18 +507,10 @@ public class DrawLines extends Activity {
 			Log.d("Menu Status:", ""+item.isChecked());
 			if (item.isChecked())
 			{
-				//item.setIcon(R.drawable.redx);
-				/*item.setTitle("Add Column");
-				item.setIcon(R.drawable.redx);
-				item.setChecked(false);*/
 				setMenuAddCol(false);
 			}
 			else
 			{
-				//item.setIcon(R.drawable.checkmark);
-				/*item.setTitle("Add Column");
-				item.setIcon(R.drawable.checkmark);
-				item.setChecked(true);*/
 				setMenuAddCol(true);
 			}
 			return true;
@@ -649,18 +518,10 @@ public class DrawLines extends Activity {
 			Log.d("Menu Status:", ""+item.isChecked());
 			if (item.isChecked())
 			{
-				//item.setIcon(R.drawable.redx);
-				/*item.setTitle("Delete Row");
-				item.setIcon(R.drawable.redx);
-				item.setChecked(false);*/
 				setMenuDeleteRow(false);
 			}
 			else
 			{
-				//item.setIcon(R.drawable.checkmark);
-				item.setTitle("Delete Row");
-				item.setIcon(R.drawable.checkmark);
-				item.setChecked(true);
 				setMenuDeleteRow(true);
 			}
 			return true;
@@ -668,30 +529,15 @@ public class DrawLines extends Activity {
 			Log.d("Menu Status:", ""+item.isChecked());
 			if (item.isChecked())
 			{
-				//item.setIcon(R.drawable.redx);
-				item.setTitle("Delete Column");
-				item.setIcon(R.drawable.redx);
-				item.setChecked(false);
 				setMenuDeleteCol(false);
 			}
 			else
 			{
-				//item.setIcon(R.drawable.checkmark);
-				item.setTitle("Delete Column");
-				item.setIcon(R.drawable.checkmark);
-				item.setChecked(true);
 				setMenuDeleteCol(true);
 			}
 			return true;
 			
-			/*case R.id.MenuIdTest:
-			TextView tv=(TextView)findViewById(R.id.testPageTextView);
-			tv.setText("set from menu? button");
-			return true;
-		case R.id.action_settings:
-			TextView tv2=(TextView)findViewById(R.id.testPageTextView);
-			tv2.setText("set from setting button");
-			return true;*/
+			
 		}
 		return super.onOptionsItemSelected(item);
 	}

@@ -7,12 +7,13 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.webkit.WebView;
 
+
+// an extension of WebView to handle personalized touchEvents
 public class MyWebView extends WebView {
 
 	Context context;
 	GestureDetector gd;
 	ViewDeck activ;
-	//Button b;
 	View arg;
 	    
 	
@@ -30,12 +31,13 @@ public class MyWebView extends WebView {
 	   	 	return true;
 	   }
 
-	    
+	    //flip over the card if there is a single tap
 	    public boolean onSingleTapUp(MotionEvent event)
 	    {
 	    	int x =(int) event.getX();
 	        int y = (int)event.getY();
 	        Log.d("DEBUG", "Trying to flip overrrrr");
+	        
         	activ.flipOver(arg);
 	        
 	        Log.d("GESTURE DETECTOR: ", "onSingleTap registered");
@@ -43,6 +45,7 @@ public class MyWebView extends WebView {
 	    	return true;
 	    }
 	    
+	    // on a swipe, move the card to the next or previous card depending on the motion
 	    public boolean onFling (MotionEvent e1, MotionEvent e2, float velocityX, float velocityY)
 	    {
 	    	int x1 =(int) e1.getX();
@@ -59,9 +62,12 @@ public class MyWebView extends WebView {
 	        Log.d("Coordinates:", "X1: "+x1+"   Y1:"+y1+"   X2: "+x2+"   Y2:"+y2);
 	        
 	        if (deltax > deltay){
+	        	//swipe from right to left
 		        if (e1.getRawX() > e2.getRawX()) {
 	                activ.prevCard(arg);
-	            } else {
+	            }
+		        //swipe from left to right
+		        else {
 	                activ.prevCard(arg);
 	            }
 	        }
@@ -69,6 +75,7 @@ public class MyWebView extends WebView {
 	        return true;
 	    }
 	    
+	    //does nothing, there for future implementation
 	    public boolean onScroll (MotionEvent e1, MotionEvent e2, float distanceX, float distanceY)
 	    {
 	    	int x1 =(int) e1.getX();
@@ -81,7 +88,7 @@ public class MyWebView extends WebView {
 	        Log.d("Coordinates:", "X1: "+x1+"   Y1:"+y1+"   X2: "+x2+"   Y2:"+y2);
 	        return true;
 	    } 
-	    
+	    // there for future implementation, not currently doing a particular function
 	    public void onLongPress(MotionEvent event) {
 	    	int x =(int) event.getX();
 	        int y = (int)event.getY();
@@ -94,14 +101,13 @@ public class MyWebView extends WebView {
 	 };
 	
 	
-	
+	//constructor
 	public MyWebView(Context context) {
         super(context);
 
         this.context = context;
         activ=(ViewDeck)context;
         gd = new GestureDetector(context, sogl);
-       // b=new Button(context);
         arg=this;
     }
 

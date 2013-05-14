@@ -15,7 +15,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.NavUtils;
 import android.util.Log;
-import android.view.KeyEvent;
 import android.view.MenuItem;
 import android.view.View;
 import flashyapp.com.JSONThread.OnResponseListener;
@@ -33,19 +32,17 @@ public class DecksPage extends Activity {
 		 public void onReturnLogin(String error, JSONObject jresponse, String name){}
 		 public void onReturnDeckFromImage(Context context, String mError, JSONObject jresponse){}
 		 public void onReturnDecksPage(String error, JSONObject jresponse, Context context){
+			 
+			 //turn JSON response into a list of decks on the phone
 			 JSONArray deckArray=null;
 				try{
 					
 					if (error==null)
 						deckArray=jresponse.getJSONArray("decks");
-					
-					
-				
 				}
 				catch(Exception e) {
 					 Log.d("Error", "Cannot turn response of getDecks to JSON");
-					e.printStackTrace();
-			       
+					e.printStackTrace(); 
 			    }
 				
 				if (deckArray != null)
@@ -62,7 +59,7 @@ public class DecksPage extends Activity {
 				    }catch (IOException e) {
 				        Log.i("Data Input Sample", "I/O Error");
 				    }
-					
+					//go to the list of decks
 					Intent intent =new Intent(context,DeckListMaker.class);
 					intent.putExtra(MainActivity_LogIn.INTENT_EXTRA_DATA_SESSION, sessionId);
 					intent.putExtra(MainActivity_LogIn.INTENT_EXTRA_DATA_USER, username);
@@ -85,6 +82,8 @@ public class DecksPage extends Activity {
 		setContentView(R.layout.activity_decks_page);
 		
 		Log.d("DEBUG", "in onCreate() in DecksPage");
+		
+		//get info from the class that just made this intent
 		Intent intent =getIntent();
 		sessionId = intent.getStringExtra(MainActivity_LogIn.INTENT_EXTRA_DATA_SESSION);
 		username=intent.getStringExtra(MainActivity_LogIn.INTENT_EXTRA_DATA_USER);
@@ -92,7 +91,6 @@ public class DecksPage extends Activity {
 		
 		Log.d("SessionId-DECK",sessionId);
 		Log.d("Username-DECK",username);
-		
 		
 		getDecks();
 	
@@ -110,11 +108,12 @@ public class DecksPage extends Activity {
 	
 
 	
-	
+	// in charge of making sure the list of decks exists, even if the file doesn't exist on the phone
 	private void getDecks()
 	{
 		JSONArray jarray=null;
 		
+		//Try to read it from the phone
 		 try {
 			DataInputStream in = new DataInputStream(openFileInput(MainActivity_LogIn.GETDECKS_FILE));
 		    try {
@@ -130,7 +129,10 @@ public class DecksPage extends Activity {
 		            Log.i("Data Input Sample from MAIN", "End of getDecks_file reached");
 		        }
 		        in.close();
+		        
 		    } catch (IOException e) {
+		    	
+		    	//If the file doesn't exist, make it by calling to the server
 		        Log.i("Data Input Sample", "I/O Error--getDecks_file isn't there!");
 		        JSONThread thread=new JSONThread((Context)this, onResponseListener, JSONThread.GETDECKLIST);
 		        if (thread.wifiOn()){
@@ -145,6 +147,8 @@ public class DecksPage extends Activity {
 		    	return;
 		    }
 		
+		 
+		 // go to the list of decks
 		if (jarray != null)
 		{
 
@@ -183,16 +187,6 @@ public class DecksPage extends Activity {
 		return super.onOptionsItemSelected(item);
 	}
 
-	
-	/*public void newDeck(View view)
-	{
-		Intent intent=new Intent(this,NewDeck.class);
-		intent.putExtra(MainActivity_LogIn.INTENT_EXTRA_DATA_SESSION, sessionId);
-	    intent.putExtra(MainActivity_LogIn.INTENT_EXTRA_DATA_USER,username);
-		startActivity(intent);
-		
-		
-	}*/
 	
 	
 	

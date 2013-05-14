@@ -1,15 +1,9 @@
 package flashyapp.com;
 
-import java.io.File;
-
 import org.apache.http.HttpResponse;
-import org.apache.http.conn.HttpHostConnectException;
 import org.json.JSONObject;
-
-import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.net.wifi.WifiManager;
 import android.os.AsyncTask;
 import android.util.Log;
@@ -18,6 +12,8 @@ import android.widget.EditText;
 
 
 	public class JSONThread extends AsyncTask<String, String, String> {
+		
+		// a number system to find out which specific command is being called
 		public static final int LOGIN=1;
 		public static final int REGISTER=2;
 		public static final int NEWDECK=3;
@@ -28,11 +24,6 @@ import android.widget.EditText;
 		public static final int SAVEDECK=8;
 		public static final int DELETEDECK=9;
 		
-		
-		
-		
-	   /*private ProgressBar pbar;*/
-	    //ProgressBar pbar;
 	    private Context mcontext;
 	    private JSONObject jresponse;
 	    private JSONObject jsend;
@@ -44,54 +35,50 @@ import android.widget.EditText;
 	    private ProgressDialog progressDialog;
 	    private boolean wifiOn;
 	    
-	    /*
-	     * constructor
-	     */
+	    //constructor
 	    public JSONThread( Context context, OnResponseListener orl, int Type)
 	    {
 	    	
 	    	mcontext=context;
 	    	morl=orl;
 	    	type=Type;
+	    	//check that the wifi is on
 	    	WifiManager wifi = (WifiManager)context.getSystemService(Context.WIFI_SERVICE);
 	    	wifiOn=false;
 			if (wifi.isWifiEnabled()){
 				wifiOn=true;
-				Log.d("WIFI is actually on", "Wifiiiiiiiii");
+				Log.d("WIFI is actually on", "Wifi");
 			}
 			else
 				wifiOn=false;
 	    }
 	    
-	   
+	   // let caller know if wifi is on
 	    public boolean wifiOn()
 	    {
 	    	return wifiOn;
 	    }
 	    
+	    
+	    // set up Login in HttpPost
 	    public void BeforeLogin(EditText etName, EditText etPswd)
 	    {
 	    	
 	    	String name=etName.getText().toString();
 			String pswd=etPswd.getText().toString();
-			username=name;
+			
 			JSONObject loginJSON=new JSONObject();
 			loginJSON=MyJSON.addString(loginJSON,"username",name);
-			if (loginJSON==null){
-				//do what?
-			}
 			loginJSON=MyJSON.addString(loginJSON,"password",pswd);
-			if (loginJSON==null){
-				//do what?
-			}
 			
+			username=name;
 			url="http://www.flashyapp.com/api/user/login";
 			jsend=loginJSON;
 			mError=null;
 	    	
 	    }
 
-	    
+	    // setup HttpPost to register
 	    public void BeforeRegister(EditText etName, EditText etPswd, EditText etEmail)
 	    {
 
@@ -99,140 +86,71 @@ import android.widget.EditText;
 			String pswd=etPswd.getText().toString();
 			String email=etEmail.getText().toString();
 			JSONObject loginJSON=new JSONObject();
+			
 			loginJSON=MyJSON.addString(loginJSON,"username",name);
-			if (loginJSON==null){
-				//do what?
-			}
 			loginJSON=MyJSON.addString(loginJSON,"password",pswd);
-			if (loginJSON==null){
-				//do what?
-			}
 			loginJSON=MyJSON.addString(loginJSON,"email",email);
-			if (loginJSON==null){
-				//do what?
-			}
+			
 			url="http://www.flashyapp.com/api/user/create_user";
 			jsend=loginJSON;
 			mError=null;
 	   
 	    }
 	    
+	    //set up the call to update the deck List
 	    public void BeforeDecksPage(String user, String session)
 	    {
 	    	JSONObject deckJSON=new JSONObject();
 			deckJSON=MyJSON.addString(deckJSON,"username",user);
-			if (deckJSON==null){
-				//do what?
-			}
-		
 			deckJSON=MyJSON.addString(deckJSON,"session_id",session);
-			if (deckJSON==null){
-				//do what?
-			}
 			
 			username=user;
-			
 			jsend=deckJSON;
 			mError=null;
 			url="http://www.flashyapp.com/api/deck/get_decks";
 	    }
+	    
+	    //set up the call to get information about a specific deck
 	    public void BeforeSaveDeck(String user, String session,String deckId)
 	    {
 	    	JSONObject resourceJSON=new JSONObject();
 			resourceJSON=MyJSON.addString(resourceJSON,"username",user);
-			if (resourceJSON==null){
-				//do what?
-			}
-		
 			resourceJSON=MyJSON.addString(resourceJSON,"session_id",session);
-			if (resourceJSON==null){
-				//do what?
-			}
 			
-			/*
-			 * 
-			 * FIX CASE STATEMENT AT BOTTOM AS WELL!!!!!
-			 * 
-			 */
 			username=user;
-			
 			jsend=resourceJSON;
-			
 			mError=null;
 			url="http://www.flashyapp.com/api/deck/"+deckId+"/get";
 			
-			
-			Log.d("GOT TO END OF BEFORE STATEMENT: ", url);
 	    }
-	    
-	    /*public void BeforeMakePic(String user, String session, String pathName)
-	    {
-	    	JSONObject deckJSON=new JSONObject();
-			deckJSON=MyJSON.addString(deckJSON,"username",user);
-			if (deckJSON==null){
-				//do what?
-			}
-		
-			deckJSON=MyJSON.addString(deckJSON,"session_id",session);
-			if (deckJSON==null){
-				//do what?
-			}
-			*
-			
-	    	
-	    
-	    	File imgFile = new  File(pathName);
-	    	
-	    	url="http://www.flashyapp.com/api/deck/new/upload_image";
-			MyJSON.HttpPost(url, imgFile,session,user);
-			
-			username=user;
-			jsend=null;
-			url=null;
-			//jsend=deckJSON;
-			mError=null;
-			
-	    }*/
+	   
+	    //set up a logout HttpPost
 	    public void BeforeLogout(String user, String session)
 	    {
 	    	JSONObject logoutJSON=new JSONObject();
 			logoutJSON=MyJSON.addString(logoutJSON,"username",user);
-			if (logoutJSON==null){
-				//do what?
-			}
-		
 			logoutJSON=MyJSON.addString(logoutJSON,"session_id",session);
-			if (logoutJSON==null){
-				//do what?
-			}
 			
 			username=user;
-			
 			jsend=logoutJSON;
 			mError=null;
 			url="http://www.flashyapp.com/api/user/logout";
 	    }
 	    
+	    //set up an httpPost to delete a deck
 	    public void BeforeDeleteDeck(String user, String session, String deckId)
 	    {
 	    	JSONObject deleteDeckJSON=new JSONObject();
 			deleteDeckJSON=MyJSON.addString(deleteDeckJSON,"username",user);
-			if (deleteDeckJSON==null){
-				//do what?
-			}
-		
 			deleteDeckJSON=MyJSON.addString(deleteDeckJSON,"session_id",session);
-			if (deleteDeckJSON==null){
-				//do what?
-			}
 			
 			username=user;
-			
 			jsend=deleteDeckJSON;
 			mError=null;
 			url="http://www.flashyapp.com/api/deck/"+deckId+"/delete";
 	    }
 	    
+	    //before the httpPost was created to submit the lines
 	    public void BeforeLineSubmission(JSONObject param)
 	    {
 	    	url="http://www.flashyapp.com/api/deck/new/from_image";
@@ -240,10 +158,13 @@ import android.widget.EditText;
 	    	
 	    }
 	    
+	    
+	    // Every single request does this to actually execute the HttpPost
 	    @Override
 	    protected String doInBackground(String... urls) {
 	    	
 	    	if(wifiOn){
+	    		
 				HttpResponse httpResponse=MyJSON.sendJSONObject(jsend,url);
 				if (httpResponse == null)
 					return null;
@@ -255,12 +176,7 @@ import android.widget.EditText;
 				jresponse=null;
 				
 				try{
-					
 					jresponse=new JSONObject(response);
-					
-					
-						
-				
 				}
 				
 				catch(Exception e) {
@@ -273,11 +189,12 @@ import android.widget.EditText;
 	        return null;
 	    }
 
+	    
+	    //universal set up
 	    @Override
 	    protected void onPreExecute() {
 
 	        super.onPreExecute();
-	        //pbar.setVisibility(View.VISIBLE);
 	        progressDialog = ProgressDialog.show(mcontext, null, "Please wait...", true); 
 	        
 	    }
@@ -285,25 +202,23 @@ import android.widget.EditText;
 	    
 	    
 	   
-
+	    //universal termination
 	    @Override
 	    protected void onPostExecute(String result) {
 	    	progressDialog.cancel();
-	        /*pbar.setVisibility(View.INVISIBLE);*/
-	        /*String sessionId=null;*/
-			//String error=null;
 	    	
-	    	
+	    //alert is done here because it can't be done from "doInBackground" method	
 	     if (!wifiOn){
 	    	 
 		   MyJSON.WifiAlert(mcontext);
 		    return;
 	     }
+	     //check for error from server
 	      try{  
 	        mError=MyJSON.errorChecker(jresponse,mcontext);
 			
 	        Log.d("DEBUG", "RETURN String of errorChecker"+mError);
-	        
+	        // return appropriate information to appropriate caller 
 	        switch (type){
 	        case LOGIN:
 	        	morl.onReturnLogin(mError,jresponse,username);
@@ -318,11 +233,6 @@ import android.widget.EditText;
 	        	morl.onReturnLogout(mError);
 	        	break;
 	        case VIEWDECK:
-	        	/*
-	        	 * 
-	        	 * 
-	        	 * 
-	        	 */
 	        	break;
 	        case DECKFROMIMAGE:
 	        	morl.onReturnDeckFromImage(mcontext,mError,jresponse);
@@ -332,25 +242,20 @@ import android.widget.EditText;
 	        	break;
 	        case SAVEDECK:
 	        	morl.onReturnSaveDeck(mcontext,mError, jresponse);
-	       // case SAVERESOURCE:
 	        	
 			default:
 				
 	        }
 	      }
 			catch(Exception e) {
-				//morl.onFailure("FAILED GAH");
 				 Log.d("Error", "Cannot turn response to JSON");
 				e.printStackTrace();
 		       
 		    }
 			
-					
-			/*if (sessionId != null){
-				Log.d("SessionID",sessionId);
-			}*/
 	    }
 
+	    
 	    @Override
 	    protected void onProgressUpdate(String... values) {
 	    	 super.onProgressUpdate(values);
@@ -368,12 +273,6 @@ import android.widget.EditText;
 			public void onReturnDeckFromImage(Context context, String mError, JSONObject jresponse);
 			public void onReturnSaveDeck(Context context, String mError, JSONObject jresponse);
 			}
-
-	    
-	    
-	   /* public String returnVal()
-	    {
-	    	return "THESE are Return values";
-	    }*/
+		
 	}
 	

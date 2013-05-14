@@ -3,8 +3,6 @@ package flashyapp.com;
 import java.util.ArrayList;
 
 import org.json.JSONArray;
-import org.json.JSONObject;
-
 import android.graphics.Path;
 import android.graphics.Path.Direction;
 import android.util.Log;
@@ -17,15 +15,14 @@ public class Row {
 	private int maxWidth;
 	private int maxHeight;
 	
+	//constructor
 	public Row(int t, int b, ArrayList<Integer> x, int width, int height)
 	{
 		top=t;
 		bottom=b;
 		xcoords=new ArrayList<Integer>();
-		//int index;
 		for (int f: x)
 			xcoords.add(f);
-		
 		maxWidth=width;
 		maxHeight=height;
 	}
@@ -58,6 +55,8 @@ public class Row {
 	}
 
 	
+	//add dots to the path to be drawn
+	//independent from lines for ease of drawing
 	public Path addToDotPath(Path path)
 	{
 		int radius=3;
@@ -76,6 +75,8 @@ public class Row {
 		return path;
 			
 	}	
+	
+	//add lines to path for drawing on screen
 	public Path addToLinePath(Path path)
 	{
 		
@@ -83,9 +84,6 @@ public class Row {
 		
 		path.moveTo(minwidth, top);
 		path.lineTo(maxWidth, top);
-		/*path.moveTo(minwidth, bottom);
-		path.lineTo(maxwidth, bottom-5);
-		*/
 		for (int x: xcoords){
 			
 			path.moveTo(x, bottom);
@@ -95,9 +93,9 @@ public class Row {
 			
 	}	
 	
+	//Debugging tool
 	public void print()
 	{
-		//Log.d("DEBUG", "Printing from print for each row");
 		Log.d("ROW toString Bottom",bottom+"");
 		Log.d("ROW toString Top",top+"");
 		String str=" ";
@@ -107,11 +105,9 @@ public class Row {
 			
 	}
 	
-	
+	//handles dragging of vertical lines
 	public void moveVerticalLineHorizontally(int newX)
 	{
-		//Log.d("DEBUG", "START move motion");
-		boolean moved=false;
 		float tolerance =25;
 		for (int x: xcoords){
 			
@@ -123,7 +119,7 @@ public class Row {
 				int index=xcoords.indexOf(x);
 				xcoords.set(index, newX);
 				Log.d("New Value of Vertical:", ""+xcoords.get(index));
-				moved=true;
+				
 				
 				sortArray();
 
@@ -132,10 +128,10 @@ public class Row {
 				
 			
 		}
-		//return moved;
+		
 	}
 	
-	
+	//in case lines cross over each other, makes sure lines are in order after each touch event
 	public void sortArray()
 	{
 		for (int i=0; i<xcoords.size()-1; i++)
@@ -151,9 +147,10 @@ public class Row {
 	}
 	
 	
+	
+	//deletes a single line in a row
 	public void deleteLine(int newX)
 	{
-		
 		float tolerance =15;
 		for (int x: xcoords){
 			if (Math.abs(x-newX) <= tolerance){
@@ -168,7 +165,6 @@ public class Row {
 				
 			
 		}
-		//return moved;
 	}
 	
 	
@@ -176,7 +172,7 @@ public class Row {
 	
 	
 	
-	
+	// used to create a structure for returning coordinates of final lines to the server
 	public JSONArray makeJSONcoords()
 	{
 		JSONArray ret=new JSONArray();
@@ -199,6 +195,9 @@ public class Row {
 	    }
 		return ret;
 	}
+	
+	
+	
 	
 	public void setTop(int newTop)
 	{

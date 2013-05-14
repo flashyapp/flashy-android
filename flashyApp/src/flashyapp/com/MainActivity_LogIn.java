@@ -3,9 +3,6 @@ package flashyapp.com;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.EOFException;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
 
 import org.json.JSONObject;
@@ -29,6 +26,8 @@ public class MainActivity_LogIn extends Activity {
 	
 	private EditText etName;
 	private EditText etPswd;
+	
+	//store constants for use throughout the activities
 	public final static String SESSION_FILE="sessionId.txt";
 	public final static String GETDECKS_FILE="getDecks.txt";
 	public final static String INTENT_EXTRA_DATA_SESSION = "sessionId";
@@ -49,7 +48,7 @@ public class MainActivity_LogIn extends Activity {
 		 public void onReturnDecksPage(String error, JSONObject jresponse, Context context){}
 		 public void onReturnLogin(String error, JSONObject jresponse,String name) {
 			 String sessionId=null;
-			 			
+			 	
 			 try{
 					if (error == null)// no error
 					{
@@ -64,47 +63,32 @@ public class MainActivity_LogIn extends Activity {
 					e.printStackTrace();
 			       
 			    }
-				
+			// save session Id and username to a file on the phone	
 			 if (sessionId != null){
 					Log.d("SessionID",sessionId);
 					
 				    //String fileName=SESSION_FILE;
 				    try {
 				        //writing SessionId
-				    	
-				    	
-				    	Log.d("WRITING SESSIONFILE", "SHOULD WORK");
-				    	
-				        DataOutputStream out = 
+				    	DataOutputStream out = 
 				                new DataOutputStream(openFileOutput(SESSION_FILE,Context.MODE_PRIVATE));
-				        
-				        
-				        /*DataOutputStream out = 
-		                new DataOutputStream(openFileOutput(file, Context.MODE_PRIVATE));*/
-				        
-				        
 				        out.writeUTF(sessionId);
 				        out.writeUTF(name);
-				      
-				   
-				    out.close();
+				        out.close();
 				    }catch (IOException e) {
 				        Log.i("Data Input Sample", "I/O Error");
 				        e.printStackTrace();
 				    }
 					
 					Intent intent = new Intent(MainActivity_LogIn.this, DecksPage.class);
-					//can pass in a sessionid or something on the intent 
 					intent.putExtra(INTENT_EXTRA_DATA_SESSION, sessionId);
 					intent.putExtra(INTENT_EXTRA_DATA_USER, name);
 					startActivity(intent);
 				}
 				
 				else{
-					//if sessionId isn't null....?
-					//check for error codes etc
+					
 					Log.e("SessionId","No SessionId was found--Check the errors");
-					Log.d("Alert Dialog", "Should have appeared!");
 				}
 				
 			 
@@ -142,32 +126,11 @@ public class MainActivity_LogIn extends Activity {
 			view.setText(message);
 		}
 
-		//htmlWrite();
-		//htmlRead();
-		
-	
-		/*FIX ADAM!*/
-		/*
-		 * 
-		 * 
-		 * 
-		 * 
-		 * 
-		 * 
-		 * 
-		 */
-		/*Make it so when a thread is happening, a layout gets invisible or rather gone is better*/
-	    /*LinearLayout llb=(LinearLayout)findViewById(R.id.button_login_layout);
-	    llb.setVisibility(View.INVISIBLE);*/
-		
 		
 		checkForSessionId();
 		
-		
-		
-		
-		 etName = (EditText) findViewById(R.id.login_name);
-		 etPswd = (EditText) findViewById(R.id.password);
+		etName = (EditText) findViewById(R.id.login_name);
+		etPswd = (EditText) findViewById(R.id.password);
 		 
 		
 		 
@@ -181,22 +144,12 @@ public class MainActivity_LogIn extends Activity {
 		        	   
 		        }
 		    });
-		/* etPswd.setOnFocusChangeListener(new View.OnFocusChangeListener() {          
-			 	@Override
-		        public void onFocusChange(View v, boolean hasFocus) {
-			 		
-		        	if(!hasFocus){
-		               validateText(etPswd,"Password Required");
-		        		
-		        	}
-		        
-		        }
-		    });*/
+		
 		 Button btnLogin=(Button)findViewById(R.id.login_button);
 		 Button btnReg=(Button)findViewById(R.id.register_button);
 		 btnLogin.setOnClickListener(new OnClickListener() {
 		        public void onClick(View v) {
-		        	
+		        	// make sure name and password are filled in
 		        	if(validateText(etName,"Username Required") && 	validateText(etPswd,"Password Required"))
 					{
 		        	Log.d("INTENTS","Login INTENT BEING CALLED by login BUTTON");
@@ -205,37 +158,29 @@ public class MainActivity_LogIn extends Activity {
 		        }
 		    });
 		 btnReg.setOnClickListener(new OnClickListener() {
-		        public void onClick(View v) {
-		        	/*if(validateText(etName,"Username Required") && 	validateText(etPswd,"Password Required"))
-					{*/
+		        
+			 
+			 public void onClick(View v) {
+		        	
 		        	Log.d("INTENTS","REGISTER INTENT BEING CALLED by REGISTER BUTTON");
 					registerIntent();
-					/*}*/
 		        }
 		    });
 		 
-		 //drawingLines();
 		 
 		}
 	        
 	private void checkForSessionId(){
-		//String fileName="sessionId.txt";
+		
 		 String sessionId=null;
 		 String username=null;
 	    try {
 	        //reading SessionId
-	       
-	    	/*File f= new File("/sdcard/flashyapp");
-	    	f.mkdir();
-	    	File f2= new File(f,SESSION_FILE);*/
+
 	    	DataInputStream in = new DataInputStream(openFileInput(SESSION_FILE));
-	       //InputStream is=new InputStream(openFileInput(SESSION_FILE));
+	       
 	        
 	    	try {
-	    //		username=in.readUTF();
-	    		
-	    			
-	    		
 	    			sessionId=in.readUTF();
 	    			username=in.readUTF();
 	    		
@@ -250,13 +195,15 @@ public class MainActivity_LogIn extends Activity {
 	        in.close();
 	    } catch (IOException e) {
 	        Log.i("Data Input Sample", "I/O Error--file isn't there!");
+	        //there is no file which is fine. just return
 	        return;
 	    }
 	    
+	    
 	    if (sessionId != null){
+	    	//if you have the sessionId just login
 	    	Log.d("DEBUG","Before entering DecksPage");
 		    Intent intent = new Intent(this, DecksPage.class);
-			//can pass in a sessionid or something on the intent
 		    intent.putExtra(INTENT_EXTRA_DATA_SESSION, sessionId);
 		    intent.putExtra(INTENT_EXTRA_DATA_USER,username);
 			startActivity(intent);
@@ -264,6 +211,9 @@ public class MainActivity_LogIn extends Activity {
 	    return;
 	}
 			
+	
+	//validate that the EditText has actual text
+	// put the error on the EditText if it doesn't have text
 	private boolean validateText(EditText et,String error){
 		String str=et.getText().toString();
 		if (str.equalsIgnoreCase("")){
@@ -286,7 +236,7 @@ public class MainActivity_LogIn extends Activity {
 	
 	
 
-
+	//call the login JSONThread functions
 	private void loginIntent(){
 		
 		JSONThread thread=new JSONThread((Context)this, onResponseListener, JSONThread.LOGIN);
@@ -296,230 +246,18 @@ public class MainActivity_LogIn extends Activity {
 		 }
 		 else
 			 MyJSON.WifiAlert(this);
-		/*String sessionId=thread.AfterLogin();
-		
-		Log.d("SessionID After thread stuff","..."+sessionId);*/
-		
-		/*FIX ADAM*/
-		/*
-		 * 
-		 * 
-		 * 
-		 * 
-		 * 
-		 * 
-		 * 
-		 */
-		/*make threads more versatile and pass in a layout to make it invisible.*/
-		
-		
-		/*String name=etName.getText().toString();
-		String pswd=etPswd.getText().toString();
-		JSONObject loginJSON=new JSONObject();
-		loginJSON=MyJSON.addString(loginJSON,"username",name);
-		if (loginJSON==null){
-			//do what?
-		}
-		loginJSON=MyJSON.addString(loginJSON,"password",pswd);
-		if (loginJSON==null){
-			//do what?
-		}
-		
-		String url="http://www.flashyapp.com/api/user/login";
-		HttpResponse httpResponse=MyJSON.sendJSONObject(loginJSON,url);
-		String response=MyJSON.responseChecker(httpResponse);
-		Log.d("LoginHttpResponse",response); 
-		
-		
-		String sessionId=null;
-		String error=null;
-		
-		try{
-			
-			JSONObject jresponse=new JSONObject(response);
-			error=MyJSON.errorChecker(jresponse,this);
-			Log.d("DEBUG", "RETURN String of errorChecker"+error);
-			
-			if (error == null)// no error
-			{
-				sessionId=jresponse.getString("session_id");
-			}
-			else{
-				AlertDialog.Builder ald=new AlertDialog.Builder(this);
-				ald.setTitle("LogIn Error");
-				ald.setMessage(error);
-				ald.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-					@Override
-					public void onClick(DialogInterface dialog, int which) {
-						Log.d("Debug", "Alert Got Clicked");
-					}
-				});
-				
-				
-				
-				AlertDialog other=ald.create();
-				other.show();
-				Log.d("Debug", "Else statement of alert");
-			}
-			
-				
-		
-		}
-		catch(Exception e) {
-			 Log.d("Error", "Cannot turn response to JSON");
-			e.printStackTrace();
-	       
-	    }
-		
-		
-		
-		
-		
-	
-		if (sessionId != null){
-			Log.d("SessionID",sessionId);
-			
-		    //String fileName=SESSION_FILE;
-		    try {
-		        //writing SessionId
-		        DataOutputStream out = 
-		                new DataOutputStream(openFileOutput(SESSION_FILE, Context.MODE_PRIVATE));
-		        out.writeUTF(sessionId);
-		        out.writeUTF(name);
-		      
-		   
-		    out.close();
-		    }catch (IOException e) {
-		        Log.i("Data Input Sample", "I/O Error");
-		    }
-			
-			Intent intent = new Intent(this, DecksPage.class);
-			//can pass in a sessionid or something on the intent 
-			intent.putExtra(INTENT_EXTRA_DATA_SESSION, sessionId);
-			intent.putExtra(INTENT_EXTRA_DATA_USER, name);
-			startActivity(intent);
-		}
-			
-		else{
-			//if sessionId isn't null....?
-			//check for error codes etc
-			Log.e("SessionId","No SessionId was found--Check the errors");
-		}
-		
-		*/
 		
 		
 		
 	}
 	
+	//go to the Register Page
 	private void registerIntent(){
 		Intent intent = new Intent(this, Registration.class);
 		startActivity(intent);
 	}
 	
-	//NOW INVALID!! NEW LINE CODE IN OTHER PROJECT!!!
-	/*private void drawingLines()
-	{
-		Log.d("Drawing", "Got into drawing method");
-		View view=this.findViewById(R.id.outer_login_layout);
-		
-		view.setOnTouchListener(new OnTouchListener() {
-			public boolean onTouch(View v, MotionEvent event) {
-				float p1= 30;
-				float p2= 30;
-				float p3=60;//event.getX();
-				float p4=60;//event.getY();
-				Log.d("Drawing", "Got into drawing method 2");
-				 Paint p = new Paint();
-		         p.setColor(Color.WHITE);
-		         p.setStyle(Paint.Style.STROKE);
-		         Canvas canvas = new Canvas();
-		         canvas.drawColor(Color.BLUE);
-
-		        canvas.drawLine(p1,p2,p3,p4,p);
-				
-				
-				
-				
-				return true;
-			}
-		
-		
-		
-		});
-		//setContentView(view);
-		
-	}*/
-
 	
-	/*private void htmlWrite(){
-		Log.d("WRITING HTML FILE","Before Writing html");
-		
-		File path = Environment.getExternalStorageDirectory();
-		    //String StrPath=path.getPath();
-		String photoName="cameraFile.jpg";
-		
-		File f = new File(path,photoName);
-	    //was takePictureIntent
-	    // String mCurrentPhotoPath = "\""+f.getAbsolutePath()+"\"";
-	     String photoPath="file:///android_asset/FlashCardsPhoto.jpg";
-	    
-	    String fileName="Test.html";
-	    String htmlString="<html><head><title>TITLeeeEE</title></head><body><i>Middle</i> of the<b> body!</b>" +
-	    		"<img src="+photoPath+" alt=\"Ninja Pic\" > </body></html>";
-	   //height="42" width="42"
-	   
-	    try {
-	        //writing SessionId
-	        DataOutputStream out = 
-	                new DataOutputStream(openFileOutput(fileName, Context.MODE_PRIVATE));
-	        out.writeUTF(htmlString);
-	        Log.d("WRITING HTML FILE","After Writing html"+htmlString);
-	       
-	   
-	    out.close();
-	    }catch (IOException e) {
-	        Log.i("Data Input Sample", "I/O Error");
-	    }
-	}
-	
-	private void htmlRead()
-	{
-		String htmlIn=null;
-		 try {
-		      DataInputStream in = new DataInputStream(openFileInput("Test.html"));
-		        
-		    	try {
-		   
-		    			htmlIn=in.readUTF();
-		    			
-		              	Log.i("HTML Input", htmlIn);
-		    			
-		    		
-		          
-		        } catch (EOFException e) {
-		            Log.i("HTML Input Sample from MAIN", "End of file reached");
-		        }
-		        in.close();
-		    } catch (IOException e) {
-		        Log.i("HTML Input Sample", "I/O Error--file isn't there!");
-		        return;
-		    }
-		
-		if(htmlIn != null){
-			
-			Log.d("HTML Input", htmlIn);
-			
-			
-			Intent intent = new Intent(this, ViewHTML.class);
-			//can pass in html string
-			intent.putExtra("html_extra", htmlIn);
-			startActivity(intent);
-			
-			
-		}
-	}
-	*/
 
 }
 

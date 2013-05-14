@@ -92,7 +92,6 @@ public final class R {
         public static final int activity_new_deck=0x7f030005;
         public static final int activity_registration=0x7f030006;
         public static final int activity_view_deck=0x7f030007;
-        public static final int activity_view_html=0x7f030008;
     }
     public static final class menu {
         public static final int deck_list_maker=0x7f070000;

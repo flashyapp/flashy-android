@@ -46,33 +46,20 @@ public class ViewDeck extends Activity {
 	private ArrayList<String> sideB;
 	private WebView webView;
 	private JSONArray mCards;
-	//private String nickResource;
  
-	
 	
 protected OnResponseSaveResourceListener onSaveResourceListener = new OnResponseSaveResourceListener() {
 		
 		public void onReturnSaveResource(Context context, Bitmap bitmap, String mSide, int counter, String name){
-			Log.d("RESOURCE WAS OBTAINED", "Resource gotten after httpget command");
-			/*DrawLines dl=(DrawLines)context;*/
-			/*File path = Environment.getExternalStorageDirectory();
-		    //String StrPath=path.getPath();
+			Log.d("RESOURCE WAS OBTAINED", "Resource gotten after httpget command");		   
 		    
-		    File f = new File(path,fileName);
-		    //was takePictureIntent
-*/		    
-		   
-		    
+			// save resource to phone
 		    File path = Environment.getExternalStorageDirectory();
 		    File dir=new File(path,MainActivity_LogIn.FILE_DIR);
 		    dir.mkdir();
 		    String fileName=name+".jpg";
 		    File f = new File(dir,fileName);
 		    
-		    
-		   
-		 
-		    //takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(f));
 		    try {
 		    	Log.d("WRITING","writing to from ViewDeck : "+f.getAbsolutePath());
 		    	FileOutputStream out = new FileOutputStream(f);
@@ -109,16 +96,12 @@ protected OnResponseSaveResourceListener onSaveResourceListener = new OnResponse
 		 public void onReturnLogout(String error){}
 		 public void onReturnSaveDeck(Context context, String mError, JSONObject jresponse){
 			 Log.d("RETURNED FROM GETTING DECK", "In response listener, Please work");
-			 //copy drawLines onrl.returndeckfromimage
-			 
-			 
+			
 			 ViewDeck vd=(ViewDeck)context;
-
 			 
-			 
-			 Log.d("Debug", "In reponse");
+			 // save the deck Data (name/description/etc...) to phone memory
+			 // starts looper to get all the resources as well
 			 if (mError==null){
-				 Log.d("Debug", "In null error");
 				 try {
 					 
 					 Log.d("DEBUG", "Before writing deck info file");
@@ -144,50 +127,13 @@ protected OnResponseSaveResourceListener onSaveResourceListener = new OnResponse
 					 	
 				        Log.d("DEBUG", "After writing deck info file" + mCards.toString());
 					 	
-					 	
-					 	
-				       
-				       /* for (int i=0; i< cards.length(); i++)
-				        {*/
-				        	//Log.d("Debug", "In card loop");
-				        	
-				        
 				       vd.getResourceLooper(context, 0, "sideA");
-				       // }
-				       
-					 
-					 
-					 
-					 /*	DataOutputStream out = 
-				                new DataOutputStream(openFileOutput(MainActivity_LogIn.GETDECKS_FILE, Context.MODE_PRIVATE));
-				        out.writeUTF(deckArray.toString());
-				        
-				     
-				  
-				        out.close();
-				        */
-				    	
-				   /* }catch (IOException e) {
-				        Log.i("Data Input Sample", "I/O Error");*/
+				      
 				    }catch (Exception e){
 				    	 Log.d("Error", "Cannot take resources from return json object");
 			 				e.printStackTrace();
 				    }
-				
-				 
-				 
-				 
-				 Log.d("THREAD Response", "Need to correct later but finished json submission");
-				 
-				//dl.updateDeckList();
-				
-				 
 			 }
-			 
-			 
-			
-			 
-			 
 			 
 		 }
 	};
@@ -212,36 +158,19 @@ protected OnResponseSaveResourceListener onSaveResourceListener = new OnResponse
 		
 		RelativeLayout rloutter=(RelativeLayout)findViewById(R.id.outerWebLayout);
 		
+		//this is just a hack to make the layouts center relative to each other
 		RelativeLayout rl=new RelativeLayout(this);
 		MyWebView myweb=new MyWebView(this);
-		
-	
-		
-		
+				
 		rl.addView(myweb);
 		
 		rloutter.addView(rl);
 		
+		//set max dimensions
 		rl.getLayoutParams().height=265;
 		rl.getLayoutParams().width=265;
 		
-		
-		
-		
-		
-		Log.d("DEBUG", "right before layoutparams");
-		
-		
-		 /*<WebView
-         android:id="@+id/cardViewer"
-         android:layout_width="265dp"
-         android:visibility="gone"
-         android:layout_height="wrap_content"
-         android:layout_centerInParent="true"
-         />*/
-	
-		
-		
+		//center one layout within the other
 		RelativeLayout.LayoutParams layoutParams = 
 			    (RelativeLayout.LayoutParams)rl.getLayoutParams();
 		layoutParams.addRule(RelativeLayout.CENTER_IN_PARENT);
@@ -250,7 +179,7 @@ protected OnResponseSaveResourceListener onSaveResourceListener = new OnResponse
 		
 		
 		Log.d("DEBUG", "right after layoutparams before invalidate");
-		myweb.loadDataWithBaseURL("fake", "HIIIII", "text/html", "utf-8", null);
+		myweb.loadDataWithBaseURL("fake", "test", "text/html", "utf-8", null);
 		myweb.invalidate();
 		
 		Intent intent =getIntent();
@@ -258,28 +187,18 @@ protected OnResponseSaveResourceListener onSaveResourceListener = new OnResponse
 		sessionId = intent.getStringExtra(MainActivity_LogIn.INTENT_EXTRA_DATA_SESSION);
 		username=intent.getStringExtra(MainActivity_LogIn.INTENT_EXTRA_DATA_USER);
 	
-			Log.d("deckId in DeckView:", deckId+ "    "+username + sessionId);
+		Log.d("deckId in DeckView:", deckId+ "    "+username + sessionId);
 		deckArray=null;
 		index=0;
-		/*cardView=(TextView)findViewById(R.id.deckView_textView);
-		cardView.setTag("A");*/
-	
+		
+		//do some more design work
 		LinearLayout ll=(LinearLayout)findViewById(R.id.ViewDeck_layout);
 		ll.setBackgroundColor(Color.BLACK);
-		//RelativeLayout rl=(RelativeLayout)findViewById(R.id.)
-		
-		/*WebView webview=new WebView(this);//(WebView)findViewById(R.id.cardViewer);
-		webview.setPadding(0, 0, 0, 0);*/
-		
-		//webview.getSettings().setUseWideViewPort(true);
-		/**/
-		
-		
 		
 		webView=myweb;
 		webView.setTag("A");
-		//ll.addView(webview);
 		
+		//find ids so that based on orientation the views can be updated/shown
 		RelativeLayout rltop=(RelativeLayout)findViewById(R.id.ViewDeck_top_buttons);
         ImageButton ib1=(ImageButton)findViewById(R.id.flip_next_button_landscape);
         ImageButton ib2=(ImageButton)findViewById(R.id.flip_previous_button_landscape);
@@ -294,7 +213,7 @@ protected OnResponseSaveResourceListener onSaveResourceListener = new OnResponse
             case Configuration.ORIENTATION_PORTRAIT:
                 
             	Log.d("ORIENTATION:", " Screen is portrait!");
-               
+            	
                 rltop.setVisibility(View.GONE);
                 ib1.setVisibility(View.VISIBLE);
                 ib2.setVisibility(View.VISIBLE);
@@ -314,24 +233,15 @@ protected OnResponseSaveResourceListener onSaveResourceListener = new OnResponse
         		break;
         }
 		
-		
-		
-		
-		
-		
-		
 		loadDeck();
 		
 	}
 
 	
 	
-	
+	// this actually loads the information about the deck for viewing use
 	private void loadDeck(){
-		
-		
-		
-		String deckString=null;
+	
 		try{
 			DataInputStream in = new DataInputStream(openFileInput(deckId+".txt"));
 		    try {
@@ -348,15 +258,14 @@ protected OnResponseSaveResourceListener onSaveResourceListener = new OnResponse
 		} catch (IOException e) {
 		        Log.i("Data Input Sample", "I/O Error--file isn't there!");
 		        
-		        
-		        webView.loadDataWithBaseURL("file://","SORRY!!", "text/html", "utf-8", null);
-		        
+		        //File doesn't exist and needs to be retrieved
+		        webView.loadDataWithBaseURL("file://","Loading", "text/html", "utf-8", null);
 		        WifiManager wifi2 = (WifiManager)getSystemService(Context.WIFI_SERVICE);
 		    	
 		        
 		        
 		        Log.d("DECKID", deckId);
-		        
+		        // call thread to load the data about the deck
 				if (wifi2.isWifiEnabled()){
 					JSONThread thread=new JSONThread(this, onResponseListener, JSONThread.SAVEDECK);
 					thread.BeforeSaveDeck(username,sessionId,deckId);
@@ -366,7 +275,7 @@ protected OnResponseSaveResourceListener onSaveResourceListener = new OnResponse
 					callWifiAlert();
 		     
 		       
-		        return;
+		    return;
 	
 		}
 		catch(Exception e) {
@@ -380,7 +289,8 @@ protected OnResponseSaveResourceListener onSaveResourceListener = new OnResponse
 		presentCardAction();
 	}
 	
-	
+	//takes the deck info and makes it into html for viewing
+	//stores results in arrays
 	private void makeIndividualCards()
 	{
 		sideA=new ArrayList<String>();
@@ -393,18 +303,18 @@ protected OnResponseSaveResourceListener onSaveResourceListener = new OnResponse
 				JSONObject tempDeck=deckArray.getJSONObject(i);
 				String Aside=tempDeck.getString("sideA");
 				
+				//string for getting resource number
 				String regex="(<img src=\")(\\[FLASHYRESOURCE:)(\\w{8,})(\\])(\" />)";
+				//string to find when there is no resource
 				String regex2="\\[FLASHYRESOURCE:0{8}\\]";
 				String replacement="$1file:///sdcard/flashyapp/$3.jpg\" alt=\"Pic\" HEIGHT=\"250\" WIDTH=\"250\" BORDER=\"0\" >";
 		    	String resourceA=Aside.replaceAll(regex, replacement );
+		    	// tell the user that there is no back
 		    	String resource2A=resourceA.replaceAll(regex2, "No Back to this card");
+		    	//do the same for sideB
 				String Bside=tempDeck.getString("sideB");
-				
 		    	String resourceB=Bside.replaceAll(regex, replacement);
 		    	String resource2B=resourceB.replaceAll(regex2, "No Back to this card");
-
-			
-				String cardIndex=tempDeck.getString("index");
 				
 				Log.d("DEBUG resource2A",resource2A);
 				Log.d("DEBUG resource2B",resource2B);
@@ -423,6 +333,8 @@ protected OnResponseSaveResourceListener onSaveResourceListener = new OnResponse
 		
 		
 	}
+	
+	//method responsible for flipping over the card
 	public void flipOver(View view)
 	{
 		String tag=(String)webView.getTag();
@@ -434,8 +346,10 @@ protected OnResponseSaveResourceListener onSaveResourceListener = new OnResponse
 		presentCardAction();
 	}
 	
+	//method for going on to the next card
 	public void nextCard(View view)
 	{
+		//always show side A when you move on to the next card
 		webView.setTag("A");
 		
 		if (index < deckArray.length()-1)
@@ -444,9 +358,10 @@ protected OnResponseSaveResourceListener onSaveResourceListener = new OnResponse
 			index=0;
 		presentCardAction();
 	}
-	
+	//method for going to previous card
 	public void prevCard(View view)
 	{
+		//always show Side A when you move to a previous card
 		webView.setTag("A");
 		
 		if (index >0)
@@ -456,29 +371,24 @@ protected OnResponseSaveResourceListener onSaveResourceListener = new OnResponse
 		presentCardAction();
 	}
 	
+	
+	//This is responsible for actually displaying a card
 	private void presentCardAction()
 	{
 		
 		String tag=(String)webView.getTag();
-		String text;
-	
 		
 	
 		File f=Environment.getExternalStorageDirectory();
 		String resource;
+		//find the html to display
 		if (webView.getTag().equals("A"))
 			resource=sideA.get(index);
 		else
 			resource=sideB.get(index);
 		
 		
-		//String imgTag="<img src=\"file:///sdcard/"+resource+".jpg\" alt=\"Pic\" HEIGHT=\"250\" WIDTH=\"250\" BORDER=\"0\" >";
-		
-		Log.d("RESOURCEEEEEEEEE", resource + " baseeeeee "+ f.getAbsolutePath());
-		//String html="<html><head></head><body>"+resource+"</body></html>";
-		
 		if (tag.equals("A")){
-			//webView.loadUrl("file://"+f.getAbsolutePath() +"/"+ deckId+index+"A"+".html");
 			webView.loadDataWithBaseURL("file://"+f.getAbsolutePath(), resource, "text/html", "utf-8", null);
 			webView.invalidate();
 		}
@@ -489,7 +399,7 @@ protected OnResponseSaveResourceListener onSaveResourceListener = new OnResponse
 		
 		
 		
-		//webView.setText(text);
+		//redraw the view
 		LinearLayout layout=(LinearLayout)findViewById(R.id.ViewDeck_layout);
 		layout.invalidate();
 		
@@ -524,6 +434,7 @@ protected OnResponseSaveResourceListener onSaveResourceListener = new OnResponse
 			return true;
 		
 		case R.id.ViewDeckLogout:
+			// allows for logout from this page
 			WifiManager wifi = (WifiManager)getSystemService(Context.WIFI_SERVICE);
 	    	
 			if (wifi.isWifiEnabled()){
@@ -539,6 +450,8 @@ protected OnResponseSaveResourceListener onSaveResourceListener = new OnResponse
 			return true;
 			
 		case R.id.SyncDeckId:
+			//Overwrites all the data about the deck so that it can reflect the
+			//deck that might have been edited on the website
 			WifiManager wifi2 = (WifiManager)getSystemService(Context.WIFI_SERVICE);
 	    	
 			if (wifi2.isWifiEnabled()){
@@ -564,12 +477,9 @@ protected OnResponseSaveResourceListener onSaveResourceListener = new OnResponse
 
 	
 	
-	
-	
-	
-	
-	
-	
+
+	//function to be in charge of looping through all resources and downloading them
+	//to save on the phone
 	public void getResourceLooper(Context context, int i, String paramSide)
 	{
 		int Length=mCards.length();
@@ -579,22 +489,23 @@ protected OnResponseSaveResourceListener onSaveResourceListener = new OnResponse
 			try{
 				JSONObject temp=mCards.getJSONObject(i);
 				Log.d("DEBUG Looper 2: ", temp.toString());
-		    	int index=temp.getInt("index");
+		    	
 		    	String side=temp.getString(paramSide);
-		    	/*String sideB=temp.getString("sideB");*/
+		    	
 		    
 		    	Log.d("WRITING RESOURCES: ", side);
 		    	
 		    	String regex="(<img src=\"\\[FLASHYRESOURCE:)(\\w{8,})(\\]\" />)";
-		    	//String regex2="\\[\\]";
 		    	String contain="<img";
+		    	//just try to replace a resource if it has a resource
 		    	if (side.contains(contain)){
 		    		Log.d("CONTAINS", "Contains the regexed stuff");
 			    	String resource=side.replaceAll(regex, "$2");
-			    	//String resourceB=sideB.replaceAll(regex, "$2");
 			    	Log.d("RESOURCES: ", resource );
 			    	getAndSaveResource(context, resource, paramSide,i);
-		    	}else{
+		    	}
+		    	//otherwise download the next appropriate resource
+		    	else{
 		    		
 		    		 if (paramSide.equals("sideA"))
 		 		    	getResourceLooper(context,i,"sideB");
@@ -619,7 +530,7 @@ protected OnResponseSaveResourceListener onSaveResourceListener = new OnResponse
 		
 	}
 	
-	
+	//actually call the thread to get the resource
 	public void getAndSaveResource(Context context, String resourceName, String side, int counter)
 	{
 		SaveResourceThread thread2=new SaveResourceThread(context, onSaveResourceListener,side, counter );
@@ -631,28 +542,5 @@ protected OnResponseSaveResourceListener onSaveResourceListener = new OnResponse
 			MyJSON.WifiAlert(this);
 	}
 
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
+
 }

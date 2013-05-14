@@ -10,16 +10,11 @@ import android.content.Context;
 import android.net.wifi.WifiManager;
 import android.os.AsyncTask;
 import android.util.Log;
-import android.widget.EditText;
-import flashyapp.com.JSONThread.OnResponseListener;
 
+
+//Similar to the JSONThread except it is specific to sending in Images to server
 public class MIMEThread extends AsyncTask<String, String, String> {
 	
-	
-	
-	
-	
-   
     private Context mcontext;
     private JSONObject jresponse;
    
@@ -51,29 +46,27 @@ public class MIMEThread extends AsyncTask<String, String, String> {
     	
     }
     
+    //returns if wifi is on
     public boolean wifiOn()
     {
     	return wifiOn;
     }
 
     
-   
+    //sets up Picture Post request
     public void BeforeMakePic(String user, String session, String pathName)
     {
     
     	mfile = new  File(pathName);
     	
     	url="http://www.flashyapp.com/api/deck/new/upload_image";
-		//MyJSON.HttpPost(url, imgFile,session,user);
 		sessionId=session;
 		username=user;
-		
-		
 		mError=null;
 		
     }
     
-    
+    // execute the post
     @Override
     protected String doInBackground(String... urls) {
     	
@@ -87,20 +80,18 @@ public class MIMEThread extends AsyncTask<String, String, String> {
 		try{
 			
 			jresponse=new JSONObject(response);
-			
-			
-				
-		
 		}
 		catch(Exception e) {
 			 Log.d("Error", "Cannot turn response to JSON");
 			e.printStackTrace();
 	       
 	    }
-		
         return null;
     }
 
+    
+    
+    // set up progress bar
     @Override
     protected void onPreExecute() {
 
@@ -113,37 +104,24 @@ public class MIMEThread extends AsyncTask<String, String, String> {
     
     
    
-
+    //take down progress bar and check errors
     @Override
     protected void onPostExecute(String result) {
     	progressDialog.cancel();
-        /*pbar.setVisibility(View.INVISIBLE);*/
-        /*String sessionId=null;*/
-		//String error=null;
       try{  
         mError=MyJSON.errorChecker(jresponse,mcontext);
-		
         Log.d("DEBUG", "RETURN String of errorChecker"+mError);
-        
-       
         morl.onReturnMIMEIn(mError,jresponse,username,mcontext);
-        	
-       
-			
         
       }
 		catch(Exception e) {
-			//morl.onFailure("FAILED GAH");
 			 Log.d("Error", "Cannot turn response to JSON");
 			e.printStackTrace();
 	       
 	    }
 		
-				
-		/*if (sessionId != null){
-			Log.d("SessionID",sessionId);
-		}*/
     }
+
 
     @Override
     protected void onProgressUpdate(String... values) {
@@ -152,16 +130,9 @@ public class MIMEThread extends AsyncTask<String, String, String> {
        
     }
     
-    
+    // define the way to return on a callback function
 	public interface OnResponseMIMEListener {
 		public void onReturnMIMEIn(String error, JSONObject jresponse,String name, Context context);
 		
 		}
-
-    
-    
-   /* public String returnVal()
-    {
-    	return "THESE are Return values";
-    }*/
 }
